@@ -1,6 +1,6 @@
 # AGENTS.md
 
-DeepSeek Harness is a plugin-based agent harness on vendored Cordis: **everything is a plugin**. Read [docs/architecture.md](docs/architecture.md) before changing `packages/`; follow [docs/AGENTS.md](docs/AGENTS.md) for documentation.
+DeepSeek Harness uses vendored Cordis: **everything is a plugin**. Read [architecture](docs/architecture.md) before editing `packages/`; follow [documentation instructions](docs/AGENTS.md).
 
 ## Pre-release stance: foundation over blast radius
 
@@ -10,6 +10,7 @@ DeepSeek Harness is a plugin-based agent harness on vendored Cordis: **everythin
 
 ```
 vendor/      Vendored Cordis source — manifest + sync procedure in vendor/README.md
+apps/        Applications
 packages/    @deepseek-ai/dsh-<pkg> workspaces at packages/<group>/<pkg>/
   core/        product API spine: session, system-prompt, tools, agent, agent-loop
   api/         Remote BFF assembly and Typert RPC gateway
@@ -48,6 +49,7 @@ packages/    @deepseek-ai/dsh-<pkg> workspaces at packages/<group>/<pkg>/
 python/      Python SDK and bundled runtime (see python/README.md)
 native/      @deepseek-ai/node-addon-landlock-run source of record (see native/README.md)
 examples/    Runnable cordis.yml leaves over packages/examples bundles (see examples/AGENTS.md)
+products/    Chico docs
 .agents/     Agent workflows and Agent Notes (`notes/`)
 docs/        architecture, generated catalogs, postmortems, cookbook (see docs/AGENTS.md)
 scripts/     repo gates and generators
