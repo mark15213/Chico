@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write products/chico/README.md
-README.md: 56842d19e36ae142b2dcc903ea20b816d039a788
-README.zh.md: 2d2b2fed7f0a94bd61341152ff87e55cb48335cc
+README.md: 7a7b0903cea2bd997df19d1567d663b3d70317d0
+README.zh.md: 1ea50795fdafc20f037d3754d15d512ce57d9e3e

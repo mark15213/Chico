@@ -4,7 +4,7 @@ This document states product intent for review. It does not describe shipped beh
 
 ## Positioning
 
-Chico is a desktop investment workbench for professional stock and fund investors. It keeps a permanent, attributable record of every judgment made about every name a user follows — the agent's judgments and the user's own — and scores them against realized outcomes. What it sells is not analysis. It is knowing which analysis to act on.
+Chico is a desktop investment workbench for professional stock and fund investors. It is an open agent: anything can be asked of it, and it does the ordinary work of the job. Underneath, it keeps a permanent, attributable record of the judgments that pass through it — the agent's and the user's own — and scores them against realized outcomes. What it sells is not analysis. It is knowing which analysis to act on.
 
 It serves investors who answer for the outcome: private fund managers, professional individual traders, investment advisors, and buy-side researchers who follow tens to hundreds of names, hold a written view on each, and are accountable for what the book does ([roles](foundations/professional-users.md)).
 
@@ -23,6 +23,16 @@ The scarce good therefore moves from generation to selection — not "give me an
 Its memory unit is a conversation. A professional investor's memory unit is a name and an assumption. To a general agent a ticker is a string in a prompt, and it meets the company again from zero every session. To the investor it is an object that has existed for three years, carrying ten years of price behavior, every quarter measured against expectation, every management commitment and whether it was met, six round trips with the reason for each, and three live assumptions with the condition that would prove each wrong.
 
 That is a data structure, not a context length, and a larger model does not produce it.
+
+## Open on top, accumulating underneath
+
+A book is what the product accumulates, not a procedure the user follows. The surface stays an open agent: a greeting gets a greeting, a question about convertible bonds gets an answer, a request to write a script or clean up a spreadsheet gets done, and none of it is routed through an investment workflow. Most of a professional's day is not thesis work, and a tool that handles only thesis work is a tool they keep in a second window.
+
+Structure is extracted from that ordinary work rather than entered into it. When something judgment-bearing passes through — a view stated, a reason given for a trade, a condition that would change the user's mind — the system proposes keeping it, and the user accepts in one action, edits it, or ignores it at no cost. Requiring a person to fill in structure was a workaround for software that could not read prose; building this product on that requirement would leave its main capability unused.
+
+Nothing is gated on the user having done any of it. Every view is worth opening with an empty record and better with a full one.
+
+The memory and personalization system that does this work — extraction, the record, and scoring — carries its own design. The three pieces below state what it has to produce; [`workbench-design.md`](workbench-design.md) states what the user sees.
 
 ## What Chico builds
 
@@ -53,7 +63,7 @@ Portfolio-level attribution is the same infrastructure read forward. Before a tr
 
 Most AI products assume the agent produces and the person consumes. In investing that direction is inverted: the person produces the alpha, and the system preserves, tests, amplifies, and executes it. What a model generates is a function of public information and is worth zero at the margin. What is worth something is the price softening heard from three distributors, the yield figure from an engineer the user knows, whether the user believes this management team. Today that material sits in chat logs, draft posts, and spreadsheet comments.
 
-The ledger accepts it at near-zero cost — a sentence, a voice note, a clipping — attaches it to the right name and the right assumption, asks one thing in return, namely what would prove it wrong, and then returns on its own when data bears on it. Agent judgments enter the same structure under the same scoring. Neither is privileged.
+The ledger takes it from wherever it was already said — a sentence in conversation, a voice note, a clipping — attaches it to the right name and assumption, and proposes the one thing that makes it scorable later: what would prove it wrong. That proposal is drafted from what the user already said and can be accepted, corrected, or left alone. The ledger then returns on its own when data bears on it. Agent judgments enter the same structure under the same scoring, and neither is privileged.
 
 ### What the three produce together
 
@@ -72,6 +82,7 @@ Scheduled tasks, report generation, and data lookups are table stakes; every gen
 | What it records | What was asked and answered | What was believed, why, and what would prove it wrong |
 | Attribution | Narrative after the fact | Return, move, expectation, and decision, decomposed |
 | Human insight | Discarded with the session | A first-class object, scored beside the agent's |
+| Off-thesis work | A general agent does it and forgets; a vertical workbench declines it | Done, and whatever bore on a position is kept |
 | Basis for trust | Fluent output | Measured hit rate, by pattern, on this user's own book |
 | Trading authority | Cannot responsibly be granted | Earned level by level against measured attribution |
 | A stronger model | Replaces the product | Raises the record's value: more answers make choosing among them worth more |
@@ -104,7 +115,7 @@ The name dossier ships first because nothing else stands without it: the attribu
 
 ## What success looks like
 
-**Capture rate.** Share of new positions carrying a written thesis and at least one falsifier at entry. Nothing downstream works without it, and it is the hardest number to move because it charges the user at the busiest moment.
+**Extraction and acceptance.** Precision and recall of assumptions and falsifiers the system proposes from ordinary work, and the share the user accepts or corrects rather than ignores. Everything downstream rests on this, and it is an engineering number rather than a behavior-change number.
 
 **Attribution coverage.** Share of position-level profit and loss decomposed to factor, event, and thesis rather than left unexplained.
 
