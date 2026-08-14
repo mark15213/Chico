@@ -6,6 +6,7 @@
  * and workspace hover cards are suppressed while a menu is open.
  */
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import clsx from 'clsx'
 import {
   HoverCard, IconArchiveOutline20, IconBranchOutline16, IconEditOutline16,
@@ -13,6 +14,7 @@ import {
   IconTrashOutline16, IconTriangleRightFill14, Menu, StateDot,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { StateDotState } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 import type { WorkspaceBrowserProps } from '../contract/slots.ts'
 import type { GroupNode, SearchResultNode, SessionNode } from '../tree.ts'
 import { relativeTime } from '../tree.ts'
@@ -107,7 +109,7 @@ function rowHalf(e: { clientY: number; currentTarget: HTMLElement }): 'before' |
  * @param props.t - the browser root's locale seat.
  * @returns the row element.
  */
-export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: {
+export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, renderDecoration, t }: {
   group: GroupNode
   onToggle: () => void
   onCreate: () => void
@@ -115,6 +117,11 @@ export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: 
   actions?: { rename: () => void; delete: () => void } | undefined
   /** Present only for real Workspace rows in the grouped view. */
   drag?: WorkspaceRowDragProps | undefined
+  /**
+   * Renders the row's decoration list. Called only for real Workspace rows,
+   * so the ungrouped bucket never asks decorators to resolve a row with no id.
+   */
+  renderDecoration?: ((workspaceId: WorkspaceId, title: string) => ReactNode) | undefined
   t: RowTranslate
 }) {
   const row = group
@@ -151,6 +158,11 @@ export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: 
       <span className={css.projectText}>
         <span className={css.title}>{label}</span>
       </span>
+      {row.workspaceId !== undefined && renderDecoration !== undefined && (
+        // Presentation only: the row's own click opens the group, so the
+        // decoration must not intercept it or claim the actions' hover lane.
+        <span className={css.rowDecoration}>{renderDecoration(row.workspaceId, label)}</span>
+      )}
       <span className={css.rowActions}>
         {actions !== undefined && (
           <Menu

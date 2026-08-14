@@ -232,6 +232,21 @@
   display: inline-flex;
 }
 
+/* Registrant-owned trailing content. It yields the lane to the action buttons
+   on hover, the same swap the session row's time label performs, so a
+   decorated row gains no width and loses no affordance. */
+.rowDecoration {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.projectRow:hover .rowDecoration,
+.projectRow.menuOpen .rowDecoration {
+  display: none;
+}
+
 .sessionRow:hover .time,
 .sessionRow.menuOpen .time {
   display: none;

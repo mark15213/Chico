@@ -140,6 +140,23 @@ describe('ui-workspace apply', () => {
     unsubscribe()
   })
 
+  it('declares the row-decoration list and collapses it with the declaring entry', async () => {
+    const b = await bench()
+    declare(b.slots, 'sidebar.workspaces', 'conversation.hero.workspace')
+    const fiber = b.ctx.plugin({ inject: [...inject], apply })
+    await fiber.await()
+    expect(b.slots.spec('sidebar.workspaces.rowDecoration')).toMatchObject({ kind: 'list' })
+
+    // A registrant contributes without the browser knowing about it.
+    const dispose = b.slots.register({ name: 'sidebar.workspaces.rowDecoration', id: 'probe' } as never, () => null)
+    expect(b.slots.entries('sidebar.workspaces.rowDecoration')).toHaveLength(1)
+    dispose()
+
+    // Declaration lives on the browser entry, so its teardown takes the child.
+    await fiber.dispose()
+    expect(b.slots.spec('sidebar.workspaces.rowDecoration')).toBeUndefined()
+  })
+
   it('rejects the browser search callback on a runtime business error', async () => {
     const b = await bench()
     b.search.mockImplementationOnce(async () => ({
