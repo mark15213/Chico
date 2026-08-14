@@ -7,5 +7,6 @@
 | 包 | 职责 | ctx 键 |
 |---|---|---|
 | [`market-data/`](market-data/README.md) | 定义行情提供方的注册、选择和共享错误 | `ctx.marketData` |
+| [`market-data-fixture/`](market-data-fixture/README.md) | 为无密钥测试和演示提供确定性的标的表与 K 线序列 | 注册到 `ctx.marketData` |
 
 这里的每个包在自身契约中都保持与提供方无关、与产品无关：场所特有的行为属于提供方包，工作台的呈现属于客户端插件。若某项能力在投资以外同样有用，它属于自己的家族而不是这里。

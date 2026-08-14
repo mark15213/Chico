@@ -484,7 +484,7 @@ const SERVICE_ROLES: ServiceRole[] = [
     pkg: 'market-data',
     title: 'Market-data provider registry',
     mode: 'seam',
-    implementations: [],
+    implementations: ['market-data-fixture'],
     consumers: [],
     note: 'Quote and price-history providers register into one ctx.marketData seam; selection resolves per call so an entitlement loss stops selection without re-registration.',
   },

@@ -1229,6 +1229,22 @@ export interface MarketDataRuntimeConfig {
 
 Source: [`packages/investment/market-data/src/index.ts:52`](../packages/investment/market-data/src/index.ts)
 
+<a id="deepseek-aidsh-market-data-fixture"></a>
+
+## `@deepseek-ai/dsh-market-data-fixture`
+
+Requires: `marketData`
+
+```ts config-catalog
+/** Plugin config: the anchor date the deterministic series ends on. */
+export interface Config {
+  /** Trading date the series ends on (`YYYY-MM-DD`). Defaults to {@link DEFAULT_ANCHOR_DATE}. */
+  anchorDate?: string
+}
+```
+
+Source: [`packages/investment/market-data-fixture/src/index.ts:111`](../packages/investment/market-data-fixture/src/index.ts)
+
 <a id="deepseek-aidsh-mcp-client"></a>
 
 ## `@deepseek-ai/dsh-mcp-client`
