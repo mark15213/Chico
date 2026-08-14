@@ -10,7 +10,7 @@ Status: implemented
 
 文本在这里不是替代品。六十个交易日上的形状是图能承载而表格不能的东西，而行情接缝存在的全部意义就是价格要被当作序列来读。
 
-底下还压着两个问题。联合的卡片种类表达的是数据**是什么**，因此用绘制方式命名成员会成为第一个例外。而 `ToolRow`——每个卡片行都组合的共享外壳——通过一组封闭的 props（`terminal`、`diff`、`read`、`search`、`web`）接收卡片素材，因此每新增一种卡片就要改一个共享组件，这正是 Workspace 行在[获得装饰 slot](2026-08-14-workspace-row-decoration-slot.md) 之前的同一种增长。
+底下还压着一个问题：联合的卡片种类表达的是数据**是什么**，因此用绘制方式命名成员会成为第一个例外。
 
 ## Decision
 
@@ -24,13 +24,13 @@ Status: implemented
 
 该视图不设置 `content` 副本，因此不认识该卡片的 UI 会回落到原始结果内容——也就是工具自身文本已经携带的那张 K 线表。正是这个回落，使得新增该成员无需每个客户端都发布一个图表实现。
 
-### `ToolRow` 获得一个中立的卡片席位
+### 渲染器与其他核心卡片种类放在一起
 
-`customCard?: ReactNode` 接收拥有自有卡片种类的注册方已经渲染好的素材。它在卡片链中排在最后，因此携带已知卡片的调用会保留该卡片，注册方无法覆盖它。`ToolRow` 和 `toolRowModel` 从 `dsh-client-ui-tool/client` 导出，使注册方组合外壳而不是分叉它。
+`dsh-client-ui-tool` 拥有 `priceSeriesModel`、图表和 `market_history` 的键控 toolview，与它拥有 `web`、`search`、`read`、`diff`、`terminal` 渲染器的方式完全一致。
 
-### 图表是 Chico 包，不是共享原语
+第一次尝试把图表放进 Chico 客户端包，理由是投资渲染属于产品专有。构建拒绝了它：**客户端 bundle 纯度禁止跨插件的值导入**，因此产品包无法导入 `ToolRow`，只能通过 cordis 服务协作。这次失败暴露了更好的规则——位于共享渲染意图联合中的卡片种类，其渲染器就在共享客户端包里，因为正是那个联合让它成为共享的。把 toolview 键控到特定工具名，与 `web-row` 对 `web_search` 和 `web_fetch` 所做的是同一件事。
 
-`dsh-client-ui-chico-price-series` 注册 `market_history` 的键控 toolview 并绘制蜡烛。卡片词汇与产品无关，属于 core；投资领域的渲染不是，[Chico 改动地图](../../../../products/chico/architecture/change-map.md)把它放在 Chico 客户端包里。没有 Chico 的组合渲染通用卡片，而这是契约早已承诺的。
+结果是图表随浏览器表层发布，而不是随 Chico bundle 发布：任何携带 `dsh-client-ui-tool` 的组合在收到 price-series 卡片时都会渲染它，而没有行情工具的组合根本不会收到。
 
 ## Alternatives considered
 
@@ -38,9 +38,9 @@ Status: implemented
 
 **保留通用卡片，在结果文本里画 ASCII 蜡烛。** 否决：这把 UI 排版放进面向模型的取值，为工具手册所禁止，并且让每次模型请求都为只服务人类读者的字符付费。
 
-**在 `ToolRow` 上与 `web`、`search` 并列增加 `priceSeries` prop。** 否决：这会让一个封闭集合继续增长，下一种卡片仍要改它，并且把一个投资类型放进共享组件的签名。中立的 `customCard` 席位一次性解决了通用问题。
+**在 `ToolRow` 上设一个中立的 `customCard?: ReactNode` 席位，由产品包填充。** 先做了、随后回退：客户端 bundle 纯度禁止产品包组合该行所需的跨插件值导入，而这个席位存在的唯一目的就是服务那种安排。通用逃生口也削弱了"行的卡片素材由已知渲染意图推导"这一不变式。
 
-**把图表放进 `dsh-client-ui-primitives`，与 `WebBlock` 并列。** 否决：原语与产品无关，而这个不是。先例恰恰指向反面——`WebBlock` 服务的是任何组合都可能启用的能力，而蜡烛图只服务一个产品。
+**把图表放进 `dsh-client-ui-primitives`，与 `WebBlock` 并列。** 否决的理由是没有必要而非错误：图表只有一个调用点，而 `ui-tool` 已经承载 `GenericToolCard`。等到第二个界面需要它时再迁移。
 
 **为价格全部相同的序列画一条平线。** 否决：那宣称了数据并不具备的形状。模型层返回 null，行回落到通用卡片，对"无可绘制"这一事实保持诚实。
 
@@ -50,8 +50,8 @@ Status: implemented
 
 成交量随渲染意图传递而图表将其丢弃。之所以携带，是因为工具本来就有，并且日后增加成交量副图不应需要改契约；今天它未被使用。
 
-`ToolRow` 现在有了一个注册方可以滥用来渲染任何东西的逃生口。排序规则限定了损害范围——已知卡片总是胜出——但没有任何类型检查能保证注册方的元素适合出现在工具行里。
+`dsh-client-ui-tool` 现在知道一个投资工具名。这与 `web-row` 已经对 web 工具承担的耦合相同，也是键控 toolview 的固有代价；纯度门禁排除的那个替代方案，代价则是重复一份行外壳。
 
 ## Testing
 
-`packages/investment/tool-market-data/tests` 覆盖 presentation-meta 往返以及所有回落到通用卡片的情形：调用出错、元数据缺失、非对象、数组、畸形 K 线和未知复权方式。`packages/client/ui-chico-price-series/tests` 覆盖模型推导、单位盒几何、运行中调用与未知卡片的回落、空序列与平坦序列、doji 细线渲染、无障碍标签，以及键控注册与 fiber 拆卸证明移除。
+`packages/investment/tool-market-data/tests` 覆盖 presentation-meta 往返以及所有回落到通用卡片的情形：调用出错、元数据缺失、非对象、数组、畸形 K 线和未知复权方式。`packages/client/ui-tool/tests/price-series.client.spec.tsx` 覆盖模型推导、单位盒几何、运行中调用与未知卡片的回落、空序列与平坦序列、doji 细线渲染、无障碍标签，以及键控注册与 fiber 拆卸证明移除。

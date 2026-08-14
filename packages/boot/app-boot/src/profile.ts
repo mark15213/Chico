@@ -114,6 +114,9 @@ export function resolveProfileDir(name: string, home: string = resolveDshHome())
 export const PROFILE_TEMPLATES: Record<string, readonly string[]> = {
   web: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app'],
   headless: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-headless'],
+  // Chico is the web surface plus the investment layer; it stacks rather than
+  // replaces, so a fix to the browser surface reaches it without a second edit.
+  chico: ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@deepseek-ai/dsh-chico-web-app'],
 }
 
 /** Installation-owned bundle tuples normalized to the shipped template. */

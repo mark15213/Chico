@@ -28,7 +28,9 @@ import { CHAT_DIFF_MAX_LINES, type DiffCardModel } from '../models/diff-card-mod
 import { CHAT_READ_MAX_LINES, type ReadCardModel } from '../models/read-card-model.ts'
 import { CHAT_SEARCH_MAX_LINES, type SearchCardModel } from '../models/search-card-model.ts'
 import { terminalBlockLabels, type TerminalCardModel } from '../models/terminal-card-model.ts'
+import type { PriceSeriesModel } from '../models/price-series-card-model.ts'
 import type { ToolRowState, ToolRowVariant } from '../models/tool-call-model.ts'
+import { PriceSeriesChart } from '../toolviews/PriceSeriesChart.tsx'
 import css from './ToolRow.module.css'
 
 export interface ToolRowProps {
@@ -87,13 +89,11 @@ export interface ToolRowProps {
    */
   web?: WebBlockProps | null | undefined
   /**
-   * Already-rendered card material for a call whose render intent this package
-   * does not know. A registrant that owns its own card kind supplies the
-   * element; ToolRow contributes only the chrome. It ranks last, so a call that
-   * also carries a known card keeps that card rather than being overridden by a
-   * registrant's guess. Absent = the row has no custom card.
+   * Price-series material for a call whose render intent is a price-series card
+   * (derived by `priceSeriesModel`); it replaces the text body with the candle
+   * chart when present.
    */
-  customCard?: ReactNode | null | undefined
+  priceSeries?: PriceSeriesModel | null | undefined
   state: ToolRowState
   /**
    * Filesystem path from tool args; when set with onOpenFile, the summary
@@ -149,7 +149,7 @@ export function ToolRow({
   read,
   search,
   web,
-  customCard,
+  priceSeries,
   state,
   filePath,
   onOpenFile,
@@ -161,13 +161,12 @@ export function ToolRow({
   const readBody = read ?? null
   const searchBody = search ?? null
   const webBody = web ?? null
-  const customBody = customCard ?? null
+  const priceSeriesBody = priceSeries ?? null
   const outputText = output ?? null
   // A card replaces the text body; a call carries at most one card kind, so the
   // card props are mutually exclusive. Any of them, or a text body/output,
-  // makes the row expandable. A registrant's custom card ranks last so a known
-  // card is never overridden by one.
-  const card = terminalBody ?? diffBody ?? readBody ?? searchBody ?? webBody ?? customBody
+  // makes the row expandable.
+  const card = terminalBody ?? diffBody ?? readBody ?? searchBody ?? webBody ?? priceSeriesBody
   const expandable = body !== null || outputText !== null || card !== null
   const open = expanded && expandable
   // The run-state label AT needs: the StateDot and the running sweep are both
@@ -271,8 +270,8 @@ export function ToolRow({
                   )
                   : webBody !== null
                     ? <WebBlock {...webBody} className={css.webBody} />
-                    : customBody !== null
-                      ? customBody
+                    : priceSeriesBody !== null
+                      ? <PriceSeriesChart model={priceSeriesBody} />
                       : (
                         <>
                           {variant === 'code' && body !== null && (

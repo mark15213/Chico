@@ -4,7 +4,7 @@
  * no arithmetic beyond mapping the unit box onto the viewBox.
  */
 import clsx from 'clsx'
-import type { PriceSeriesModel } from './model.ts'
+import type { PriceSeriesModel } from '../models/price-series-card-model.ts'
 import css from './PriceSeriesChart.module.css'
 
 /** Unit-box height the plot maps onto; width is one column per session. */

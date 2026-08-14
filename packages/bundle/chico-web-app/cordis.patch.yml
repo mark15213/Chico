@@ -1,0 +1,37 @@
+# The dsh-chico-web-app bundle patch: the Chico investment surface over the
+# dsh-web-app layer. Applied after web-app's patch, so rows here override that
+# layer's rows by id, with the profile's own cordis.patch.yml and any --patch
+# overlays still to come.
+#
+# A patch replaces the targeted row's whole `config`, so each row below
+# restates every key it owns.
+#
+# This layer adds capability, never surface policy: it inserts the market-data
+# seam, one provider, and the model-facing tools. The browser roster needs no
+# row — the price-series card is part of the shared render-intent union, so
+# dsh-client-ui-tool already renders it. Everything else about the browser
+# surface stays exactly as dsh-web-app left it.
+
+- insert:
+    # The market-data seam. No provider is configured, so selection resolves to
+    # the single usable one below; a deployment with a licensed feed adds it and
+    # pins `provider` in a later patch layer rather than editing this row.
+    - id: market-data
+      name: '@deepseek-ai/dsh-market-data'
+      config:
+        maxHistorySessions: 500
+
+    # The deterministic provider. It is the only provider in this composition,
+    # so every quote and bar here is fixture data — a deployment that must not
+    # present synthetic prices as real disables this row when it adds a feed.
+    - id: market-data-fixture
+      name: '@deepseek-ai/dsh-market-data-fixture'
+
+    # The model-facing tools. Both are enabled; the default 60-session range is
+    # what a chart card wants, and the seam's own ceiling bounds anything larger.
+    - id: tool-market-data
+      name: '@deepseek-ai/dsh-tool-market-data'
+      config:
+        quote: true
+        history: true
+        defaultHistorySessions: 60

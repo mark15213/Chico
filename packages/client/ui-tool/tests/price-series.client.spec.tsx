@@ -7,13 +7,11 @@
 import { Context } from '@deepseek-ai/cordis'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ToolCallBlock } from '@deepseek-ai/dsh-client-runtime/client'
-import { apply, HISTORY_TOOL, inject, priceSeriesModel } from '../src/client/index.ts'
-import { PriceSeriesChart } from '../src/client/PriceSeriesChart.tsx'
-import { apply as applyNode } from '../src/index.ts'
-import * as PriceSeriesInvariant from '../src/invariant.ts'
+import { priceSeriesModel } from '../src/client/tool/models/price-series-card-model.ts'
+import { PriceSeriesChart } from '../src/client/tool/toolviews/PriceSeriesChart.tsx'
+import { PRICE_SERIES_TOOL, priceSeriesToolview } from '../src/client/tool/toolviews/price-series-row.tsx'
 
 afterEach(cleanup)
 
@@ -35,35 +33,35 @@ describe('priceSeriesModel', () => {
     }))
 
     expect(model).not.toBeNull()
-    expect(model!.label).toBe('SZSE:300750')
-    expect(model!.adjustment).toBe('backward')
-    expect(model!.currency).toBe('CNY')
-    expect(model!.low).toBe(95)
-    expect(model!.high).toBe(120)
-    expect(model!.last).toBe(118)
+    expect(model?.label).toBe('SZSE:300750')
+    expect(model?.adjustment).toBe('backward')
+    expect(model?.currency).toBe('CNY')
+    expect(model?.low).toBe(95)
+    expect(model?.high).toBe(120)
+    expect(model?.last).toBe(118)
     // 100 open to 118 close over the series.
-    expect(model!.changePercent).toBe(18)
+    expect(model?.changePercent).toBe(18)
   })
 
   it('normalizes each bar into the unit box against the whole series range', () => {
     const model = priceSeriesModel(settled({
       card: 'price-series', label: 'x', bars, adjustment: 'none',
     }))
-    const [first] = model!.bars
+    const first = model?.bars[0]
 
     // Range is 95..120, so the first bar's low sits at the very bottom.
-    expect(first!.lowUnit).toBe(0)
-    expect(first!.highUnit).toBeCloseTo((110 - 95) / 25)
-    expect(first!.bodyTopUnit).toBeCloseTo((105 - 95) / 25)
-    expect(first!.bodyBottomUnit).toBeCloseTo((100 - 95) / 25)
-    expect(first!.rising).toBe(true)
-    expect(model!.bars[1]!.rising).toBe(false)
+    expect(first?.lowUnit).toBe(0)
+    expect(first?.highUnit).toBeCloseTo((110 - 95) / 25)
+    expect(first?.bodyTopUnit).toBeCloseTo((105 - 95) / 25)
+    expect(first?.bodyBottomUnit).toBeCloseTo((100 - 95) / 25)
+    expect(first?.rising).toBe(true)
+    expect(model?.bars[1]?.rising).toBe(false)
   })
 
   it('omits currency when the tool supplied none', () => {
     const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars, adjustment: 'none' }))
 
-    expect(model!.currency).toBeUndefined()
+    expect(model?.currency).toBeUndefined()
   })
 
   it('takes the generic path for a running call', () => {
@@ -93,8 +91,8 @@ describe('PriceSeriesChart', () => {
   it('states the label, the change, and the adjustment', () => {
     const model = priceSeriesModel(settled({
       card: 'price-series', label: 'SZSE:300750', bars, adjustment: 'backward', currency: 'CNY',
-    }))!
-    render(<PriceSeriesChart model={model} />)
+    }))
+    render(<PriceSeriesChart model={model!} />)
 
     expect(screen.getByText('SZSE:300750')).toBeTruthy()
     expect(screen.getByText('118 CNY (+18%)')).toBeTruthy()
@@ -104,18 +102,16 @@ describe('PriceSeriesChart', () => {
   })
 
   it('labels the plot for assistive technology with its range and basis', () => {
-    const model = priceSeriesModel(settled({
-      card: 'price-series', label: 'x', bars, adjustment: 'none',
-    }))!
-    render(<PriceSeriesChart model={model} />)
+    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars, adjustment: 'none' }))
+    render(<PriceSeriesChart model={model!} />)
 
     expect(screen.getByRole('img').getAttribute('aria-label'))
       .toBe('3 sessions from 2026-08-12 to 2026-08-14, as traded')
   })
 
   it('draws one wick and one body per session', () => {
-    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars, adjustment: 'none' }))!
-    const { container } = render(<PriceSeriesChart model={model} />)
+    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars, adjustment: 'none' }))
+    const { container } = render(<PriceSeriesChart model={model!} />)
 
     expect(container.querySelectorAll('line')).toHaveLength(3)
     expect(container.querySelectorAll('rect')).toHaveLength(3)
@@ -126,8 +122,8 @@ describe('PriceSeriesChart', () => {
       { date: '2026-08-13', open: 100, high: 110, low: 90, close: 100, volume: 1 },
       { date: '2026-08-14', open: 100, high: 105, low: 95, close: 104, volume: 1 },
     ]
-    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars: doji, adjustment: 'none' }))!
-    const { container } = render(<PriceSeriesChart model={model} />)
+    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars: doji, adjustment: 'none' }))
+    const { container } = render(<PriceSeriesChart model={model!} />)
 
     // Two wicks plus the doji's body hairline; only the second bar gets a rect.
     expect(container.querySelectorAll('line')).toHaveLength(3)
@@ -135,11 +131,7 @@ describe('PriceSeriesChart', () => {
   })
 })
 
-describe('price-series browser half', () => {
-  it('declares the services it binds', () => {
-    expect(inject).toEqual(['slots'])
-  })
-
+describe('price-series toolview registration', () => {
   it('registers under the history tool key, and fiber teardown removes it (HMR safety)', async () => {
     const ctx = new Context()
     await ctx.plugin(SlotRegistry).await()
@@ -148,30 +140,11 @@ describe('price-series browser half', () => {
       children: { 'tool.call.toolview': { kind: 'keyed', scope: 'session' } },
     } as never, () => null)
 
-    const fiber = ctx.plugin({ inject: [...inject], apply })
+    const fiber = ctx.plugin(priceSeriesToolview)
     await fiber.await()
-    expect(ctx.slots.entries('tool.call.toolview').map(entry => entry.options.key)).toContain(HISTORY_TOOL)
+    expect(ctx.slots.entries('tool.call.toolview').map(entry => entry.options.key)).toContain(PRICE_SERIES_TOOL)
 
     await fiber.dispose()
-    expect(ctx.slots.entries('tool.call.toolview').map(entry => entry.options.key)).not.toContain(HISTORY_TOOL)
-  })
-})
-
-describe('price-series node half', () => {
-  it('contributes no host behavior', () => {
-    expect(applyNode).not.toThrow()
-  })
-})
-
-describe('price-series invariant companion', () => {
-  it('reserves package ownership under its declared companion name', async () => {
-    const ctx = new Context()
-    await ctx.plugin(InvariantRegistry, { enabled: true })
-    const fiber = ctx.plugin(PriceSeriesInvariant)
-    await fiber.await()
-
-    expect(PriceSeriesInvariant.name).toBe('client-ui-chico-price-series-invariant')
-    expect(PriceSeriesInvariant.inject).toEqual(['invariants'])
-    await fiber.dispose()
+    expect(ctx.slots.entries('tool.call.toolview').map(entry => entry.options.key)).not.toContain(PRICE_SERIES_TOOL)
   })
 })

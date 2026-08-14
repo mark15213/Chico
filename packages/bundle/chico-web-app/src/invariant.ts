@@ -1,25 +1,23 @@
 /**
- * Package-owned invariant companion for
- * `@deepseek-ai/dsh-client-ui-chico-price-series`.
- * @module @deepseek-ai/dsh-client-ui-chico-price-series/invariant
+ * Package-owned invariant companion for `@deepseek-ai/dsh-chico-web-app`.
+ * @module @deepseek-ai/dsh-chico-web-app/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-chico-price-series'
+const PACKAGE_NAME = '@deepseek-ai/dsh-chico-web-app'
 
 /** Cordis companion plugin name. */
-export const name = 'client-ui-chico-price-series-invariant'
+export const name = 'chico-web-app-invariant'
 /** Service required before the companion can reserve package ownership. */
 export const inject = ['invariants']
 
 /**
- * No runtime invariant: this package is a pure projection of one settled tool
- * call's render intent onto one keyed toolview. It emits no cordis events, owns
- * no cross-plugin mutable state, and its single slot registration proves
- * disposal through the HMR-safety spec.
+ * No runtime invariant: this bundle contributes a patch layer and an empty
+ * plugin body. It emits no cordis events and owns no mutable state; what the
+ * layer composes is asserted by the bundle spec against the parsed patch.
  */
 const install: InvariantInstaller = () => {}
 

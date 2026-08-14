@@ -5,7 +5,7 @@
  * place that turns it into what the chart draws.
  * @module
  */
-import type { ToolCallBlock } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ToolCallBlock } from './tool-call-model.ts'
 
 /** One session's drawn geometry, already normalized into the 0..1 unit box. */
 export interface PlottedBar {

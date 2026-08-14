@@ -1,6 +1,6 @@
 # Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
-#   pnpm run verify-translation-pairing --write packages/client/ui-chico-price-series/README.md
-README.md: f2dffa9d23ab1aa22b8334f19240d23219b49ddb
-README.zh.md: ffd01c2cea2776a909982d4d32ad7ab0646c3ce4
+#   pnpm run verify-translation-pairing --write packages/bundle/chico-web-app/README.md
+README.md: 9e6ec0f45daa0c2f16bef29257c20aab6f053844
+README.zh.md: be2719d738945d9bbdb08d7ea8430f3f08ffa5b0
