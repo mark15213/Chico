@@ -3563,6 +3563,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface PriceHistoryRequest {\n    readonly instrument: InstrumentRef;\n    readonly sessions: number;\n}',
   },
   {
+    name: 'PriceSeriesBar',
+    declaration: 'export interface PriceSeriesBar {\n    date: string;\n    open: number;\n    high: number;\n    low: number;\n    close: number;\n    volume: number;\n}',
+  },
+  {
+    name: 'PriceSeriesResultView',
+    declaration: 'export interface PriceSeriesResultView {\n    card: \'price-series\';\n    title?: string;\n    label: string;\n    bars: PriceSeriesBar[];\n    adjustment: \'none\' | \'backward\' | \'forward\';\n    currency?: string;\n}',
+  },
+  {
     name: 'ProjectionChangeListener',
     declaration: 'export type ProjectionChangeListener = (session: Session, key: Extract<keyof SessionProjectionMap, string>, value: unknown, seq: number) => void;',
   },
@@ -4488,7 +4496,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ToolResultView',
-    declaration: 'export type ToolResultView = GenericResultView | TerminalResultView | DiffResultView | SearchResultView | ReadResultView | WebResultView;',
+    declaration: 'export type ToolResultView = GenericResultView | TerminalResultView | DiffResultView | SearchResultView | ReadResultView | WebResultView | PriceSeriesResultView;',
   },
   {
     name: 'ToolRunContext',

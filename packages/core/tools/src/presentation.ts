@@ -137,7 +137,9 @@ export interface ReadFileLine {
  * `ToolDefinition.presentResult`; omitting the method keeps the pending
  * title and renders the raw result content.
  */
-export type ToolResultView = GenericResultView | TerminalResultView | DiffResultView | SearchResultView | ReadResultView | WebResultView
+export type ToolResultView =
+  | GenericResultView | TerminalResultView | DiffResultView | SearchResultView
+  | ReadResultView | WebResultView | PriceSeriesResultView
 
 /**
  * The default completed card: an optional replacement title and reformatted
@@ -305,6 +307,60 @@ export interface ReadResultView {
    * the read capability. Omit to let such a UI render the raw result content.
    */
   content?: ContentBlock[]
+}
+
+/**
+ * One session's price range in a completed {@link PriceSeriesResultView}. The
+ * presentation projection of `dsh-market-data`'s `PriceBar`: that Service
+ * Definition type is authoritative (core cannot depend on the market-data
+ * Service Definition, so the two are declared separately and MUST evolve
+ * together). `date` is the venue's trading date rather than a timestamp,
+ * because a bar covers a session.
+ */
+export interface PriceSeriesBar {
+  /** Trading date at the venue (ISO-8601 calendar date, `YYYY-MM-DD`). */
+  date: string
+  /** First traded price of the session. */
+  open: number
+  /** Highest traded price of the session. */
+  high: number
+  /** Lowest traded price of the session. */
+  low: number
+  /** Last traded price of the session. */
+  close: number
+  /** Session volume in shares or contracts. */
+  volume: number
+}
+
+/**
+ * A completed price series rendered as a chart by a capable UI. Set by a tool
+ * whose call returns per-session price bars. The card names the data rather
+ * than a drawing, so a UI stays free to render candles, a line, or a table; an
+ * incapable UI falls back to the raw `tool/result` content, which carries the
+ * same numbers as text (this view sets no `content` copy).
+ *
+ * `adjustment` is required rather than optional because a chart drawn without
+ * saying which corporate-action basis its prices carry invites exactly the
+ * comparison the market-data seam exists to prevent. There is no price-series
+ * call view: the bars exist only after `execute`, so a pending call keeps its
+ * generic card, the same arrangement `search` uses.
+ */
+export interface PriceSeriesResultView {
+  card: 'price-series'
+  /** Replacement title for the completed call. Omit to keep the pending-state title. */
+  title?: string
+  /** What the series describes, already resolved for display (for example `SZSE:300750`). */
+  label: string
+  /** Session bars in ascending date order. */
+  bars: PriceSeriesBar[]
+  /**
+   * Corporate-action adjustment the prices carry: `none` is as-traded,
+   * `backward` restates history onto today's basis, `forward` restates onto the
+   * first bar's basis.
+   */
+  adjustment: 'none' | 'backward' | 'forward'
+  /** ISO-4217 code the prices are denominated in, when the tool knows it. */
+  currency?: string
 }
 
 /**

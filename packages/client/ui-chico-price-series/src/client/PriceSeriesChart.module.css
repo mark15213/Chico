@@ -1,0 +1,64 @@
+/* Candle chart for a completed price series. Colors follow the local market
+   convention the product serves — red for a rising session, green for a
+   falling one — and are drawn from theme tokens so both themes resolve. */
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.last {
+  font-variant-numeric: tabular-nums;
+}
+
+.rising { color: var(--ds-color-error, #c0392b); }
+.falling { color: var(--ds-color-success, #2f6f5e); }
+
+.meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.plot {
+  width: 100%;
+  height: 120px;
+  display: block;
+  overflow: visible;
+}
+
+.wick {
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.body {
+  fill: currentColor;
+}
+
+/* A doji session has no body height; a hairline keeps it visible. */
+.bodyFlat {
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}

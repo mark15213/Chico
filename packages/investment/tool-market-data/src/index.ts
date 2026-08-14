@@ -9,7 +9,9 @@
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { defineTool } from '@deepseek-ai/dsh-tools'
-import type { GenericCallView, GenericResultView } from '@deepseek-ai/dsh-tools'
+import type {
+  GenericCallView, GenericResultView, JsonValue, PriceSeriesBar, PriceSeriesResultView, ToolResult,
+} from '@deepseek-ai/dsh-tools'
 import type { Market, PriceHistory, Quote } from '@deepseek-ai/dsh-market-data'
 import type {} from '@deepseek-ai/dsh-system-prompt'
 
@@ -142,6 +144,74 @@ function presentInstrumentResult(title: string, args: { market: string; symbol: 
   return { card: 'generic', title: `${title} ${args.market}:${args.symbol}` }
 }
 
+/** Replayable presentation state for one completed `market_history` call. */
+export interface HistoryMeta {
+  /** Session bars in ascending date order. */
+  bars: PriceSeriesBar[]
+  /** The corporate-action adjustment the bars carry. */
+  adjustment: 'none' | 'backward' | 'forward'
+}
+
+/**
+ * Project a validated `market_history` output into replayable presentation
+ * meta. The card cannot be rebuilt from the rendered text, so the bars travel
+ * as durable result metadata the same way the web card's sources do.
+ * @param value - the canonical `market_history` output value.
+ * @returns the bars and adjustment as opaque JSON.
+ */
+export function historyMetaFromValue(value: HistoryValue): JsonValue {
+  return { bars: value.bars.map(bar => ({ ...bar })), adjustment: value.adjustment }
+}
+
+/** Whether `value` is a valid {@link PriceSeriesBar} (defensive narrowing from opaque `meta`). */
+function isPriceSeriesBar(value: unknown): value is PriceSeriesBar {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
+  const { date, open, high, low, close, volume } = value as Record<string, unknown>
+  return typeof date === 'string'
+    && typeof open === 'number' && typeof high === 'number' && typeof low === 'number'
+    && typeof close === 'number' && typeof volume === 'number'
+}
+
+/**
+ * Narrow opaque live or replayed result metadata to a {@link HistoryMeta}.
+ * Malformed metadata returns `undefined` so presentation falls back to the
+ * generic card instead of throwing during replay.
+ * @param meta - result metadata.
+ * @returns the validated history meta, or `undefined` for absent or malformed data.
+ */
+export function historyMetaFromResult(meta: unknown): HistoryMeta | undefined {
+  if (typeof meta !== 'object' || meta === null || Array.isArray(meta)) return undefined
+  const { bars, adjustment } = meta as Record<string, unknown>
+  if (!Array.isArray(bars) || !bars.every(isPriceSeriesBar)) return undefined
+  if (adjustment !== 'none' && adjustment !== 'backward' && adjustment !== 'forward') return undefined
+  return { bars, adjustment }
+}
+
+/**
+ * Completed-call presentation for `market_history`: a price-series card a
+ * capable UI charts. Falls back to the generic card when the call errored or
+ * the metadata is absent or malformed, so a replay never loses the row.
+ * @param args - the raw tool arguments; the instrument becomes the card label.
+ * @param result - the final tool result; `meta` carries the bars.
+ * @returns the price-series view, or the generic card.
+ */
+export function presentHistoryResult(
+  args: { market: string; symbol: string },
+  result: ToolResult,
+): PriceSeriesResultView | GenericResultView {
+  const label = `${args.market}:${args.symbol}`
+  if (result.isError) return presentInstrumentResult('History', args)
+  const meta = historyMetaFromResult(result.meta)
+  if (meta === undefined) return presentInstrumentResult('History', args)
+  return {
+    card: 'price-series',
+    title: `History ${label}`,
+    label,
+    bars: meta.bars,
+    adjustment: meta.adjustment,
+  }
+}
+
 /**
  * Register the enabled market-data tools. Both default to true; a product that
  * wants only one disables the other in config.
@@ -241,6 +311,7 @@ export function apply(ctx: Context, config: Config): void {
           },
         },
         render: (args, value) => [{ type: 'text', text: formatHistory(args, value) }],
+        presentationMeta: (_args, value) => historyMetaFromValue(value),
       },
       timeoutMs: resolved.timeoutMs,
       isConcurrencySafe: () => true,
@@ -255,7 +326,7 @@ export function apply(ctx: Context, config: Config): void {
         return { adjustment: history.adjustment, bars: history.bars.map(bar => ({ ...bar })) }
       },
       presentCall: args => presentInstrumentCall('History', args),
-      presentResult: args => presentInstrumentResult('History', args),
+      presentResult: (args, result) => presentHistoryResult(args, result),
     }))
   }
 }

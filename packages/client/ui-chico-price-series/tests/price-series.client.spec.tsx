@@ -1,0 +1,177 @@
+// @vitest-environment jsdom
+/**
+ * Price-series toolview: model derivation from the render intent (including
+ * every generic-card fallback), chart geometry, and the keyed registration
+ * with fiber teardown proving removal (HMR safety).
+ */
+import { Context } from '@deepseek-ai/cordis'
+import { afterEach, describe, expect, it } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import InvariantRegistry from '@deepseek-ai/dsh-invariants'
+import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ToolCallBlock } from '@deepseek-ai/dsh-client-runtime/client'
+import { apply, HISTORY_TOOL, inject, priceSeriesModel } from '../src/client/index.ts'
+import { PriceSeriesChart } from '../src/client/PriceSeriesChart.tsx'
+import { apply as applyNode } from '../src/index.ts'
+import * as PriceSeriesInvariant from '../src/invariant.ts'
+
+afterEach(cleanup)
+
+const bars = [
+  { date: '2026-08-12', open: 100, high: 110, low: 95, close: 105, volume: 10 },
+  { date: '2026-08-13', open: 105, high: 108, low: 100, close: 102, volume: 12 },
+  { date: '2026-08-14', open: 102, high: 120, low: 101, close: 118, volume: 15 },
+]
+
+/** A settled tool call carrying the given result view. */
+function settled(resultView: unknown): ToolCallBlock {
+  return { kind: 'tool-result', callId: 'c1', isError: false, resultView } as never
+}
+
+describe('priceSeriesModel', () => {
+  it('derives unit geometry and the series summary from a price-series card', () => {
+    const model = priceSeriesModel(settled({
+      card: 'price-series', label: 'SZSE:300750', bars, adjustment: 'backward', currency: 'CNY',
+    }))
+
+    expect(model).not.toBeNull()
+    expect(model!.label).toBe('SZSE:300750')
+    expect(model!.adjustment).toBe('backward')
+    expect(model!.currency).toBe('CNY')
+    expect(model!.low).toBe(95)
+    expect(model!.high).toBe(120)
+    expect(model!.last).toBe(118)
+    // 100 open to 118 close over the series.
+    expect(model!.changePercent).toBe(18)
+  })
+
+  it('normalizes each bar into the unit box against the whole series range', () => {
+    const model = priceSeriesModel(settled({
+      card: 'price-series', label: 'x', bars, adjustment: 'none',
+    }))
+    const [first] = model!.bars
+
+    // Range is 95..120, so the first bar's low sits at the very bottom.
+    expect(first!.lowUnit).toBe(0)
+    expect(first!.highUnit).toBeCloseTo((110 - 95) / 25)
+    expect(first!.bodyTopUnit).toBeCloseTo((105 - 95) / 25)
+    expect(first!.bodyBottomUnit).toBeCloseTo((100 - 95) / 25)
+    expect(first!.rising).toBe(true)
+    expect(model!.bars[1]!.rising).toBe(false)
+  })
+
+  it('omits currency when the tool supplied none', () => {
+    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars, adjustment: 'none' }))
+
+    expect(model!.currency).toBeUndefined()
+  })
+
+  it('takes the generic path for a running call', () => {
+    expect(priceSeriesModel({ callId: 'c1', argsRaw: '' } as never)).toBeNull()
+  })
+
+  it.each([
+    ['a generic result view', { card: 'generic', title: 'History' }],
+    ['a card this UI version does not know', { card: 'candlestick-v2', label: 'x', bars, adjustment: 'none' }],
+    ['no result view at all', undefined],
+  ])('takes the generic path for %s', (_label, resultView) => {
+    expect(priceSeriesModel(settled(resultView))).toBeNull()
+  })
+
+  it('takes the generic path for an empty series, which has nothing to plot', () => {
+    expect(priceSeriesModel(settled({ card: 'price-series', label: 'x', bars: [], adjustment: 'none' }))).toBeNull()
+  })
+
+  it('takes the generic path for a flat series rather than drawing an arbitrary line', () => {
+    const flat = [{ date: '2026-08-14', open: 10, high: 10, low: 10, close: 10, volume: 1 }]
+
+    expect(priceSeriesModel(settled({ card: 'price-series', label: 'x', bars: flat, adjustment: 'none' }))).toBeNull()
+  })
+})
+
+describe('PriceSeriesChart', () => {
+  it('states the label, the change, and the adjustment', () => {
+    const model = priceSeriesModel(settled({
+      card: 'price-series', label: 'SZSE:300750', bars, adjustment: 'backward', currency: 'CNY',
+    }))!
+    render(<PriceSeriesChart model={model} />)
+
+    expect(screen.getByText('SZSE:300750')).toBeTruthy()
+    expect(screen.getByText('118 CNY (+18%)')).toBeTruthy()
+    expect(screen.getByText('back-adjusted')).toBeTruthy()
+    expect(screen.getByText('low 95 · high 120')).toBeTruthy()
+    expect(screen.getByText('3 sessions')).toBeTruthy()
+  })
+
+  it('labels the plot for assistive technology with its range and basis', () => {
+    const model = priceSeriesModel(settled({
+      card: 'price-series', label: 'x', bars, adjustment: 'none',
+    }))!
+    render(<PriceSeriesChart model={model} />)
+
+    expect(screen.getByRole('img').getAttribute('aria-label'))
+      .toBe('3 sessions from 2026-08-12 to 2026-08-14, as traded')
+  })
+
+  it('draws one wick and one body per session', () => {
+    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars, adjustment: 'none' }))!
+    const { container } = render(<PriceSeriesChart model={model} />)
+
+    expect(container.querySelectorAll('line')).toHaveLength(3)
+    expect(container.querySelectorAll('rect')).toHaveLength(3)
+  })
+
+  it('draws a doji session as a hairline rather than a zero-height body', () => {
+    const doji = [
+      { date: '2026-08-13', open: 100, high: 110, low: 90, close: 100, volume: 1 },
+      { date: '2026-08-14', open: 100, high: 105, low: 95, close: 104, volume: 1 },
+    ]
+    const model = priceSeriesModel(settled({ card: 'price-series', label: 'x', bars: doji, adjustment: 'none' }))!
+    const { container } = render(<PriceSeriesChart model={model} />)
+
+    // Two wicks plus the doji's body hairline; only the second bar gets a rect.
+    expect(container.querySelectorAll('line')).toHaveLength(3)
+    expect(container.querySelectorAll('rect')).toHaveLength(1)
+  })
+})
+
+describe('price-series browser half', () => {
+  it('declares the services it binds', () => {
+    expect(inject).toEqual(['slots'])
+  })
+
+  it('registers under the history tool key, and fiber teardown removes it (HMR safety)', async () => {
+    const ctx = new Context()
+    await ctx.plugin(SlotRegistry).await()
+    ctx.slots.register({
+      name: 'root',
+      children: { 'tool.call.toolview': { kind: 'keyed', scope: 'session' } },
+    } as never, () => null)
+
+    const fiber = ctx.plugin({ inject: [...inject], apply })
+    await fiber.await()
+    expect(ctx.slots.entries('tool.call.toolview').map(entry => entry.options.key)).toContain(HISTORY_TOOL)
+
+    await fiber.dispose()
+    expect(ctx.slots.entries('tool.call.toolview').map(entry => entry.options.key)).not.toContain(HISTORY_TOOL)
+  })
+})
+
+describe('price-series node half', () => {
+  it('contributes no host behavior', () => {
+    expect(applyNode).not.toThrow()
+  })
+})
+
+describe('price-series invariant companion', () => {
+  it('reserves package ownership under its declared companion name', async () => {
+    const ctx = new Context()
+    await ctx.plugin(InvariantRegistry, { enabled: true })
+    const fiber = ctx.plugin(PriceSeriesInvariant)
+    await fiber.await()
+
+    expect(PriceSeriesInvariant.name).toBe('client-ui-chico-price-series-invariant')
+    expect(PriceSeriesInvariant.inject).toEqual(['invariants'])
+    await fiber.dispose()
+  })
+})

@@ -9,7 +9,8 @@ import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
 import { apply as applyFixture, Config as FixtureConfig, inject as fixtureInject } from '@deepseek-ai/dsh-market-data-fixture'
 import {
-  apply, Config, DEFAULT_HISTORY_SESSIONS, formatHistory, formatQuote, inject, MARKETS, parseSymbol,
+  apply, Config, DEFAULT_HISTORY_SESSIONS, formatHistory, formatQuote, historyMetaFromResult,
+  historyMetaFromValue, inject, MARKETS, parseSymbol, presentHistoryResult,
 } from '../src/index.ts'
 import * as ToolInvariant from '../src/invariant.ts'
 
@@ -201,6 +202,53 @@ describe('model-facing formatting', () => {
     })
 
     expect(text).toContain('(no sessions returned)')
+  })
+})
+
+describe('price-series presentation', () => {
+  const bars = [{ date: '2026-08-14', open: 1, high: 2, low: 0.5, close: 1.5, volume: 10 }]
+
+  it('projects bars into replayable meta and reads them back', () => {
+    const meta = historyMetaFromValue({ bars, adjustment: 'backward' })
+
+    expect(historyMetaFromResult(meta)).toEqual({ bars, adjustment: 'backward' })
+  })
+
+  it('renders a price-series card carrying the adjustment', () => {
+    const view = presentHistoryResult(
+      { market: 'SZSE', symbol: '300750' },
+      { isError: false, meta: historyMetaFromValue({ bars, adjustment: 'none' }) } as never,
+    )
+
+    expect(view).toEqual({
+      card: 'price-series',
+      title: 'History SZSE:300750',
+      label: 'SZSE:300750',
+      bars,
+      adjustment: 'none',
+    })
+  })
+
+  it('falls back to the generic card on an errored call', () => {
+    const view = presentHistoryResult(
+      { market: 'SZSE', symbol: '300750' },
+      { isError: true, meta: historyMetaFromValue({ bars, adjustment: 'none' }) } as never,
+    )
+
+    expect(view).toEqual({ card: 'generic', title: 'History SZSE:300750' })
+  })
+
+  it.each([
+    ['absent', undefined],
+    ['a non-object', 'nope'],
+    ['an array', []],
+    ['bars that are not bars', { bars: [{ date: '2026-08-14' }], adjustment: 'none' }],
+    ['bars that are not an array', { bars: 'many', adjustment: 'none' }],
+    ['an unknown adjustment', { bars: [], adjustment: 'sideways' }],
+  ])('falls back to the generic card when meta is %s', (_label, meta) => {
+    expect(historyMetaFromResult(meta)).toBeUndefined()
+    expect(presentHistoryResult({ market: 'SZSE', symbol: '300750' }, { isError: false, meta } as never))
+      .toEqual({ card: 'generic', title: 'History SZSE:300750' })
   })
 })
 

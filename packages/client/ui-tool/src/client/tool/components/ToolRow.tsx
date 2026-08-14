@@ -86,6 +86,14 @@ export interface ToolRowProps {
    * list or fetched-source card when present.
    */
   web?: WebBlockProps | null | undefined
+  /**
+   * Already-rendered card material for a call whose render intent this package
+   * does not know. A registrant that owns its own card kind supplies the
+   * element; ToolRow contributes only the chrome. It ranks last, so a call that
+   * also carries a known card keeps that card rather than being overridden by a
+   * registrant's guess. Absent = the row has no custom card.
+   */
+  customCard?: ReactNode | null | undefined
   state: ToolRowState
   /**
    * Filesystem path from tool args; when set with onOpenFile, the summary
@@ -141,6 +149,7 @@ export function ToolRow({
   read,
   search,
   web,
+  customCard,
   state,
   filePath,
   onOpenFile,
@@ -152,11 +161,13 @@ export function ToolRow({
   const readBody = read ?? null
   const searchBody = search ?? null
   const webBody = web ?? null
+  const customBody = customCard ?? null
   const outputText = output ?? null
   // A card replaces the text body; a call carries at most one card kind, so the
   // card props are mutually exclusive. Any of them, or a text body/output,
-  // makes the row expandable.
-  const card = terminalBody ?? diffBody ?? readBody ?? searchBody ?? webBody
+  // makes the row expandable. A registrant's custom card ranks last so a known
+  // card is never overridden by one.
+  const card = terminalBody ?? diffBody ?? readBody ?? searchBody ?? webBody ?? customBody
   const expandable = body !== null || outputText !== null || card !== null
   const open = expanded && expandable
   // The run-state label AT needs: the StateDot and the running sweep are both
@@ -260,36 +271,38 @@ export function ToolRow({
                   )
                   : webBody !== null
                     ? <WebBlock {...webBody} className={css.webBody} />
-                    : (
-                      <>
-                        {variant === 'code' && body !== null && (
-                          <div className={css.bodyScroll}>
-                            <CodeBlock code={body} lang="typescript" copyLabel={t('copy')} copiedLabel={t('copied')} className={css.codeBody} />
-                          </div>
-                        )}
-                        {(cardBody !== null || outputText !== null) && (
-                          <div className={css.ioCard}>
-                            {cardBody !== null && (
-                              <div className={css.ioSection}>
-                                <span className={css.ioLabel}>IN</span>
-                                <span className={css.ioText}>{cardBody}</span>
-                              </div>
-                            )}
-                            {cardBody !== null && outputText !== null && (
-                              <span className={css.ioDivider} aria-hidden />
-                            )}
-                            {outputText !== null && (
-                              <div className={css.ioSection}>
-                                <span className={css.ioLabel}>OUT</span>
-                                <span className={css.ioText} data-error={state === 'error' || undefined}>
-                                  {outputText}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </>
-                    )}
+                    : customBody !== null
+                      ? customBody
+                      : (
+                        <>
+                          {variant === 'code' && body !== null && (
+                            <div className={css.bodyScroll}>
+                              <CodeBlock code={body} lang="typescript" copyLabel={t('copy')} copiedLabel={t('copied')} className={css.codeBody} />
+                            </div>
+                          )}
+                          {(cardBody !== null || outputText !== null) && (
+                            <div className={css.ioCard}>
+                              {cardBody !== null && (
+                                <div className={css.ioSection}>
+                                  <span className={css.ioLabel}>IN</span>
+                                  <span className={css.ioText}>{cardBody}</span>
+                                </div>
+                              )}
+                              {cardBody !== null && outputText !== null && (
+                                <span className={css.ioDivider} aria-hidden />
+                              )}
+                              {outputText !== null && (
+                                <div className={css.ioSection}>
+                                  <span className={css.ioLabel}>OUT</span>
+                                  <span className={css.ioText} data-error={state === 'error' || undefined}>
+                                    {outputText}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      )}
           {inspect !== undefined && (
             <button
               type="button"
