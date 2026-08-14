@@ -1204,6 +1204,31 @@ export interface LspLocalServerConfig {
 
 Source: [`packages/lsp/lsp-stdio/src/index.ts:82`](../packages/lsp/lsp-stdio/src/index.ts)
 
+<a id="deepseek-aidsh-market-data"></a>
+
+## `@deepseek-ai/dsh-market-data`
+
+```ts config-catalog
+/**
+ * Config for the market-data seam. `provider` pins which registered provider
+ * wins; omitted, a single registered usable provider auto-selects. Operational
+ * overrides feed this same field rather than introduce a hidden priority chain.
+ */
+export interface MarketDataRuntimeConfig {
+  /** Explicit provider id. Omitted = auto-select when exactly one is usable. */
+  readonly provider?: string
+  /**
+   * Largest number of sessions {@link MarketDataRuntime.priceHistory} will ask
+   * a provider for. A larger request is refused rather than silently trimmed,
+   * because a caller that asked for five years and received one would draw a
+   * chart that lies about its own range.
+   */
+  readonly maxHistorySessions: number
+}
+```
+
+Source: [`packages/investment/market-data/src/index.ts:52`](../packages/investment/market-data/src/index.ts)
+
 <a id="deepseek-aidsh-mcp-client"></a>
 
 ## `@deepseek-ai/dsh-mcp-client`

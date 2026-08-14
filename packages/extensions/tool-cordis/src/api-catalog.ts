@@ -882,6 +882,31 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'marketData',
+    summary: 'The market-data service.',
+    description: 'The market-data service. Registered as `ctx.marketData` (one instance per context).\n\nSelection semantics, resolved at execution time and never order-dependent:\n\n- A configured id that is registered and `available()` — that provider.\n- A configured id not registered — `MARKET_DATA_PROVIDER_CONFIGURED_MISSING`.\n- A configured id registered but unavailable — `MARKET_DATA_PROVIDER_CONFIGURED_UNAVAILABLE`.\n- No id configured, exactly one registered usable provider — that provider.\n- No id configured, multiple usable providers — `MARKET_DATA_PROVIDER_AMBIGUOUS`.\n- No id configured, no usable provider — `MARKET_DATA_PROVIDER_UNAVAILABLE`.',
+    methods: [
+      {
+        signature: 'registerProvider(provider: MarketDataProvider): () => void',
+        description: 'Register a market-data provider. Throws MarketDataError `MARKET_DATA_DUPLICATE_PROVIDER` if its id is already registered. Returns a disposer; disposed with the calling fiber.',
+        parameters: [{ name: 'provider', description: 'the provider; its `id` is the registry key.' }],
+        returns: 'the disposer that unregisters the provider.',
+      },
+      {
+        signature: 'async quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>',
+        description: 'Read one instrument\'s latest quote through the selected provider. Resolves the provider at call time; throws MarketDataError when the capability cannot run.',
+        parameters: [{ name: 'request', description: 'the instrument to price.' }, { name: 'signal', description: 'optional cancellation signal forwarded to the provider.' }],
+        returns: 'the quote observation.',
+      },
+      {
+        signature: 'async priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>',
+        description: 'Read one instrument\'s recent session bars through the selected provider. Resolves the provider at call time; throws MarketDataError when the capability cannot run, and rejects a `sessions` count above the configured ceiling instead of trimming it.',
+        parameters: [{ name: 'request', description: 'the instrument and how many sessions to read.' }, { name: 'signal', description: 'optional cancellation signal forwarded to the provider.' }],
+        returns: 'the bars in ascending date order with their adjustment.',
+      },
+    ],
+  },
+  {
     key: 'messageFeedback',
     summary: 'Storage-domain sidecar service.',
     description: 'Storage-domain sidecar service. It inspects persisted Session history and never creates or resumes an Agent or Session.',
@@ -3158,6 +3183,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type InboxTarget = \'next-turn\' | \'next-step\';',
   },
   {
+    name: 'InstrumentRef',
+    declaration: 'export interface InstrumentRef {\n    readonly market: Market;\n    readonly symbol: string;\n}',
+  },
+  {
     name: 'InvariantFailure',
     declaration: 'export type InvariantFailure = (message: string) => never;',
   },
@@ -3362,6 +3391,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface ManualCompactAgentContext extends CompactionAgentContext {\n    runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T>;\n}',
   },
   {
+    name: 'Market',
+    declaration: 'export type Market = \'SSE\' | \'SZSE\' | \'BSE\' | \'HKEX\' | \'NASDAQ\' | \'NYSE\';',
+  },
+  {
+    name: 'MarketDataProvider',
+    declaration: 'export interface MarketDataProvider {\n    readonly id: string;\n    available(): boolean;\n    quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>;\n    priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>;\n}',
+  },
+  {
     name: 'Message',
     declaration: 'export interface Message {\n    readonly id: MessageId;\n    readonly role: \'system\' | \'user\' | \'assistant\';\n    readonly content: ContentBlock[];\n    readonly source: MessageSource;\n}',
   },
@@ -3514,6 +3551,18 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type PreToolDecision = {\n    kind: \'allow\';\n} | {\n    kind: \'deny\';\n    reason: string;\n} | {\n    kind: \'ask\';\n    reason?: string;\n};',
   },
   {
+    name: 'PriceBar',
+    declaration: 'export interface PriceBar {\n    readonly date: string;\n    readonly open: number;\n    readonly high: number;\n    readonly low: number;\n    readonly close: number;\n    readonly volume: number;\n}',
+  },
+  {
+    name: 'PriceHistory',
+    declaration: 'export interface PriceHistory {\n    readonly instrument: InstrumentRef;\n    readonly bars: readonly PriceBar[];\n    readonly adjustment: \'none\' | \'backward\' | \'forward\';\n}',
+  },
+  {
+    name: 'PriceHistoryRequest',
+    declaration: 'export interface PriceHistoryRequest {\n    readonly instrument: InstrumentRef;\n    readonly sessions: number;\n}',
+  },
+  {
     name: 'ProjectionChangeListener',
     declaration: 'export type ProjectionChangeListener = (session: Session, key: Extract<keyof SessionProjectionMap, string>, value: unknown, seq: number) => void;',
   },
@@ -3556,6 +3605,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'PruneResult',
     declaration: 'export interface PruneResult {\n    readonly pruned: readonly PrunedEntry[];\n    readonly charsRemoved: number;\n}',
+  },
+  {
+    name: 'Quote',
+    declaration: 'export interface Quote {\n    readonly instrument: InstrumentRef;\n    readonly name: string;\n    readonly currency: string;\n    readonly last: number;\n    readonly previousClose: number;\n    readonly changePercent: number;\n    readonly volume: number;\n    readonly asOf: string;\n    readonly session: \'open\' | \'closed\';\n}',
+  },
+  {
+    name: 'QuoteRequest',
+    declaration: 'export interface QuoteRequest {\n    readonly instrument: InstrumentRef;\n}',
   },
   {
     name: 'ReadFileLine',

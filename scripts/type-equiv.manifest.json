@@ -1924,6 +1924,41 @@
       "doc": "docs/subsystems/feedback.md",
       "symbol": "MessageFeedbackDeleteResult",
       "source": "packages/feedback/message-feedback/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "InstrumentRef",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "QuoteRequest",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "Quote",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "PriceBar",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "PriceHistoryRequest",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "PriceHistory",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
+      "symbol": "MarketDataProvider",
+      "source": "packages/investment/market-data/src/types.ts"
     }
   ]
 }

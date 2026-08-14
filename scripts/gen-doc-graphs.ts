@@ -79,6 +79,7 @@ const GROUP_ORDER = [
   'tasks',
   'workflow',
   'web',
+  'market-data',
   'spill',
   'todo',
   'plan',
@@ -477,6 +478,15 @@ const SERVICE_ROLES: ServiceRole[] = [
     implementations: ['jobs-local'],
     consumers: ['tool-bash', 'tool-terminal', 'tool-subagent', 'tool-jobs'],
     note: 'Producers (background bash, PTY sends, and subagent delegations) register running work; tool-jobs is the model-facing controller that reads, lists, and kills it; jobs-local is the process-local registry.',
+  },
+  {
+    key: 'marketData',
+    pkg: 'market-data',
+    title: 'Market-data provider registry',
+    mode: 'seam',
+    implementations: [],
+    consumers: [],
+    note: 'Quote and price-history providers register into one ctx.marketData seam; selection resolves per call so an entitlement loss stops selection without re-registration.',
   },
   {
     key: 'web',
