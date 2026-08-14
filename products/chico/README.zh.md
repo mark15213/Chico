@@ -14,6 +14,7 @@
 
 | 区域 | 负责内容 |
 |---|---|
+| [`one-pager.md`](one-pager.md) | 单页产品定位、目标用户、差异化优势、设计原则和交付路径（仅英文）。 |
 | [`foundations/`](foundations/vision.md) | 产品愿景、专业用户、原则、领域术语和授权基线。 |
 | [`architecture/`](architecture/repository-structure.md) | 目标仓库结构、组合与启动方式、依赖方向和改动地图。 |
 | [`capabilities/`](capabilities/index.md) | 每项面向用户的投资能力及其纵向文档集合。 |

@@ -14,6 +14,7 @@ The current design phase covers repository structure and product composition: wh
 
 | Area | Owner |
 |---|---|
+| [`one-pager.md`](one-pager.md) | Positioning, target users, differentiation, design principles, and delivery path on one page (English only). |
 | [`foundations/`](foundations/vision.md) | Product vision, professional users, principles, domain terms, and the authority baseline. |
 | [`architecture/`](architecture/repository-structure.md) | Target repository layout, composition and startup model, dependency direction, and change map. |
 | [`capabilities/`](capabilities/index.md) | One vertical document set for each user-visible investment capability. |
