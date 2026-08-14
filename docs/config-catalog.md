@@ -2540,6 +2540,28 @@ export interface Config {
 
 Source: [`packages/lsp/tool-lsp/src/index.ts:58`](../packages/lsp/tool-lsp/src/index.ts)
 
+<a id="deepseek-aidsh-tool-market-data"></a>
+
+## `@deepseek-ai/dsh-tool-market-data`
+
+Requires: `tools` · `marketData` · `systemPrompt`
+
+```ts config-catalog
+/** Plugin config: which tools to register, the default range, and the budget. */
+export interface Config {
+  /** Register `market_quote`. Defaults to true. */
+  quote?: boolean
+  /** Register `market_history`. Defaults to true. */
+  history?: boolean
+  /** Sessions returned when `market_history` omits a count. Defaults to 60. */
+  defaultHistorySessions?: number
+  /** Cooperative timeout budget (ms) for both tools. Defaults to 15000. */
+  timeoutMs?: number
+}
+```
+
+Source: [`packages/investment/tool-market-data/src/index.ts:32`](../packages/investment/tool-market-data/src/index.ts)
+
 <a id="deepseek-aidsh-tool-pwsh"></a>
 
 ## `@deepseek-ai/dsh-tool-pwsh`

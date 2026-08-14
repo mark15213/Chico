@@ -41,6 +41,7 @@
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`、`owning Agent session` | `tool/call`、`todo/write`、`tool/result` | - | todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。 |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`、`ctx.workflowEngine`、`ctx.systemPrompt`、`a calling Agent (exec.agent parents the script children)` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`、`web_search` | `ctx.tools`、`ctx.web`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | web_search 和 web_fetch 将提供方选择置于 ctx.web 之后，使模型可见 schema 在更换后端时保持稳定。 |
+| `@deepseek-ai/dsh-tool-market-data` | `market_history`、`market_quote` | `ctx.tools`、`ctx.marketData`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | market_quote 和 market_history 将提供方选择置于 ctx.marketData 之后；场所参数是镜像接缝封闭 Market 联合的枚举。 |
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
 
@@ -1876,3 +1877,81 @@ todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为
 来源：[`packages/web/tool-web/src/index.ts`](../packages/web/tool-web/src/index.ts)
 
 web_search 和 web_fetch 将提供方选择置于 ctx.web 之后，使模型可见 schema 在更换后端时保持稳定。
+
+<a id="deepseek-aidsh-tool-market-data"></a>
+
+## `@deepseek-ai/dsh-tool-market-data`
+
+### `market_history`
+
+Read one instrument's recent daily sessions as open/high/low/close/volume bars, oldest first, with the corporate-action adjustment they carry.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "market": {
+      "type": "string",
+      "description": "Trading venue the instrument is listed on.",
+      "enum": [
+        "SSE",
+        "SZSE",
+        "BSE",
+        "HKEX",
+        "NASDAQ",
+        "NYSE"
+      ]
+    },
+    "symbol": {
+      "type": "string",
+      "description": "The venue's own instrument code, exactly as the venue writes it (for example 300750)."
+    },
+    "sessions": {
+      "type": "integer",
+      "description": "Number of most recent sessions to return. Defaults to 60."
+    }
+  },
+  "required": [
+    "market",
+    "symbol"
+  ]
+}
+```
+
+来源：[`packages/investment/tool-market-data/src/index.ts`](../packages/investment/tool-market-data/src/index.ts)
+
+### `market_quote`
+
+Read one instrument's latest price, change against the previous close, volume, and the venue session state.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "market": {
+      "type": "string",
+      "description": "Trading venue the instrument is listed on.",
+      "enum": [
+        "SSE",
+        "SZSE",
+        "BSE",
+        "HKEX",
+        "NASDAQ",
+        "NYSE"
+      ]
+    },
+    "symbol": {
+      "type": "string",
+      "description": "The venue's own instrument code, exactly as the venue writes it (for example 300750)."
+    }
+  },
+  "required": [
+    "market",
+    "symbol"
+  ]
+}
+```
+
+来源：[`packages/investment/tool-market-data/src/index.ts`](../packages/investment/tool-market-data/src/index.ts)
+
+market_quote and market_history keep provider selection behind ctx.marketData; the venue argument is an enum mirroring the seam's closed Market union.

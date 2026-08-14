@@ -60,6 +60,9 @@ import * as ToolTasks from '@deepseek-ai/dsh-tool-jobs'
 import * as ToolTodo from '@deepseek-ai/dsh-tool-todo'
 import * as ToolSubagent from '@deepseek-ai/dsh-tool-subagent'
 import * as ToolWeb from '@deepseek-ai/dsh-tool-web'
+import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
+import * as MarketDataFixture from '@deepseek-ai/dsh-market-data-fixture'
+import * as ToolMarketData from '@deepseek-ai/dsh-tool-market-data'
 import VmWorkflowEngine from '@deepseek-ai/dsh-workflow-worker-thread'
 import * as ToolRalph from '@deepseek-ai/dsh-tool-ralph'
 import * as ToolWorkflow from '@deepseek-ai/dsh-tool-workflow'
@@ -550,6 +553,22 @@ const TOOL_PACKAGES: ToolPackage[] = [
     },
     note:
       'web_search and web_fetch keep provider selection behind ctx.web so model-visible schemas stay stable across backend swaps.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-market-data',
+    dir: 'tool-market-data',
+    source: 'packages/investment/tool-market-data/src/index.ts',
+    requires: ['ctx.tools', 'ctx.marketData', 'ctx.systemPrompt'],
+    writes: ['tool/call', 'tool/result'],
+    async mount(ctx) {
+      // Mount the deterministic provider so both tools register. Their schemas
+      // do not depend on provider identity or availability.
+      await ctx.plugin(MarketDataRuntime)
+      await ctx.plugin(MarketDataFixture)
+      await ctx.plugin(ToolMarketData)
+    },
+    note:
+      'market_quote and market_history keep provider selection behind ctx.marketData; the venue argument is an enum mirroring the seam\'s closed Market union.',
   },
 ]
 

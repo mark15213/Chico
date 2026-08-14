@@ -227,6 +227,7 @@
     { "path": "./packages/compaction/compaction-tool-result-pruner" },
     { "path": "./packages/investment/market-data" },
     { "path": "./packages/investment/market-data-fixture" },
+    { "path": "./packages/investment/tool-market-data" },
     { "path": "./packages/web/web" },
     { "path": "./packages/web/web-search-exa" },
     { "path": "./packages/web/web-search-perplexity" },
