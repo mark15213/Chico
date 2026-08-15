@@ -209,6 +209,16 @@
         "tests/**/*.tsx"
       ]
     },
+    "packages/client/ui-watchlist": {
+      "entry": [
+        "tests/**/*.spec.tsx"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "tests/**/*.tsx"
+      ]
+    },
     "packages/client/web-react": {
       "entry": [
         "tests/**/*.spec.tsx"
@@ -779,6 +789,11 @@
       ]
     },
     "packages/bundle/web-app": {
+      "ignoreDependencies": [
+        "@deepseek-ai/.+"
+      ]
+    },
+    "packages/bundle/chico-web-app": {
       "ignoreDependencies": [
         "@deepseek-ai/.+"
       ]

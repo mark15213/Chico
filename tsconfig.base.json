@@ -44,6 +44,10 @@
       // package's exports through source rather than through its emitted
       // declarations. Without this the analyzer cannot place the type.
       "@deepseek-ai/dsh-market-data": ["./packages/investment/market-data/src/index.ts"],
+      "@deepseek-ai/dsh-market-data-fixture": ["./packages/investment/market-data-fixture/src"],
+      "@deepseek-ai/dsh-tool-market-data": ["./packages/investment/tool-market-data/src"],
+      "@deepseek-ai/dsh-followed-names": ["./packages/investment/followed-names/src"],
+      "@deepseek-ai/dsh-watchlist": ["./packages/investment/watchlist/src"],
       "@deepseek-ai/dsh-tool-call-timeout-policy": ["./packages/guard/timeout-policy/src"],
       "@deepseek-ai/dsh-tool-call-timeout-policy/invariant": ["./packages/guard/timeout-policy/src/invariant.ts"],
       "@deepseek-ai/dsh-typert-registry": ["./packages/typert/registry/src/index.ts"],
@@ -201,6 +205,7 @@
       "@deepseek-ai/dsh-client-ui-sidebar": ["./packages/client/ui-sidebar/src"],
       "@deepseek-ai/dsh-client-ui-conversation": ["./packages/client/ui-conversation/src"],
       "@deepseek-ai/dsh-client-ui-tool": ["./packages/client/ui-tool/src"],
+      "@deepseek-ai/dsh-client-ui-watchlist": ["./packages/client/ui-watchlist/src"],
       "@deepseek-ai/dsh-client-ui-deliverables": ["./packages/client/ui-deliverables/src"],
       "@deepseek-ai/dsh-client-ui-workflow-run": ["./packages/client/ui-workflow-run/src"],
       "@deepseek-ai/dsh-client-ui-input-trigger": ["./packages/client/ui-input-trigger/src"],

@@ -18,12 +18,6 @@ importers:
       '@agentclientprotocol/sdk':
         specifier: 0.25.1
         version: 0.25.1(zod@4.4.3)
-      '@deepseek-ai/dsh-client-ui-watchlist':
-        specifier: workspace:^
-        version: link:packages/client/ui-watchlist
-      '@deepseek-ai/dsh-followed-names':
-        specifier: workspace:^
-        version: link:packages/investment/followed-names
       '@deepseek-ai/dsh-market-data':
         specifier: workspace:^
         version: link:packages/investment/market-data
@@ -36,9 +30,6 @@ importers:
       '@deepseek-ai/dsh-tool-session-query':
         specifier: workspace:^
         version: link:packages/session-query/tool-session-query
-      '@deepseek-ai/dsh-watchlist':
-        specifier: workspace:^
-        version: link:packages/investment/watchlist
       '@stylistic/eslint-plugin':
         specifier: ^5.10.0
         version: 5.10.0(eslint@10.5.0(jiti@2.7.0))
@@ -5219,9 +5210,6 @@ importers:
       '@deepseek-ai/dsh-storage-domain':
         specifier: workspace:^
         version: link:../../storage/storage-domain
-      '@deepseek-ai/dsh-storage-json':
-        specifier: workspace:^
-        version: link:../../storage/storage-json
 
   packages/investment/market-data:
     dependencies:
@@ -5298,18 +5286,12 @@ importers:
       '@deepseek-ai/dsh-market-data':
         specifier: workspace:^
         version: link:../market-data
-      '@deepseek-ai/dsh-market-data-fixture':
-        specifier: workspace:^
-        version: link:../market-data-fixture
       '@deepseek-ai/dsh-storage':
         specifier: workspace:^
         version: link:../../storage/storage
       '@deepseek-ai/dsh-storage-domain':
         specifier: workspace:^
         version: link:../../storage/storage-domain
-      '@deepseek-ai/dsh-storage-json':
-        specifier: workspace:^
-        version: link:../../storage/storage-json
       '@deepseek-ai/dsh-typert-protocol':
         specifier: workspace:^
         version: link:../../typert/protocol
