@@ -229,6 +229,7 @@
     { "path": "./packages/investment/followed-names" },
     { "path": "./packages/investment/market-data" },
     { "path": "./packages/investment/market-data-fixture" },
+    { "path": "./packages/investment/name-record" },
     { "path": "./packages/investment/tool-market-data" },
     { "path": "./packages/investment/watchlist" },
     { "path": "./packages/web/web" },

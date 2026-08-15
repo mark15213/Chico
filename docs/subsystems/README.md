@@ -40,6 +40,7 @@ One page per subsystem of the DeepSeek Harness: what it is, the data structures 
 | [subagent.md](subagent.md) | the subagent seam: the named-provider registry, `SubagentStartRequest`/`Result`/`Run`, the start-time-vs-runtime capability split |
 | [followed-names.md](followed-names.md) | the followed-names registry: `FollowedName`, the keep-on-unfollow rule, and the unregistered archive directory |
 | [market-data.md](market-data.md) | the market-data seam: `InstrumentRef`, `Quote`, `PriceBar`, `PriceHistory`, provider selection, `MarketDataError` |
+| [name-record.md](name-record.md) | the name record: `ChainEntry` kinds, `ChainSource`, `NameStance`, the verification that settles one thesis |
 | [watchlist.md](watchlist.md) | the watchlist projection: `WatchlistRow`, `WatchlistFollowResult`, the degrading quote, the venue-resolved display name |
 | [web.md](web.md) | the web access seam: `WebSearchRequest`/`Result`, `WebFetchRequest`/`Result`, `WebFetchBody`, provider availability, `WebError` |
 | [spill.md](spill.md) | the spill storage seam: `SaveTextSpill`, `SpillOwner`/`SpillSource`, `SpillRef`, the branded `SpillLocator` |

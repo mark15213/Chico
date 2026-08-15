@@ -980,6 +980,57 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'nameRecord',
+    summary: 'The name-record service.',
+    description: 'The name-record service. Registered as `ctx.nameRecord` (one instance per context).',
+    methods: [
+      {
+        signature: 'chain(instrument: InstrumentRef): readonly ChainEntry[]',
+        description: 'One name\'s decision chain, newest first.',
+        parameters: [{ name: 'instrument', description: 'the instrument to read.' }],
+        returns: 'a snapshot array; empty when nothing has been recorded.',
+      },
+      {
+        signature: 'stance(instrument: InstrumentRef): NameStance | undefined',
+        description: 'One name\'s stance.',
+        parameters: [{ name: 'instrument', description: 'the instrument to read.' }],
+        returns: 'the stance, or `undefined` until the user sets one.',
+      },
+      {
+        signature: 'openTheses(instrument: InstrumentRef): readonly ChainEntry[]',
+        description: 'The theses still waiting to be settled.',
+        parameters: [{ name: 'instrument', description: 'the instrument to read.' }],
+        returns: 'the open theses, newest first.',
+      },
+      {
+        signature: 'sessions(instrument: InstrumentRef): readonly SessionId[]',
+        description: 'The conversations bound to one name, in the order they were bound.',
+        parameters: [{ name: 'instrument', description: 'the instrument to read.' }],
+        returns: 'a snapshot array of session ids.',
+      },
+      {
+        signature: 'async append(instrument: InstrumentRef, request: ChainEntryRequest, now: string): Promise<ChainEntry>',
+        description: 'Record one entry. A verification also settles the thesis it names, which is the only write that touches an entry already stored: a thesis is answered exactly once, and the answer belongs on both.',
+        parameters: [{ name: 'instrument', description: 'the instrument the entry is about.' }, { name: 'request', description: 'what to record.' }, { name: 'now', description: 'ISO-8601 instant to stamp, supplied by the caller so the record stays free of a clock and reproducible in tests.' }],
+        returns: 'the stored entry.',
+        throws: ['{@link NameRecordError} for an empty body, or a verification naming an entry that is missing, not a thesis, from another name, or already settled.'],
+      },
+      {
+        signature: 'async setStance(instrument: InstrumentRef, request: StanceRequest, now: string): Promise<NameStance>',
+        description: 'Set where the user stands. Absent fields keep their current value, so a surface that edits one figure does not have to restate the others.',
+        parameters: [{ name: 'instrument', description: 'the instrument to set.' }, { name: 'request', description: 'the fields to change.' }, { name: 'now', description: 'ISO-8601 instant to stamp.' }],
+        returns: 'the stored stance.',
+        throws: ['{@link NameRecordError} when a position is outside 0..100.'],
+      },
+      {
+        signature: 'async bindSession(instrument: InstrumentRef, sessionId: SessionId): Promise<readonly SessionId[]>',
+        description: 'Bind a conversation to a name, so the name\'s surfaces can list it and the chain\'s provenance links can reach it. Binding the same session twice is a no-op rather than an error, because a surface may bind on every send.',
+        parameters: [{ name: 'instrument', description: 'the instrument the conversation is about.' }, { name: 'sessionId', description: 'the conversation to bind.' }],
+        returns: 'the bound sessions in order.',
+      },
+    ],
+  },
+  {
     key: 'permissionPresets',
     summary: 'Owns the deployment\'s permission presets and their write path.',
     description: 'Owns the deployment\'s permission presets and their write path. Requires a confining `ctx.shell` executor and `ctx.approval`; unmatched knob values are reported as CUSTOM_PRESET, not an error.',
@@ -2853,6 +2904,22 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface CancelOptions {\n    keepInbox?: boolean | undefined;\n}',
   },
   {
+    name: 'ChainEntry',
+    declaration: 'export type ChainEntry = (ChainEntryBase & {\n    readonly kind: \'thesis\';\n    readonly resolution: ThesisResolution;\n}) | (ChainEntryBase & {\n    readonly kind: \'decision\';\n}) | (ChainEntryBase & {\n    readonly kind: \'event\';\n}) | (ChainEntryBase & {\n    readonly kind: \'verification\';\n    readonly settles: ChainEntryId;\n    readonly verdict: \'confirmed\' | \'refuted\';\n    readonly elapsedDays: number;\n});',
+  },
+  {
+    name: 'ChainEntryId',
+    declaration: 'export type ChainEntryId = Branded<\'ChainEntryId\'>;',
+  },
+  {
+    name: 'ChainEntryRequest',
+    declaration: 'export type ChainEntryRequest = {\n    readonly kind: \'thesis\';\n    readonly body: string;\n    readonly source: ChainSource;\n} | {\n    readonly kind: \'decision\';\n    readonly body: string;\n    readonly source: ChainSource;\n} | {\n    readonly kind: \'event\';\n    readonly body: string;\n    readonly source: ChainSource;\n} | {\n    readonly kind: \'verification\';\n    readonly body: string;\n    readonly source: ChainSource;\n    readonly settles: ChainEntryId;\n    readonly verdict: \'confirmed\' | \'refuted\';\n};',
+  },
+  {
+    name: 'ChainSource',
+    declaration: 'export type ChainSource = {\n    readonly kind: \'manual\';\n} | {\n    readonly kind: \'session\';\n    readonly sessionId: SessionId;\n    readonly turn: number;\n};',
+  },
+  {
     name: 'ClientResponse',
     declaration: 'export interface ClientResponse {\n    type: \'client-response\';\n    rpcId: RpcId;\n    result: RpcResult<unknown>;\n}',
   },
@@ -3613,6 +3680,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface NameDossier {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly followed: boolean;\n    readonly quote: Quote | null;\n    readonly bars: readonly PriceBar[];\n    readonly adjustment: \'none\' | \'backward\' | \'forward\';\n}',
   },
   {
+    name: 'NameStance',
+    declaration: 'export interface NameStance {\n    readonly instrument: InstrumentRef;\n    readonly posture: StancePosture;\n    readonly positionPercent: number | null;\n    readonly conviction: \'low\' | \'medium\' | \'high\' | null;\n    readonly updatedAt: string;\n}',
+  },
+  {
     name: 'ObjectJsonSchema',
     declaration: 'export type ObjectJsonSchema = JsonSchemaNode & {\n    type: \'object\';\n};',
   },
@@ -4253,6 +4324,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface SpillSource {\n    toolName: string;\n    callId: CallId;\n    label: string;\n}',
   },
   {
+    name: 'StancePosture',
+    declaration: 'export type StancePosture = \'holding\' | \'watching\' | \'avoiding\';',
+  },
+  {
+    name: 'StanceRequest',
+    declaration: 'export interface StanceRequest {\n    readonly posture?: StancePosture;\n    readonly positionPercent?: number | null;\n    readonly conviction?: \'low\' | \'medium\' | \'high\' | null;\n}',
+  },
+  {
     name: 'StorageBackend',
     declaration: 'export interface StorageBackend {\n    readonly kv?: KvFacet;\n    close(): Promise<void>;\n}',
   },
@@ -4495,6 +4574,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'TerminalWaitReason',
     declaration: 'export type TerminalWaitReason = \'stdin_read\' | \'inferred_idle\' | \'timeout\' | \'session_exit\';',
+  },
+  {
+    name: 'ThesisResolution',
+    declaration: 'export type ThesisResolution = \'open\' | \'confirmed\' | \'refuted\';',
   },
   {
     name: 'TodoItem',

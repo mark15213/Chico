@@ -1936,6 +1936,21 @@
       "source": "packages/investment/followed-names/src/types.ts"
     },
     {
+      "doc": "docs/subsystems/name-record.md",
+      "symbol": "ChainEntryBase",
+      "source": "packages/investment/name-record/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/name-record.md",
+      "symbol": "ChainSource",
+      "source": "packages/investment/name-record/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/name-record.md",
+      "symbol": "NameStance",
+      "source": "packages/investment/name-record/src/types.ts"
+    },
+    {
       "doc": "docs/subsystems/watchlist.md",
       "symbol": "WatchlistRow",
       "source": "packages/investment/watchlist/src/types.ts"

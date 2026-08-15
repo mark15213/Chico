@@ -40,6 +40,7 @@
 | [subagent.md](subagent.md) | subagent seam：命名提供方注册表、`SubagentStartRequest`/`Result`/`Run`、启动时与运行时能力拆分 |
 | [followed-names.md](followed-names.md) | 关注标的注册表：`FollowedName`、取消关注保留记录的规则，以及不注册为 Workspace 的档案目录 |
 | [market-data.md](market-data.md) | 行情 seam：`InstrumentRef`、`Quote`、`PriceBar`、`PriceHistory`、提供方选择、`MarketDataError` |
+| [name-record.md](name-record.md) | 标的记录：`ChainEntry` 的四种类别、`ChainSource`、`NameStance`，以及结清一条判断的验证 |
 | [watchlist.md](watchlist.md) | 自选投影：`WatchlistRow`、`WatchlistFollowResult`、降级的报价、由交易场所解析的显示名 |
 | [web.md](web.md) | Web 访问 seam：`WebSearchRequest`/`Result`、`WebFetchRequest`/`Result`、`WebFetchBody`、提供方可用性、`WebError` |
 | [spill.md](spill.md) | spill 存储 seam：`SaveTextSpill`、`SpillOwner`/`SpillSource`、`SpillRef`、品牌类型 `SpillLocator` |

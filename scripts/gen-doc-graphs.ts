@@ -81,6 +81,7 @@ const GROUP_ORDER = [
   'web',
   'market-data',
   'followed-names',
+  'name-record',
   'watchlist',
   'spill',
   'todo',
@@ -498,6 +499,15 @@ const SERVICE_ROLES: ServiceRole[] = [
     implementations: ['market-data-fixture'],
     consumers: ['tool-market-data'],
     note: 'Quote and price-history providers register into one ctx.marketData seam; selection resolves per call so an entitlement loss stops selection without re-registration.',
+  },
+  {
+    key: 'nameRecord',
+    pkg: 'name-record',
+    title: 'Name record',
+    mode: 'core',
+    implementations: [],
+    consumers: [],
+    note: 'One service over its own storage domain: the stance, the decision chain, and the sessions bound to one instrument. Deliberately independent of the follow flag, so a name can be studied before it is followed.',
   },
   {
     key: 'watchlist',

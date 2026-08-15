@@ -47,6 +47,7 @@
       "@deepseek-ai/dsh-market-data-fixture": ["./packages/investment/market-data-fixture/src"],
       "@deepseek-ai/dsh-tool-market-data": ["./packages/investment/tool-market-data/src"],
       "@deepseek-ai/dsh-followed-names": ["./packages/investment/followed-names/src"],
+      "@deepseek-ai/dsh-name-record": ["./packages/investment/name-record/src"],
       "@deepseek-ai/dsh-watchlist": ["./packages/investment/watchlist/src"],
       "@deepseek-ai/dsh-tool-call-timeout-policy": ["./packages/guard/timeout-policy/src"],
       "@deepseek-ai/dsh-tool-call-timeout-policy/invariant": ["./packages/guard/timeout-policy/src/invariant.ts"],

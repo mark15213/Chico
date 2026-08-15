@@ -167,6 +167,8 @@ flowchart LR
   svc_marketData["ctx.marketData<br/>Market-data provider registry"]
   pkg_market_data_fixture["market-data-fixture"]
   pkg_tool_market_data["tool-market-data"]
+  pkg_name_record["name-record"]
+  svc_nameRecord["ctx.nameRecord<br/>Name record"]
   pkg_watchlist["watchlist"]
   svc_watchlist["ctx.watchlist<br/>Watchlist projection"]
   pkg_web["web"]
@@ -246,6 +248,7 @@ flowchart LR
   pkg_market_data_fixture --> svc_marketData
   pkg_message_feedback --> svc_messageFeedback
   pkg_modules --> svc_clientModules
+  pkg_name_record --> svc_nameRecord
   pkg_permission_presets --> svc_permissionPresets
   pkg_plan_mode --> svc_planMode
   pkg_pwsh_local --> svc_shell
@@ -472,6 +475,7 @@ flowchart LR
 | `ctx.jobs` | `seam` | [`jobs`](../packages/jobs/jobs) | [`jobs-local`](../packages/jobs/jobs-local) | [`tool-bash`](../packages/shell/tool-bash), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-subagent`](../packages/subagent/tool-subagent), [`tool-jobs`](../packages/jobs/tool-jobs) | - | Producers (background bash, PTY sends, and subagent delegations) register running work; tool-jobs is the model-facing controller that reads, lists, and kills it; jobs-local is the process-local registry. |
 | `ctx.followedNames` | `core` | [`followed-names`](../packages/investment/followed-names) | - | - | - | One service over its own storage domain, not a seam: unfollowing clears a flag so the record survives, and the archive directory it owns is deliberately never registered as a Workspace. |
 | `ctx.marketData` | `seam` | [`market-data`](../packages/investment/market-data) | [`market-data-fixture`](../packages/investment/market-data-fixture) | [`tool-market-data`](../packages/investment/tool-market-data) | - | Quote and price-history providers register into one ctx.marketData seam; selection resolves per call so an entitlement loss stops selection without re-registration. |
+| `ctx.nameRecord` | `core` | [`name-record`](../packages/investment/name-record) | - | - | - | One service over its own storage domain: the stance, the decision chain, and the sessions bound to one instrument. Deliberately independent of the follow flag, so a name can be studied before it is followed. |
 | `ctx.watchlist` | `core` | [`watchlist`](../packages/investment/watchlist) | - | - | - | A Consumer of the followed-names registry and the market-data seam, not a seam of its own: it joins a record with a quote for the browser so neither of the two grows a dependency on the other. |
 | `ctx.web` | `seam` | [`web`](../packages/web/web) | [`web-search-exa`](../packages/web/web-search-exa), [`web-search-perplexity`](../packages/web/web-search-perplexity), [`web-search-deepseek`](../packages/web/web-search-deepseek), [`web-fetch-http`](../packages/web/web-fetch-http) | [`tool-web`](../packages/web/tool-web) | - | Search and fetch providers register into one ctx.web seam; tool-web owns the stable model-facing names. |
 | `ctx.spillStore` | `seam` | [`spill`](../packages/spill/spill) | [`spill-local`](../packages/spill/spill-local) | [`spill-policy`](../packages/spill/spill-policy) | - | The backend saves oversized tool text and returns a model-facing locator plus retrieval hint; spill-policy is the tools/post-execute consumer that decides when to spill. |
