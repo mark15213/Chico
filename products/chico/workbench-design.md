@@ -36,7 +36,9 @@ This has been checked against the code, and the answer splits in two ([evidence]
 
 **Adding a name also needs no change.** The sidebar's picker hole takes an occupant that reports one chosen path per open, so a Chico component that searches by ticker or name, materializes the directory, and reports its path satisfies the existing contract.
 
-**The sidebar row does need one shared modification.** The browser declares exactly one child slot — the picker hole — and no row-level extension point, so last price, change, and status cannot be added by registration. The alternative is for Chico to take over the whole browser, which forfeits grouping, ordering, drag reorder, search, rename, fork, and archive. Row decoration carries no investment semantics and any product may want it, so the shared modification is the cheaper and more honest path.
+**The sidebar row did need one shared modification, and it has shipped.** The browser declared exactly one child slot — the picker hole — and no row-level extension point, so last price, change, and status could not be added by registration. Rather than take over the whole browser and forfeit grouping, ordering, drag reorder, search, rename, fork, and archive, the browser now declares `sidebar.workspaces.rowDecoration`, a trailing region carrying the row's workspace id and title ([decision](../../.agents/notes/implemented/architecture/2026-08-14-workspace-row-decoration-slot.md)).
+
+**What remains open is the mapping the decoration needs.** A decorator receives a workspace and must resolve it to an instrument, and nothing yet says which directory corresponds to which listing. That is the same question as where name directories live, below; until it is answered, a row cannot be decorated with a price.
 
 ## The increment
 
@@ -114,8 +116,8 @@ This is an MVP concern rather than a later one, because a fund investor with no 
 
 ## Open questions
 
-- Where do name directories live, and which user boundary owns that tree under a remote deployment?
-- What shape does the row extension point take — whole-row replacement, a trailing region, or declared columns? And does unfollowing a name delete its workspace registration, given the directory itself is never removed?
+- **Where do name directories live, how does a directory map back to a listing, and which user boundary owns that tree under a remote deployment?** This is the one blocking question: the row-decoration slot exists, but a decorator cannot resolve a workspace to an instrument until the mapping is decided, so the followed-names surface cannot be built on top of it yet.
+- Does unfollowing a name delete its workspace registration, given the directory itself is never removed?
 - Does the dossier share the details column with the tool inspector, or does one of them move?
 - Does release one target a professional working alone, or a small team sharing a book? Sharing changes the name browser, notes, and permissions, and is cheaper to decide now than to retrofit.
 - Which market data licenses cover the disclosure and ownership content, and which permit derived computation and export?
