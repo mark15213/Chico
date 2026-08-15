@@ -142,7 +142,7 @@ export function createFixtureProvider(anchorDate: string): MarketDataProvider {
   return {
     id: PROVIDER_ID,
     // A fixture table needs no credential and no network, so it is always usable.
-    available: () => true,
+    available: () => Promise.resolve(true),
     // Matching is over the whole fixed table, in table order, because the
     // table is small enough that ranking would be an invention rather than a
     // measurement. A real feed ranks by its own relevance signal.

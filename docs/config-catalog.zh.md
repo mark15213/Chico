@@ -1278,6 +1278,36 @@ export interface Config {
 
 来源：[`packages/investment/market-data-fixture/src/index.ts:126`](../packages/investment/market-data-fixture/src/index.ts)
 
+<a id="deepseek-aidsh-market-data-tushare"></a>
+
+## `@deepseek-ai/dsh-market-data-tushare`
+
+需要：`marketData` · `credentials`
+
+```ts config-catalog
+/** Plugin config: the token reference, the endpoint, and how prices are stated. */
+export interface Config {
+  /** Credential reference holding the account token. Defaults to `TUSHARE_TOKEN`. */
+  tokenEnv?: string
+  /** Tushare Pro endpoint. Defaults to the public one. */
+  baseURL?: string
+  /**
+   * Corporate-action basis for the bars this provider returns. `none` is
+   * as-traded and needs only the bar interface; the two restating values also
+   * read the adjustment-factor interface, which Tushare gates behind a higher
+   * point threshold than the bars, so an account below it must leave this at
+   * `none`. Defaults to `none`.
+   */
+  adjustment?: 'none' | 'backward' | 'forward'
+  /** How long the listing roster is held. Defaults to 720. */
+  rosterTtlMinutes?: number
+  /** Wall-clock budget for one Tushare call. Defaults to 15000. */
+  timeoutMs?: number
+}
+```
+
+来源：[`packages/investment/market-data-tushare/src/index.ts:110`](../packages/investment/market-data-tushare/src/index.ts)
+
 <a id="deepseek-aidsh-mcp-client"></a>
 
 ## `@deepseek-ai/dsh-mcp-client`

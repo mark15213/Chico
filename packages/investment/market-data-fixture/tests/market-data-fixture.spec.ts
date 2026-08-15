@@ -75,8 +75,8 @@ describe('fixture provider values', () => {
       .toThrow(expect.objectContaining({ code: 'MARKET_DATA_UNKNOWN_INSTRUMENT' }))
   })
 
-  it('is always usable, having no credential to lose', () => {
-    expect(createFixtureProvider(DEFAULT_ANCHOR_DATE).available()).toBe(true)
+  it('is always usable, having no credential to lose', async () => {
+    await expect(createFixtureProvider(DEFAULT_ANCHOR_DATE).available()).resolves.toBe(true)
     expect(createFixtureProvider(DEFAULT_ANCHOR_DATE).id).toBe(PROVIDER_ID)
   })
 })

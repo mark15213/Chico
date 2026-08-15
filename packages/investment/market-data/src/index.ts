@@ -153,7 +153,7 @@ export class MarketDataRuntime extends Service {
         'MARKET_DATA_SEARCH_RANGE_REFUSED',
       )
     }
-    return this.resolveProvider().search(request, signal)
+    return (await this.resolveProvider()).search(request, signal)
   }
 
   /**
@@ -165,7 +165,7 @@ export class MarketDataRuntime extends Service {
    * @returns the quote observation.
    */
   async quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote> {
-    return this.resolveProvider().quote(request, signal)
+    return (await this.resolveProvider()).quote(request, signal)
   }
 
   /**
@@ -184,11 +184,11 @@ export class MarketDataRuntime extends Service {
         'MARKET_DATA_HISTORY_RANGE_REFUSED',
       )
     }
-    return this.resolveProvider().priceHistory(request, signal)
+    return (await this.resolveProvider()).priceHistory(request, signal)
   }
 
   /** Resolve the selected provider or throw the matching {@link MarketDataError}. */
-  private resolveProvider(): MarketDataProvider {
+  private async resolveProvider(): Promise<MarketDataProvider> {
     const configuredId = this.providerId
     if (configuredId !== undefined) {
       const provider = this.providers.get(configuredId)
@@ -198,7 +198,7 @@ export class MarketDataRuntime extends Service {
           'MARKET_DATA_PROVIDER_CONFIGURED_MISSING',
         )
       }
-      if (!provider.available()) {
+      if (!await provider.available()) {
         throw new MarketDataError(
           `configured market-data provider "${configuredId}" is registered but unavailable`,
           'MARKET_DATA_PROVIDER_CONFIGURED_UNAVAILABLE',
@@ -206,7 +206,12 @@ export class MarketDataRuntime extends Service {
       }
       return provider
     }
-    const usable = [...this.providers.values()].filter(provider => provider.available())
+    // Every candidate is asked at once: availability is a credential or
+    // entitlement read per provider, and asking them in sequence would make
+    // selection cost grow with a roster the caller did not choose.
+    const registered = [...this.providers.values()]
+    const answers = await Promise.all(registered.map(provider => provider.available()))
+    const usable = registered.filter((_, index) => answers[index] === true)
     const [single] = usable
     if (single === undefined) {
       throw new MarketDataError(

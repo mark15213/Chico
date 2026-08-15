@@ -145,10 +145,13 @@ export interface MarketDataProvider {
   /** Registry key; unique among market-data providers. */
   readonly id: string
   /**
-   * Whether this provider can serve a request right now.
+   * Whether this provider can serve a request right now. Asynchronous because
+   * the usual answer is a credential lookup: a provider that had to answer
+   * synchronously could only mirror a cached flag, and a stale mirror is
+   * exactly what per-call consultation exists to avoid.
    * @returns true when the provider is usable.
    */
-  available(): boolean
+  available(): Promise<boolean>
   /**
    * Find the listings a typed query names. A provider whose feed has no
    * lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than
@@ -175,7 +178,15 @@ export interface MarketDataProvider {
   priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>
 }
 
-/** Reasons the market-data seam refuses to run or rejects a registration. */
+/**
+ * Reasons the market-data seam refuses to run or rejects a registration.
+ *
+ * The `PROVIDER_*` members describe the composition and would fail every
+ * request identically; the rest describe one request, and a consumer reading a
+ * list may degrade that entry alone. `VENUE_UNSUPPORTED` is on the request side
+ * even though it is a fact about the provider: a source that serves Shanghai
+ * but not Hong Kong is correctly selected and correctly refuses that one name.
+ */
 export type MarketDataErrorCode =
   | 'MARKET_DATA_DUPLICATE_PROVIDER'
   | 'MARKET_DATA_PROVIDER_CONFIGURED_MISSING'
@@ -183,6 +194,7 @@ export type MarketDataErrorCode =
   | 'MARKET_DATA_PROVIDER_AMBIGUOUS'
   | 'MARKET_DATA_PROVIDER_UNAVAILABLE'
   | 'MARKET_DATA_UNKNOWN_INSTRUMENT'
+  | 'MARKET_DATA_VENUE_UNSUPPORTED'
   | 'MARKET_DATA_HISTORY_RANGE_REFUSED'
   | 'MARKET_DATA_SEARCH_RANGE_REFUSED'
   | 'MARKET_DATA_SEARCH_UNSUPPORTED'

@@ -7,7 +7,7 @@
 # restates every key it owns.
 #
 # This layer adds capability and the one surface that capability exists for:
-# the market-data seam, one provider, the model-facing tools, the watchlist
+# the market-data seam, one venue feed, the model-facing tools, the watchlist
 # projection, and the browser tab that reads it. The price-series card needs no
 # roster row — it is part of the shared render-intent union, so
 # dsh-client-ui-tool already renders it. Everything else about the browser
@@ -22,18 +22,30 @@
       name: '@deepseek-ai/dsh-followed-names'
 
     # The market-data seam. No provider is configured, so selection resolves to
-    # the single usable one below; a deployment with a licensed feed adds it and
+    # the single usable one below; a deployment with a second feed adds it and
     # pins `provider` in a later patch layer rather than editing this row.
     - id: market-data
       name: '@deepseek-ai/dsh-market-data'
       config:
         maxHistorySessions: 500
 
-    # The deterministic provider. It is the only provider in this composition,
-    # so every quote and bar here is fixture data — a deployment that must not
-    # present synthetic prices as real disables this row when it adds a feed.
-    - id: market-data-fixture
-      name: '@deepseek-ai/dsh-market-data-fixture'
+    # The venue feed. Tushare serves end-of-day data for the mainland venues,
+    # so every price here is a session close and the workbench says so.
+    #
+    # The account token is a credential reference, never a value in a shipped
+    # file: it resolves through the credentials seam the base layer mounts, so
+    # `TUSHARE_TOKEN` in the environment, in `$DSH_HOME/.env`, or in the managed
+    # store all reach it. Without one the provider reports itself unusable and
+    # the seam refuses loudly, which is the wanted failure — a workbench that
+    # quietly served synthetic prices as real would be the worse outcome.
+    #
+    # `adjustment` stays `none` because restatement reads a second Tushare
+    # interface gated behind a higher point threshold than the bars; an account
+    # that has it sets `backward` here and gets history on today's basis.
+    - id: market-data-tushare
+      name: '@deepseek-ai/dsh-market-data-tushare'
+      config:
+        adjustment: none
 
     # The model-facing tools. Both are enabled; the default 60-session range is
     # what a chart card wants, and the seam's own ceiling bounds anything larger.

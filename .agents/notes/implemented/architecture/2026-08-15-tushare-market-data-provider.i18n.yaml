@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-08-15-tushare-market-data-provider.md
+2026-08-15-tushare-market-data-provider.md: bfa712a12d31f4b4a69c5f171f1a46603a16a1a6
+2026-08-15-tushare-market-data-provider.zh.md: e6e647aba70701e8cc9b71a23c7e1220c3278c41

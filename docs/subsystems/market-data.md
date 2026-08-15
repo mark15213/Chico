@@ -165,10 +165,13 @@ interface MarketDataProvider {
   /** Registry key; unique among market-data providers. */
   readonly id: string
   /**
-   * Whether this provider can serve a request right now.
+   * Whether this provider can serve a request right now. Asynchronous because
+   * the usual answer is a credential lookup: a provider that had to answer
+   * synchronously could only mirror a cached flag, and a stale mirror is
+   * exactly what per-call consultation exists to avoid.
    * @returns true when the provider is usable.
    */
-  available(): boolean
+  available(): Promise<boolean>
   /**
    * Find the listings a typed query names. A provider whose feed has no
    * lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than
@@ -196,7 +199,11 @@ interface MarketDataProvider {
 }
 ```
 
-Selection resolves at execution time and never depends on registration order. A configured `provider` id must be registered and available; with no id configured, exactly one usable provider auto-selects, none is `MARKET_DATA_PROVIDER_UNAVAILABLE`, and several is `MARKET_DATA_PROVIDER_AMBIGUOUS`. The seam refuses to guess between two usable feeds because two feeds disagreeing on a price is a fact the operator must resolve, not one the runtime may pick a winner for.
+Selection resolves at execution time and never depends on registration order. A configured `provider` id must be registered and available; with no id configured, exactly one usable provider auto-selects, none is `MARKET_DATA_PROVIDER_UNAVAILABLE`, and several is `MARKET_DATA_PROVIDER_AMBIGUOUS`. The seam refuses to guess between two usable feeds because two feeds disagreeing on a price is a fact the operator must resolve, not one the runtime may pick a winner for. Every candidate is asked for its availability at once, so selection costs one round of lookups rather than one per registered provider in sequence.
+
+Two providers ship. [`dsh-market-data-fixture`](../../packages/investment/market-data-fixture/README.md) is a deterministic table that lets keyless snapshots and tests exercise the seam without an entitlement, and is always available. [`dsh-market-data-tushare`](../../packages/investment/market-data-tushare/README.md) reads end-of-day data for the mainland venues from Tushare Pro, and is available only while its account token resolves — which is why a composition holding both still auto-selects the fixture until a token is configured, and must pin `provider` once one is.
+
+A provider that reaches some venues and not others refuses the rest with `MARKET_DATA_VENUE_UNSUPPORTED`. That is a per-request refusal rather than a selection failure: the provider was correctly selected and is correctly declining one name, so a consumer reading a list degrades that entry and keeps the rest.
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 

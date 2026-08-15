@@ -11,9 +11,11 @@ DeepSeek Harness 的行情能力接缝（`ctx.marketData`）：提供方注册�
 - `ctx.marketData.quote(request, signal?)` —— 单个标的的最新观测值。
 - `ctx.marketData.priceHistory(request, signal?)` —— 单个标的最近的日频 K 线，按日期升序。
 
-提供方选择在执行时解析，且不依赖注册顺序：配置的 `provider` id 必须已注册（否则 `MARKET_DATA_PROVIDER_CONFIGURED_MISSING`）且 `available()`（否则 `MARKET_DATA_PROVIDER_CONFIGURED_UNAVAILABLE`）；未配置 id 时，恰好一个可用提供方将自动选中，没有则抛出 `MARKET_DATA_PROVIDER_UNAVAILABLE`，多个则抛出 `MARKET_DATA_PROVIDER_AMBIGUOUS`。`available()` 每次调用都会查询而不缓存，因此失去权限的提供方无需重新注册即会停止被选中。
+提供方选择在执行时解析，且不依赖注册顺序：配置的 `provider` id 必须已注册（否则 `MARKET_DATA_PROVIDER_CONFIGURED_MISSING`）且 `available()`（否则 `MARKET_DATA_PROVIDER_CONFIGURED_UNAVAILABLE`）；未配置 id 时，恰好一个可用提供方将自动选中，没有则抛出 `MARKET_DATA_PROVIDER_UNAVAILABLE`，多个则抛出 `MARKET_DATA_PROVIDER_AMBIGUOUS`。`available()` 每次调用都会查询而不缓存，因此失去权限的提供方无需重新注册即会停止被选中。它是异步的，因为通常的答案是一次凭据查询；所有候选者会被同时询问，因此选择的开销不随调用方没有选择的名册规模增长。
 
 `maxHistorySessions`（默认 500，约两个交易年）与 `maxSearchMatches`（默认 20，一份人在选择前会读完的候选列表）各自限定单次提供方调用的规模。超出任一上限的请求都会抛出——`MARKET_DATA_HISTORY_RANGE_REFUSED` 或 `MARKET_DATA_SEARCH_RANGE_REFUSED`——且不会到达提供方，因为请求五年却静默拿到一年的调用方会画出一张对自身区间撒谎的图，而请求五十条却画出二十条的调用方会把一份被截断的列表当成完整答案呈现。
+
+`PROVIDER_*` 这几个错误码描述的是组合本身，它们会让每一个请求以完全相同的方式失败；读取列表的消费方遇到它们应对整次调用抛出。其余的描述的是单次请求，因此列表可以只降级那一条：`MARKET_DATA_UNKNOWN_INSTRUMENT` 表示交易场所没有列出该代码，`MARKET_DATA_VENUE_UNSUPPORTED` 表示所选提供方够不到该交易场所——服务上海但不服务香港的来源被正确地选中，也正确地拒绝那一个标的。
 
 `search` 做的是身份解析而不是定价：`InstrumentMatch` 只携带标的与名称，随后需要价格的调用方再去取报价。数据源没有检索端点的提供方会以 `MARKET_DATA_SEARCH_UNSUPPORTED` 拒绝，而不是解析出空列表，这样消费方才能区分"没有匹配"和"这个来源答不了"。
 

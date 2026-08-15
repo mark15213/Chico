@@ -72,7 +72,7 @@ async function bench(provider?: MarketDataProvider | 'none') {
 function partialProvider(refusal: MarketDataError): MarketDataProvider {
   return {
     id: 'partial',
-    available: () => true,
+    available: () => Promise.resolve(true),
     search: () => Promise.resolve({ matches: [] }),
     quote: ({ instrument }) => instrument.symbol === CATL.symbol
       ? Promise.resolve(quoteOf(instrument.symbol))
@@ -185,7 +185,7 @@ describe('a row that cannot be priced', () => {
   it('degrades on any per-instrument failure, including one the seam did not raise', async () => {
     const provider: MarketDataProvider = {
       id: 'flaky',
-      available: () => true,
+      available: () => Promise.resolve(true),
       search: () => Promise.resolve({ matches: [] }),
       quote: () => Promise.reject(new Error('socket hang up')),
       priceHistory: () => Promise.reject(new Error('unused')),

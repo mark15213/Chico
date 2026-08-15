@@ -165,10 +165,13 @@ interface MarketDataProvider {
   /** Registry key; unique among market-data providers. */
   readonly id: string
   /**
-   * Whether this provider can serve a request right now.
+   * Whether this provider can serve a request right now. Asynchronous because
+   * the usual answer is a credential lookup: a provider that had to answer
+   * synchronously could only mirror a cached flag, and a stale mirror is
+   * exactly what per-call consultation exists to avoid.
    * @returns true when the provider is usable.
    */
-  available(): boolean
+  available(): Promise<boolean>
   /**
    * Find the listings a typed query names. A provider whose feed has no
    * lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than
@@ -196,7 +199,11 @@ interface MarketDataProvider {
 }
 ```
 
-选择在执行时解析，且不依赖注册顺序。配置的 `provider` id 必须已注册且可用；未配置 id 时，恰好一个可用提供方将自动选中，没有则是 `MARKET_DATA_PROVIDER_UNAVAILABLE`，多个则是 `MARKET_DATA_PROVIDER_AMBIGUOUS`。接缝拒绝在两个可用数据源之间猜测，因为两个数据源对价格不一致是运维必须解决的事实，而不是运行时可以替它挑一个赢家的事。
+选择在执行时解析，且不依赖注册顺序。配置的 `provider` id 必须已注册且可用；未配置 id 时，恰好一个可用提供方将自动选中，没有则是 `MARKET_DATA_PROVIDER_UNAVAILABLE`，多个则是 `MARKET_DATA_PROVIDER_AMBIGUOUS`。接缝拒绝在两个可用数据源之间猜测，因为两个数据源对价格不一致是运维必须解决的事实，而不是运行时可以替它挑一个赢家的事。所有候选者的可用性会被同时询问，因此选择的开销是一轮查询，而不是按注册提供方数量依次查询。
+
+随附两个提供方。[`dsh-market-data-fixture`](../../packages/investment/market-data-fixture/README.md) 是一张确定性表格，让无密钥快照和测试无需权限即可演练该接缝，并且恒为可用。[`dsh-market-data-tushare`](../../packages/investment/market-data-tushare/README.md) 从 Tushare Pro 读取内地交易所的收盘后数据，只在它的账号 token 能解析出来时可用——这正是为什么同时持有两者的组合在配置 token 之前仍会自动选中 fixture，而一旦配置了就必须固定 `provider`。
+
+够到部分交易场所而够不到其余的提供方，会以 `MARKET_DATA_VENUE_UNSUPPORTED` 拒绝其余的。这是一次针对单个请求的拒绝，而不是选择失败：提供方被正确地选中，也正确地拒绝了一个标的，因此读取列表的消费方降级那一条并保留其余。
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 

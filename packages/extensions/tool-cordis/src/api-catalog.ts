@@ -3599,7 +3599,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'MarketDataProvider',
-    declaration: 'export interface MarketDataProvider {\n    readonly id: string;\n    available(): boolean;\n    search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>;\n    quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>;\n    priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>;\n}',
+    declaration: 'export interface MarketDataProvider {\n    readonly id: string;\n    available(): Promise<boolean>;\n    search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>;\n    quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>;\n    priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>;\n}',
   },
   {
     name: 'Message',

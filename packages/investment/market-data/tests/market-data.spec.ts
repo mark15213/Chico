@@ -53,7 +53,7 @@ function stubProvider(id: string, available = true): StubProvider {
     quote: vi.fn(async () => quote),
     priceHistory: vi.fn(async () => history),
   }
-  return { id, available: () => available, ...calls, calls }
+  return { id, available: () => Promise.resolve(available), ...calls, calls }
 }
 
 /** Boot the seam with the given config over a bare context. */

@@ -1251,9 +1251,9 @@ importers:
       '@deepseek-ai/dsh-market-data':
         specifier: workspace:^
         version: link:../../investment/market-data
-      '@deepseek-ai/dsh-market-data-fixture':
+      '@deepseek-ai/dsh-market-data-tushare':
         specifier: workspace:^
-        version: link:../../investment/market-data-fixture
+        version: link:../../investment/market-data-tushare
       '@deepseek-ai/dsh-name-record':
         specifier: workspace:^
         version: link:../../investment/name-record
@@ -5248,6 +5248,25 @@ importers:
       '@deepseek-ai/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+      '@deepseek-ai/dsh-market-data':
+        specifier: workspace:^
+        version: link:../market-data
+
+  packages/investment/market-data-tushare:
+    dependencies:
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-credentials':
+        specifier: workspace:^
+        version: link:../../credentials/credentials
       '@deepseek-ai/dsh-invariants':
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
