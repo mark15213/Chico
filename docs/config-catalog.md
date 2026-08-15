@@ -1248,10 +1248,17 @@ export interface MarketDataRuntimeConfig {
    * chart that lies about its own range.
    */
   readonly maxHistorySessions: number
+  /**
+   * Largest number of matches {@link MarketDataRuntime.search} will ask a
+   * provider for. Refused rather than trimmed for the same reason as
+   * {@link MarketDataRuntimeConfig.maxHistorySessions}: a caller that asked for
+   * fifty and drew twenty would present a truncated list as the whole answer.
+   */
+  readonly maxSearchMatches: number
 }
 ```
 
-Source: [`packages/investment/market-data/src/index.ts:52`](../packages/investment/market-data/src/index.ts)
+Source: [`packages/investment/market-data/src/index.ts:63`](../packages/investment/market-data/src/index.ts)
 
 <a id="deepseek-aidsh-market-data-fixture"></a>
 
@@ -1267,7 +1274,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/investment/market-data-fixture/src/index.ts:111`](../packages/investment/market-data-fixture/src/index.ts)
+Source: [`packages/investment/market-data-fixture/src/index.ts:126`](../packages/investment/market-data-fixture/src/index.ts)
 
 <a id="deepseek-aidsh-mcp-client"></a>
 

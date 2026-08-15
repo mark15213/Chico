@@ -52,7 +52,7 @@ async function composition(provider?: MarketDataProvider | 'none') {
   ctx.storage.mount('domain', facility)
   ctx.provide('storageDomain', facility)
   await ctx.plugin(FollowedNamesService, { archivePath: archiveRoot() }).await()
-  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500 }).await()
+  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500, maxSearchMatches: 20 }).await()
   if (provider === undefined) await ctx.plugin(marketDataFixture, {}).await()
   else if (provider !== 'none') ctx.marketData.registerProvider(provider)
   return ctx
@@ -70,6 +70,7 @@ function partialProvider(refusal: MarketDataError): MarketDataProvider {
   return {
     id: 'partial',
     available: () => true,
+    search: () => Promise.resolve({ matches: [] }),
     quote: ({ instrument }) => instrument.symbol === CATL.symbol
       ? Promise.resolve(quoteOf(instrument.symbol))
       : Promise.reject(refusal),
@@ -153,6 +154,7 @@ describe('a row that cannot be priced', () => {
     const provider: MarketDataProvider = {
       id: 'flaky',
       available: () => true,
+      search: () => Promise.resolve({ matches: [] }),
       quote: () => Promise.reject(new Error('socket hang up')),
       priceHistory: () => Promise.reject(new Error('unused')),
     }
@@ -169,6 +171,48 @@ describe('a row that cannot be priced', () => {
 
     await expect(ctx.watchlist.list()).rejects.toMatchObject({
       code: 'MARKET_DATA_PROVIDER_UNAVAILABLE',
+    })
+  })
+})
+
+describe('the instrument lookup', () => {
+  it('finds a listing by code and by name', async () => {
+    const ctx = await bench()
+
+    expect((await ctx.watchlist.search('300750', 8)).matches)
+      .toEqual([{ instrument: CATL, name: '宁德时代', followed: false }])
+    expect((await ctx.watchlist.search('茅台', 8)).matches)
+      .toEqual([{ instrument: MOUTAI, name: '贵州茅台', followed: false }])
+  })
+
+  it('marks a match already on the watchlist, so a picker cannot offer it twice', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    const { matches } = await ctx.watchlist.search('300750', 8)
+
+    expect(matches[0]?.followed).toBe(true)
+  })
+
+  it('does not mark an unfollowed record as followed, since the picker offers to re-add it', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    await ctx.followedNames.unfollow(CATL, T1)
+
+    expect((await ctx.watchlist.search('300750', 8)).matches[0]?.followed).toBe(false)
+  })
+
+  it('resolves empty for a query that names nothing', async () => {
+    const ctx = await bench()
+
+    expect(await ctx.watchlist.search('zzzz', 8)).toEqual({ matches: [] })
+  })
+
+  it('refuses a limit above the seam ceiling rather than returning a truncated list', async () => {
+    const ctx = await bench()
+
+    await expect(ctx.watchlist.search('3', 21)).rejects.toMatchObject({
+      code: 'MARKET_DATA_SEARCH_RANGE_REFUSED',
     })
   })
 })

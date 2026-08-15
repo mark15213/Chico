@@ -1,8 +1,9 @@
 /**
- * Deterministic market-data Service Provider: serves a fixed instrument table
- * and a reproducible bar series so keyless snapshots, demos, and tests exercise
- * the seam without a venue entitlement. Every value derives from the symbol and
- * the configured anchor date, so two runs on two machines agree.
+ * Deterministic market-data Service Provider: serves a fixed instrument table,
+ * lookup over it, and a reproducible bar series so keyless snapshots, demos,
+ * and tests exercise the seam without a venue entitlement. Every value derives
+ * from the symbol and the configured anchor date, so two runs on two machines
+ * agree.
  * @module @deepseek-ai/dsh-market-data-fixture
  */
 
@@ -10,6 +11,8 @@ import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import type {
   InstrumentRef,
+  InstrumentSearchRequest,
+  InstrumentSearchResult,
   MarketDataProvider,
   PriceBar,
   PriceHistory,
@@ -59,6 +62,18 @@ const FIXTURES: readonly FixtureInstrument[] = [
  */
 function wave(seed: number, index: number): number {
   return Math.sin((index + seed) * 0.7) * 0.6 + Math.sin((index + seed) * 0.23) * 0.4
+}
+
+/**
+ * Whether one fixture answers an upper-cased query. A code matches from its
+ * start, because a partial code is a prefix of the real one; a name matches
+ * anywhere, because a person types the distinctive middle of a name as often
+ * as its beginning.
+ */
+function matchesQuery(fixture: FixtureInstrument, query: string): boolean {
+  return fixture.instrument.symbol.startsWith(query)
+    || fixture.instrument.market.startsWith(query)
+    || fixture.name.toLocaleUpperCase().includes(query)
 }
 
 /** Round to two decimals; venue prices in this table are all two-decimal. */
@@ -128,6 +143,18 @@ export function createFixtureProvider(anchorDate: string): MarketDataProvider {
     id: PROVIDER_ID,
     // A fixture table needs no credential and no network, so it is always usable.
     available: () => true,
+    // Matching is over the whole fixed table, in table order, because the
+    // table is small enough that ranking would be an invention rather than a
+    // measurement. A real feed ranks by its own relevance signal.
+    search: (request: InstrumentSearchRequest): Promise<InstrumentSearchResult> => {
+      const query = request.query.trim().toLocaleUpperCase()
+      if (query.length === 0) return Promise.resolve({ matches: [] })
+      const matches = FIXTURES
+        .filter(fixture => matchesQuery(fixture, query))
+        .slice(0, request.limit)
+        .map(fixture => ({ instrument: fixture.instrument, name: fixture.name }))
+      return Promise.resolve({ matches })
+    },
     // An unknown instrument returns a rejected promise rather than throwing
     // synchronously: the contract returns a promise, and a caller that only
     // installed a rejection handler must still see the refusal.

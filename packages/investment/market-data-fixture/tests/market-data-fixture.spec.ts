@@ -81,10 +81,44 @@ describe('fixture provider values', () => {
   })
 })
 
+describe('fixture instrument lookup', () => {
+  const provider = createFixtureProvider(DEFAULT_ANCHOR_DATE)
+
+  it('matches a code from its start, because a partial code is a prefix', async () => {
+    expect((await provider.search({ query: '3007', limit: 8 })).matches)
+      .toEqual([{ instrument: { market: 'SZSE', symbol: '300750' }, name: '宁德时代' }])
+    // A code's tail is not a code, so a suffix names nothing.
+    expect((await provider.search({ query: '0750', limit: 8 })).matches).toEqual([])
+  })
+
+  it('matches a name anywhere, because a person types its distinctive part', async () => {
+    expect((await provider.search({ query: '茅台', limit: 8 })).matches)
+      .toEqual([{ instrument: { market: 'SSE', symbol: '600519' }, name: '贵州茅台' }])
+  })
+
+  it('matches a venue, so a user can see what it lists', async () => {
+    const { matches } = await provider.search({ query: 'szse', limit: 8 })
+
+    expect(matches.map(match => match.instrument.symbol)).toEqual(['300750', '300274'])
+  })
+
+  it('honors the caller limit', async () => {
+    expect((await provider.search({ query: 'SZSE', limit: 1 })).matches).toHaveLength(1)
+  })
+
+  it('resolves empty for a blank query rather than listing the whole table', async () => {
+    expect(await provider.search({ query: '   ', limit: 8 })).toEqual({ matches: [] })
+  })
+
+  it('resolves empty for a query that names nothing', async () => {
+    expect(await provider.search({ query: 'zzzz', limit: 8 })).toEqual({ matches: [] })
+  })
+})
+
 describe('fixture provider registration', () => {
   it('registers on the seam and unregisters with the fiber', async () => {
     const ctx = new Context()
-    await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500 }).await()
+    await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500, maxSearchMatches: 20 }).await()
     const fiber = ctx.plugin({ name: 'fixture', inject: [...inject], apply, Config }, {})
     await fiber.await()
 

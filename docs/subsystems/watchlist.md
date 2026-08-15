@@ -43,6 +43,14 @@ A quote that fails degrades its own row to `quote: null`. A watchlist that disap
 
 Provider *selection* failures are the exception and raise for the whole call: no usable provider, a configured provider that is missing or unavailable, and an ambiguous choice are composition errors rather than facts about an instrument. Every row would degrade identically, so a watchlist of dashes would present a misconfigured deployment as a quiet data gap.
 
+## Lookup is how a name reaches the list
+
+`search` takes what the user typed and returns the listings it names, each marked with whether it is already followed. That flag is what makes the operation belong here rather than on the market-data seam: a picker that offers to add a name already on the list asks the user to make a mistake, and only the registry knows.
+
+The caller passes the `limit` it will draw rather than receiving a number this package chose, because the surface rendering the list is what knows how many it can show. The seam refuses anything above its own ceiling.
+
+An unfollowed record is reported as *not* followed. The picker is therefore also the way back to a name taken off the list: re-following restores the record with its original `firstFollowedAt`.
+
 ## Following resolves the name from the venue
 
 `follow` takes a venue and a code and reads the quote before recording anything, which both proves the listing exists and supplies the display name. A caller does not pass a name: a user typing `SZSE:300750` does not know it, and a browser that guessed would write a wrong name into a durable record.
@@ -99,6 +107,23 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 @Remote('list') async list(signal?: AbortSignal): Promise<WatchlistSnapshot>
 
 /**
+ * Find the listings a typed query names, each marked with whether it is
+ * already followed. This is the path onto the watchlist: a user knows a name
+ * far more often than a venue and a code.
+ * @param query - what the user typed: a code, a name, or part of either.
+ * @param limit - how many matches the caller will present. Passed rather
+ *   than fixed here, because the surface drawing the list is what knows how
+ *   many it can show; the seam refuses a limit above its own ceiling.
+ * @param signal - optional cancellation signal, so a keystroke supersedes
+ *   the lookup the previous one started.
+ * @returns the matched listings, best first.
+ * @throws {@link MarketDataError} when no usable provider can be selected,
+ *   when the limit is above the seam's ceiling, or when the selected
+ *   provider's feed has no lookup endpoint.
+ */
+@Remote('search') async search(query: string, limit: number, signal?: AbortSignal): Promise<WatchlistSearchResult>
+
+/**
  * Follow an instrument named by venue and code, taking its display name from
  * the venue rather than from the caller. Re-following a name that was
  * unfollowed restores it with its original `firstFollowedAt`.
@@ -122,5 +147,5 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 
 Types: [InstrumentRef](market-data.md)
 
-Source: [`packages/investment/watchlist/src/index.ts:56`](../../packages/investment/watchlist/src/index.ts)
+Source: [`packages/investment/watchlist/src/index.ts:63`](../../packages/investment/watchlist/src/index.ts)
 <!-- END GENERATED cordis-surface -->

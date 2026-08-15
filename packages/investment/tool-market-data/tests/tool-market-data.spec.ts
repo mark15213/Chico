@@ -29,7 +29,7 @@ async function bench(options: { provider?: boolean; config?: Config } = {}) {
   ctx.provide('systemPrompt', {
     section: (section: { name: string; text: string }) => { sections.push(section) },
   } as never)
-  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500 }).await()
+  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500, maxSearchMatches: 20 }).await()
   if (provider) {
     await ctx.plugin({ name: 'fixture', inject: [...fixtureInject], apply: applyFixture, Config: FixtureConfig }, {}).await()
   }

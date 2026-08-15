@@ -1,13 +1,13 @@
 /**
  * Market-data seam: provider registration and disposal, execution-time
- * selection under every configured/auto/ambiguous branch, and the history
- * ceiling that refuses rather than trims.
+ * selection under every configured/auto/ambiguous branch, and the two request
+ * ceilings that refuse rather than trim.
  */
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import MarketDataRuntime, { MarketDataError } from '../src/index.ts'
-import type { MarketDataProvider, PriceHistory, Quote } from '../src/index.ts'
+import type { InstrumentSearchResult, MarketDataProvider, PriceHistory, Quote } from '../src/index.ts'
 import * as MarketDataInvariant from '../src/invariant.ts'
 
 const instrument = { market: 'SZSE', symbol: '300750' } as const
@@ -24,6 +24,10 @@ const quote: Quote = {
   session: 'closed',
 }
 
+const searchResult: InstrumentSearchResult = {
+  matches: [{ instrument, name: '宁德时代' }],
+}
+
 const history: PriceHistory = {
   instrument,
   bars: [{ date: '2026-08-13', open: 226, high: 231, low: 225, close: 228.28, volume: 30_100_000 }],
@@ -36,11 +40,16 @@ const history: PriceHistory = {
  * values rather than as methods detached from their receiver.
  */
 type StubProvider = MarketDataProvider & {
-  calls: { quote: ReturnType<typeof vi.fn>; priceHistory: ReturnType<typeof vi.fn> }
+  calls: {
+    search: ReturnType<typeof vi.fn>
+    quote: ReturnType<typeof vi.fn>
+    priceHistory: ReturnType<typeof vi.fn>
+  }
 }
 
 function stubProvider(id: string, available = true): StubProvider {
   const calls = {
+    search: vi.fn(async () => searchResult),
     quote: vi.fn(async () => quote),
     priceHistory: vi.fn(async () => history),
   }
@@ -48,9 +57,9 @@ function stubProvider(id: string, available = true): StubProvider {
 }
 
 /** Boot the seam with the given config over a bare context. */
-async function bench(config: Partial<{ provider: string; maxHistorySessions: number }> = {}) {
+async function bench(config: Partial<{ provider: string; maxHistorySessions: number; maxSearchMatches: number }> = {}) {
   const ctx = new Context()
-  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500, ...config }).await()
+  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500, maxSearchMatches: 20, ...config }).await()
   return ctx
 }
 
@@ -159,6 +168,29 @@ describe('market-data history ceiling', () => {
     ctx.marketData.registerProvider(stubProvider('fixture'))
 
     expect(await ctx.marketData.priceHistory({ instrument, sessions: 60 })).toBe(history)
+  })
+})
+
+describe('market-data search ceiling', () => {
+  it('refuses a limit above the ceiling rather than trimming it', async () => {
+    const ctx = await bench({ maxSearchMatches: 5 })
+    const provider = stubProvider('fixture')
+    ctx.marketData.registerProvider(provider)
+
+    await expect(ctx.marketData.search({ query: 'x', limit: 6 })).rejects
+      .toThrow(expect.objectContaining({ code: 'MARKET_DATA_SEARCH_RANGE_REFUSED' }))
+    // A refused limit never reaches the provider, so no partial list exists.
+    expect(provider.calls.search).not.toHaveBeenCalled()
+  })
+
+  it('serves a limit exactly at the ceiling, forwarding the caller signal', async () => {
+    const ctx = await bench({ maxSearchMatches: 5 })
+    const provider = stubProvider('fixture')
+    ctx.marketData.registerProvider(provider)
+    const signal = new AbortController().signal
+
+    expect(await ctx.marketData.search({ query: 'x', limit: 5 }, signal)).toBe(searchResult)
+    expect(provider.calls.search).toHaveBeenCalledWith({ query: 'x', limit: 5 }, signal)
   })
 })
 

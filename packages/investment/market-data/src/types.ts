@@ -77,6 +77,32 @@ export interface PriceBar {
   readonly volume: number
 }
 
+/**
+ * One listing a search matched. Carries identity and name only: a search
+ * answers "which instrument does the user mean", and a caller that then needs
+ * a price asks for a quote.
+ */
+export interface InstrumentMatch {
+  /** The matched instrument. */
+  readonly instrument: InstrumentRef
+  /** Display name in the venue's own language. */
+  readonly name: string
+}
+
+/** Request for instruments matching what a user typed. */
+export interface InstrumentSearchRequest {
+  /** What the user typed: a code, a name, or part of either. */
+  readonly query: string
+  /** Largest number of matches to return; a provider may return fewer. */
+  readonly limit: number
+}
+
+/** The listings one search matched, best first as the provider ranks them. */
+export interface InstrumentSearchResult {
+  /** Matched listings; empty when the query names nothing. */
+  readonly matches: readonly InstrumentMatch[]
+}
+
 /** Request for one instrument's latest quote. */
 export interface QuoteRequest {
   /** The instrument to price. */
@@ -124,6 +150,16 @@ export interface MarketDataProvider {
    */
   available(): boolean
   /**
+   * Find the listings a typed query names. A provider whose feed has no
+   * lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than
+   * resolving empty, so a consumer can tell "nothing matched" from "this
+   * source cannot answer".
+   * @param request - the query and how many matches to return.
+   * @param signal - optional cancellation signal.
+   * @returns the matched listings, best first.
+   */
+  search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>
+  /**
    * Read one instrument's latest quote.
    * @param request - the instrument to price.
    * @param signal - optional cancellation signal.
@@ -148,6 +184,8 @@ export type MarketDataErrorCode =
   | 'MARKET_DATA_PROVIDER_UNAVAILABLE'
   | 'MARKET_DATA_UNKNOWN_INSTRUMENT'
   | 'MARKET_DATA_HISTORY_RANGE_REFUSED'
+  | 'MARKET_DATA_SEARCH_RANGE_REFUSED'
+  | 'MARKET_DATA_SEARCH_UNSUPPORTED'
 
 /** Error thrown by the market-data seam and by providers refusing a request. */
 export class MarketDataError extends Error {

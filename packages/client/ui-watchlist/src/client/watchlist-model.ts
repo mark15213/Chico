@@ -1,11 +1,10 @@
 /**
  * Pure derivations behind the watchlist rows: price and change presentation,
- * the instrument label, and the venue list the add form offers. Kept out of the
- * component so the rules are asserted directly rather than through the DOM.
+ * and the instrument label. Kept out of the component so the rules are
+ * asserted directly rather than through the DOM.
  */
 
-import type { Market, Quote, WatchlistRow } from '@deepseek-ai/dsh-api-remotes/client'
-import type { WatchlistLocaleKey } from './locales.ts'
+import type { Quote, WatchlistRow } from '@deepseek-ai/dsh-api-remotes/client'
 
 /**
  * Which way a row moved. `flat` is its own case rather than a rounding of up:
@@ -24,23 +23,6 @@ export interface RowFigures {
   /** Direction the change is colored by, or null without a quote. */
   readonly direction: PriceDirection | null
 }
-
-/**
- * Venue labels, one locale key per member of the market union. A `Record` over
- * the union rather than a list, so a venue added to the seam fails this file to
- * compile instead of silently disappearing from the add form.
- */
-export const MARKET_LABEL_KEYS = {
-  SSE: 'market.SSE',
-  SZSE: 'market.SZSE',
-  BSE: 'market.BSE',
-  HKEX: 'market.HKEX',
-  NASDAQ: 'market.NASDAQ',
-  NYSE: 'market.NYSE',
-} as const satisfies Record<Market, WatchlistLocaleKey>
-
-/** The venues the add form offers, in the order it lists them. */
-export const MARKETS = Object.keys(MARKET_LABEL_KEYS) as readonly Market[]
 
 /**
  * Decimal places every figure is shown to. Two is what the venues served today
@@ -107,12 +89,12 @@ export function rowFigures(row: WatchlistRow): RowFigures {
 }
 
 /**
- * The code as the venue writes it, or null when the field holds nothing to
- * look up. Whitespace and case are the user's typing, not part of the code.
+ * The query as a lookup should see it, or null when the field holds nothing to
+ * look up. Whitespace is the user's typing, not part of what they meant.
  * @param input - the raw field value.
- * @returns the normalized code, or null when there is nothing to look up.
+ * @returns the trimmed query, or null when there is nothing to look up.
  */
-export function normalizeSymbol(input: string): string | null {
-  const trimmed = input.trim().toUpperCase()
+export function normalizeQuery(input: string): string | null {
+  const trimmed = input.trim()
   return trimmed.length === 0 ? null : trimmed
 }

@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write docs/subsystems/watchlist.md
-watchlist.md: d82f5ae8ba14b10e073747ec757a05a049b5f6a9
-watchlist.zh.md: 4efc69f1796699c2b5bdc91003f76b9c5c80df55
+watchlist.md: dc88eeeb628af7158dc8e56ed32be2281293aefd
+watchlist.zh.md: ece5ea7e510c5f82ad72b6d40fdc99f59c4c9464

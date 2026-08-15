@@ -1,7 +1,7 @@
 /**
  * Service Definition for the market-data capability seam (`ctx.marketData`): a
- * provider registry plus provider-selecting execution for quotes and price
- * history. Duplicate ids are rejected. At execution time a configured provider
+ * provider registry plus provider-selecting execution for instrument lookup,
+ * quotes, and price history. Duplicate ids are rejected. At execution time a configured provider
  * must exist and be usable; without one, exactly one usable provider is
  * required, so selection never depends on registration order.
  * @module @deepseek-ai/dsh-market-data
@@ -10,6 +10,8 @@
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import type {
+  InstrumentSearchRequest,
+  InstrumentSearchResult,
   MarketDataProvider,
   PriceHistory,
   PriceHistoryRequest,
@@ -20,7 +22,10 @@ import { MarketDataError } from './types.ts'
 
 export { MarketDataError } from './types.ts'
 export type {
+  InstrumentMatch,
   InstrumentRef,
+  InstrumentSearchRequest,
+  InstrumentSearchResult,
   Market,
   MarketDataErrorCode,
   MarketDataProvider,
@@ -45,6 +50,12 @@ declare module '@deepseek-ai/cordis' {
 const DEFAULT_MAX_HISTORY_SESSIONS = 500
 
 /**
+ * Default ceiling for {@link MarketDataRuntimeConfig.maxSearchMatches}: a
+ * pick-list a person reads before choosing, not a result set to page through.
+ */
+const DEFAULT_MAX_SEARCH_MATCHES = 20
+
+/**
  * Config for the market-data seam. `provider` pins which registered provider
  * wins; omitted, a single registered usable provider auto-selects. Operational
  * overrides feed this same field rather than introduce a hidden priority chain.
@@ -59,6 +70,13 @@ export interface MarketDataRuntimeConfig {
    * chart that lies about its own range.
    */
   readonly maxHistorySessions: number
+  /**
+   * Largest number of matches {@link MarketDataRuntime.search} will ask a
+   * provider for. Refused rather than trimmed for the same reason as
+   * {@link MarketDataRuntimeConfig.maxHistorySessions}: a caller that asked for
+   * fifty and drew twenty would present a truncated list as the whole answer.
+   */
+  readonly maxSearchMatches: number
 }
 
 /**
@@ -75,20 +93,23 @@ export interface MarketDataRuntimeConfig {
  * - No id configured, no usable provider — `MARKET_DATA_PROVIDER_UNAVAILABLE`.
  */
 export class MarketDataRuntime extends Service {
-  /** Provider selection and the history request ceiling. */
+  /** Provider selection and the two request ceilings. */
   static Config: z<MarketDataRuntimeConfig> = z.object({
     provider: z.string(),
     maxHistorySessions: z.natural().min(1).default(DEFAULT_MAX_HISTORY_SESSIONS),
+    maxSearchMatches: z.natural().min(1).default(DEFAULT_MAX_SEARCH_MATCHES),
   })
 
   private providers = new Map<string, MarketDataProvider>()
   private readonly providerId: string | undefined
   private readonly maxHistorySessions: number
+  private readonly maxSearchMatches: number
 
   constructor(ctx: Context, config: MarketDataRuntimeConfig) {
     super(ctx, 'marketData')
     this.providerId = config.provider
     this.maxHistorySessions = config.maxHistorySessions
+    this.maxSearchMatches = config.maxSearchMatches
   }
 
   /**
@@ -113,6 +134,26 @@ export class MarketDataRuntime extends Service {
     // ctx.effect's disposer returns Promise<void>; this disposer API is
     // synchronous fire-and-forget — discard the always-resolved promise.
     return () => void dispose()
+  }
+
+  /**
+   * Find the listings a typed query names, through the selected provider.
+   * Resolves the provider at call time; throws {@link MarketDataError} when the
+   * capability cannot run, and rejects a `limit` above the configured ceiling
+   * instead of trimming it, so a caller that asked for fifty and drew twenty
+   * knows it was refused.
+   * @param request - the query and how many matches to return.
+   * @param signal - optional cancellation signal forwarded to the provider.
+   * @returns the matched listings, best first.
+   */
+  async search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult> {
+    if (request.limit > this.maxSearchMatches) {
+      throw new MarketDataError(
+        `requested ${request.limit} matches, above the configured ceiling of ${this.maxSearchMatches}`,
+        'MARKET_DATA_SEARCH_RANGE_REFUSED',
+      )
+    }
+    return this.resolveProvider().search(request, signal)
   }
 
   /**

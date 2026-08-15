@@ -1,18 +1,20 @@
-import { useCallback, useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import type {
   InstrumentRef,
-  Market,
   WatchlistFollowResult,
+  WatchlistSearchResult,
   WatchlistSnapshot,
 } from '@deepseek-ai/dsh-api-remotes/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { MARKETS, MARKET_LABEL_KEYS, instrumentLabel, normalizeSymbol, rowFigures } from './watchlist-model.ts'
+import { instrumentLabel, normalizeQuery, rowFigures } from './watchlist-model.ts'
 import css from './WatchlistView.module.css'
 
 /** Registration-side Remote face the view calls through. */
 export interface WatchlistViewInjected {
   /** Read the current rows with their quotes. */
   list: () => Promise<WatchlistSnapshot>
+  /** Find listings a typed query names, marked with whether they are followed. */
+  search: (query: string, limit: number, signal?: AbortSignal) => Promise<WatchlistSearchResult>
   /** Follow one instrument, resolving its name from the venue. */
   follow: (instrument: InstrumentRef) => Promise<WatchlistFollowResult>
   /** Take one instrument off the watchlist, keeping its record. */
@@ -30,22 +32,39 @@ type ListState =
   | { readonly status: 'error' }
   | { readonly status: 'ready'; readonly snapshot: WatchlistSnapshot }
 
-/** Why the add form last refused, or null when it has nothing to report. */
-type AddFailure = 'unknown' | 'failed' | null
+type LookupState =
+  | { readonly status: 'idle' }
+  | { readonly status: 'searching' }
+  | { readonly status: 'error' }
+  | { readonly status: 'ready'; readonly result: WatchlistSearchResult }
 
 /**
- * The watchlist tab: every followed name with its current price, and the one
- * form that puts a name on the list. The tab is useful with an empty record —
+ * How many matches the picker draws. The surface that renders the list is what
+ * knows how many it can show, so the limit travels with the request; the
+ * market-data seam refuses anything above its own ceiling.
+ */
+const MATCH_LIMIT = 8
+
+/**
+ * Idle time before a query is sent. A lookup crosses to the host and on to a
+ * provider, so sending one per keystroke would spend a request on every prefix
+ * of a word nobody finished typing.
+ */
+const LOOKUP_DEBOUNCE_MS = 250
+
+/**
+ * The watchlist tab: every followed name with its current price, and the
+ * lookup that puts a name on the list. The tab is useful with an empty record —
  * an empty watchlist states how to fill it rather than showing a blank panel.
  */
-export function WatchlistView({ list, follow, unfollow, t }: WatchlistViewProps): ReactNode {
-  const formId = useId()
+export function WatchlistView({ list, search, follow, unfollow, t }: WatchlistViewProps): ReactNode {
+  const fieldId = useId()
   const [request, setRequest] = useState(0)
   const [state, setState] = useState<ListState>({ status: 'loading' })
-  const [market, setMarket] = useState<Market>('SZSE')
-  const [symbol, setSymbol] = useState('')
-  const [adding, setAdding] = useState(false)
-  const [addFailure, setAddFailure] = useState<AddFailure>(null)
+  const [query, setQuery] = useState('')
+  const [lookup, setLookup] = useState<LookupState>({ status: 'idle' })
+  const [adding, setAdding] = useState<string | null>(null)
+  const [addFailed, setAddFailed] = useState(false)
   const [rowFailure, setRowFailure] = useState<string | null>(null)
 
   useEffect(() => {
@@ -59,30 +78,46 @@ export function WatchlistView({ list, follow, unfollow, t }: WatchlistViewProps)
 
   const reload = useCallback(() => { setRequest(value => value + 1) }, [])
 
-  const retry = (): void => {
-    setState({ status: 'loading' })
-    reload()
-  }
+  // One in-flight lookup at a time: a later keystroke aborts the request the
+  // previous one started, so a slow early prefix cannot land over a later
+  // answer.
+  const inFlight = useRef<AbortController | null>(null)
+  useEffect(() => {
+    const text = normalizeQuery(query)
+    if (text === null) {
+      setLookup({ status: 'idle' })
+      return
+    }
+    setLookup({ status: 'searching' })
+    const timer = window.setTimeout(() => {
+      inFlight.current?.abort()
+      const controller = new AbortController()
+      inFlight.current = controller
+      void search(text, MATCH_LIMIT, controller.signal).then(
+        (result) => { if (!controller.signal.aborted) setLookup({ status: 'ready', result }) },
+        () => { if (!controller.signal.aborted) setLookup({ status: 'error' }) },
+      )
+    }, LOOKUP_DEBOUNCE_MS)
+    return () => { window.clearTimeout(timer) }
+  }, [query, search])
 
-  const submit = (event: FormEvent): void => {
-    event.preventDefault()
-    const code = normalizeSymbol(symbol)
-    if (code === null || adding) return
-    setAdding(true)
-    setAddFailure(null)
-    void follow({ market, symbol: code }).then(
+  const add = (instrument: InstrumentRef): void => {
+    const label = instrumentLabel(instrument)
+    setAdding(label)
+    setAddFailed(false)
+    void follow(instrument).then(
       (result) => {
-        setAdding(false)
-        if (result.ok) {
-          setSymbol('')
-          reload()
+        setAdding(null)
+        if (!result.ok) {
+          setAddFailed(true)
           return
         }
-        setAddFailure('unknown')
+        setQuery('')
+        reload()
       },
       () => {
-        setAdding(false)
-        setAddFailure('failed')
+        setAdding(null)
+        setAddFailed(true)
       },
     )
   }
@@ -90,6 +125,11 @@ export function WatchlistView({ list, follow, unfollow, t }: WatchlistViewProps)
   const remove = (instrument: InstrumentRef): void => {
     setRowFailure(null)
     void unfollow(instrument).then(reload, () => { setRowFailure(instrumentLabel(instrument)) })
+  }
+
+  const retry = (): void => {
+    setState({ status: 'loading' })
+    reload()
   }
 
   const rows = state.status === 'ready' ? state.snapshot.rows : []
@@ -104,42 +144,58 @@ export function WatchlistView({ list, follow, unfollow, t }: WatchlistViewProps)
         <button type="button" className={css.refresh} onClick={retry}>{t('refresh')}</button>
       </header>
 
-      <form className={css.add} onSubmit={submit}>
-        <label className={css.field} htmlFor={`${formId}-market`}>
-          <span className={css.fieldLabel}>{t('add.market')}</span>
-          <select
-            id={`${formId}-market`}
-            className={css.select}
-            value={market}
-            onChange={(event) => { setMarket(event.currentTarget.value as Market) }}
-          >
-            {MARKETS.map(value => (
-              <option key={value} value={value}>{t(MARKET_LABEL_KEYS[value])}</option>
-            ))}
-          </select>
-        </label>
-        <label className={css.field} htmlFor={`${formId}-symbol`}>
-          <span className={css.fieldLabel}>{t('add.symbol')}</span>
+      <div className={css.lookup}>
+        <label className={css.field} htmlFor={fieldId}>
+          <span className={css.visuallyHidden}>{t('lookup.label')}</span>
           <input
-            id={`${formId}-symbol`}
+            id={fieldId}
+            type="search"
             className={css.input}
-            value={symbol}
-            placeholder={t('add.symbolPlaceholder')}
+            value={query}
+            placeholder={t('lookup.placeholder')}
+            aria-label={t('lookup.label')}
             onChange={(event) => {
-              setSymbol(event.currentTarget.value)
-              setAddFailure(null)
+              setQuery(event.currentTarget.value)
+              setAddFailed(false)
             }}
           />
         </label>
-        <button type="submit" className={css.submit} disabled={adding || normalizeSymbol(symbol) === null}>
-          {adding ? t('add.pending') : t('add.submit')}
-        </button>
-      </form>
-      {addFailure !== null ? (
-        <p className={css.failure} role="alert">
-          {t(addFailure === 'unknown' ? 'add.unknown' : 'add.failed')}
-        </p>
-      ) : null}
+        {lookup.status === 'searching' ? <p className={css.status}>{t('lookup.searching')}</p> : null}
+        {lookup.status === 'error' ? (
+          <p className={css.failure} role="alert">{t('lookup.failed')}</p>
+        ) : null}
+        {lookup.status === 'ready' && lookup.result.matches.length === 0 ? (
+          <p className={css.status}>{t('lookup.empty')}</p>
+        ) : null}
+        {lookup.status === 'ready' && lookup.result.matches.length > 0 ? (
+          <ul className={css.matches}>
+            {lookup.result.matches.map((match) => {
+              const label = instrumentLabel(match.instrument)
+              return (
+                <li className={css.match} key={label} data-instrument={label}>
+                  <span className={css.name}>{match.name}</span>
+                  <span className={css.code}>{label}</span>
+                  {match.followed ? (
+                    <span className={css.followedTag}>{t('lookup.alreadyFollowed')}</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className={css.add}
+                      disabled={adding !== null}
+                      aria-label={`${t('lookup.add')} ${match.name}`}
+                      onClick={() => { add(match.instrument) }}
+                    >
+                      {adding === label ? t('lookup.adding') : t('lookup.add')}
+                    </button>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        ) : null}
+        {addFailed ? <p className={css.failure} role="alert">{t('lookup.addFailed')}</p> : null}
+      </div>
+
       {rowFailure !== null ? (
         <p className={css.failure} role="alert">{`${rowFailure} · ${t('unfollowFailed')}`}</p>
       ) : null}

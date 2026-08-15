@@ -30,6 +30,27 @@ export interface WatchlistRow {
   readonly quote: Quote | null
 }
 
+/**
+ * One listing a lookup matched, told apart by whether it is already on the
+ * watchlist. The flag is what makes this a watchlist answer rather than a
+ * market-data one: a picker that offers to add a name already followed asks
+ * the user to make a mistake.
+ */
+export interface WatchlistSearchMatch {
+  /** The matched instrument. */
+  readonly instrument: InstrumentRef
+  /** Display name in the venue's own language. */
+  readonly name: string
+  /** Whether this instrument is currently on the watchlist. */
+  readonly followed: boolean
+}
+
+/** The listings one lookup matched, best first as the provider ranks them. */
+export interface WatchlistSearchResult {
+  /** Matched listings; empty when the query names nothing. */
+  readonly matches: readonly WatchlistSearchMatch[]
+}
+
 /** Every followed name, in the registry's own order. */
 export interface WatchlistSnapshot {
   /** The current watchlist rows. */

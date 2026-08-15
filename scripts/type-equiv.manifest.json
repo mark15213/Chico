@@ -1947,6 +1947,11 @@
     },
     {
       "doc": "docs/subsystems/market-data.md",
+      "symbol": "InstrumentMatch",
+      "source": "packages/investment/market-data/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/market-data.md",
       "symbol": "QuoteRequest",
       "source": "packages/investment/market-data/src/types.ts"
     },

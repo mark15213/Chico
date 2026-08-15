@@ -43,6 +43,14 @@ interface WatchlistRow {
 
 **选取**提供方的失败是例外，会让整次调用抛出：没有可用提供方、配置的提供方缺失或不可用、以及存在歧义，都是组合错误，而不是关于某个标的的事实。这些情况下每一行都会以完全相同的方式降级，因此一屏短横线会把一个配置错误的部署呈现为一次安静的数据缺口。
 
+## 检索是标的进入列表的路径
+
+`search` 接收用户输入的内容，返回它所指向的上市标的，并逐条标出是否已经关注。正是这个标志让该操作属于这里而不是行情接缝：一个把已在列表中的标的再次提供为"加入"的选择器，是在请求用户犯错，而只有注册表知道这件事。
+
+调用方传入自己将要绘制的 `limit`，而不是接收本包选定的一个数字，因为渲染列表的那个界面才知道自己能显示多少条。接缝会拒绝任何超过自身上限的取值。
+
+已取消关注的记录会被报告为**未**关注。因此选择器同时也是回到已移出标的的那条路：重新关注会连同原有的 `firstFollowedAt` 一起恢复记录。
+
 ## 关注时由交易场所解析名称
 
 `follow` 接收交易场所和代码，在记录任何东西之前先读取报价，这既证明了该上市标的存在，也提供了显示名。调用方不传名字：敲下 `SZSE:300750` 的用户并不知道它，而浏览器随便猜一个就会把错误的名字写进持久记录。
@@ -99,6 +107,23 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 @Remote('list') async list(signal?: AbortSignal): Promise<WatchlistSnapshot>
 
 /**
+ * Find the listings a typed query names, each marked with whether it is
+ * already followed. This is the path onto the watchlist: a user knows a name
+ * far more often than a venue and a code.
+ * @param query - what the user typed: a code, a name, or part of either.
+ * @param limit - how many matches the caller will present. Passed rather
+ *   than fixed here, because the surface drawing the list is what knows how
+ *   many it can show; the seam refuses a limit above its own ceiling.
+ * @param signal - optional cancellation signal, so a keystroke supersedes
+ *   the lookup the previous one started.
+ * @returns the matched listings, best first.
+ * @throws {@link MarketDataError} when no usable provider can be selected,
+ *   when the limit is above the seam's ceiling, or when the selected
+ *   provider's feed has no lookup endpoint.
+ */
+@Remote('search') async search(query: string, limit: number, signal?: AbortSignal): Promise<WatchlistSearchResult>
+
+/**
  * Follow an instrument named by venue and code, taking its display name from
  * the venue rather than from the caller. Re-following a name that was
  * unfollowed restores it with its original `firstFollowedAt`.
@@ -122,5 +147,5 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 
 Types: [InstrumentRef](market-data.md)
 
-Source: [`packages/investment/watchlist/src/index.ts:56`](../../packages/investment/watchlist/src/index.ts)
+Source: [`packages/investment/watchlist/src/index.ts:63`](../../packages/investment/watchlist/src/index.ts)
 <!-- END GENERATED cordis-surface -->

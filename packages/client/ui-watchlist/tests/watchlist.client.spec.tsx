@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 /**
- * Watchlist tab: the pure row derivations, the view's states over a stubbed
- * Remote face, and the view-ring registration with fiber teardown proving
- * removal (HMR safety).
+ * Watchlist tab: the pure row derivations, the instrument lookup and its
+ * debounce, the view's states over a stubbed Remote face, and the view-ring
+ * registration with fiber teardown proving removal (HMR safety).
  */
 import { Context, Service } from '@deepseek-ai/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -14,12 +14,11 @@ import type { Quote, WatchlistRow, WatchlistSnapshot } from '@deepseek-ai/dsh-ap
 import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
 import { en, NS } from '../src/client/locales.ts'
 import {
-  MARKETS,
   directionOf,
   formatChange,
   formatLast,
   instrumentLabel,
-  normalizeSymbol,
+  normalizeQuery,
   rowFigures,
 } from '../src/client/watchlist-model.ts'
 import { WatchlistView, type WatchlistViewInjected } from '../src/client/WatchlistView.tsx'
@@ -57,10 +56,15 @@ function row(over?: Partial<WatchlistRow>): WatchlistRow {
   }
 }
 
+const MOUTAI = { market: 'SSE', symbol: '600519' } as const
+
 /** A view over a stubbed Remote face; every call resolves unless overridden. */
 function mount(over?: Partial<WatchlistViewInjected>, snapshot: WatchlistSnapshot = { rows: [row()] }) {
   const injected: WatchlistViewInjected = {
     list: vi.fn(() => Promise.resolve(snapshot)),
+    search: vi.fn(() => Promise.resolve({
+      matches: [{ instrument: MOUTAI, name: '贵州茅台', followed: false }],
+    })),
     follow: vi.fn(() => Promise.resolve({ ok: true as const, row: row() })),
     unfollow: vi.fn(() => Promise.resolve()),
     ...over,
@@ -99,14 +103,9 @@ describe('row derivations', () => {
     })
   })
 
-  it('offers every venue the market union declares', () => {
-    expect([...MARKETS]).toEqual(['SSE', 'SZSE', 'BSE', 'HKEX', 'NASDAQ', 'NYSE'])
-  })
-
-  it('takes whitespace and case out of a typed code, and refuses an empty one', () => {
-    expect(normalizeSymbol('  300750 ')).toBe('300750')
-    expect(normalizeSymbol('aapl')).toBe('AAPL')
-    expect(normalizeSymbol('   ')).toBeNull()
+  it('takes the typing whitespace out of a query, and refuses an empty one', () => {
+    expect(normalizeQuery('  300750 ')).toBe('300750')
+    expect(normalizeQuery('   ')).toBeNull()
   })
 })
 
@@ -139,7 +138,7 @@ describe('the watchlist tab', () => {
     mount(undefined, { rows: [] })
 
     expect(await screen.findByText('The watchlist is empty.')).toBeTruthy()
-    expect(screen.getByText('Enter a venue and a code to follow the first name.')).toBeTruthy()
+    expect(screen.getByText('Search above by code or name to follow the first one.')).toBeTruthy()
   })
 
   it('offers a retry when the list cannot be read', async () => {
@@ -155,64 +154,105 @@ describe('the watchlist tab', () => {
   })
 })
 
-describe('following a name from the form', () => {
-  /** Fill the code field and submit, which is the whole add interaction. */
-  function submit(view: ReturnType<typeof render>, code: string) {
-    fireEvent.change(view.getByLabelText('Code'), { target: { value: code } })
-    fireEvent.click(view.getByText('Follow'))
+describe('the instrument lookup', () => {
+  /** Type into the search field, which is the whole trigger. */
+  function type(view: ReturnType<typeof render>, text: string) {
+    fireEvent.change(view.getByLabelText('Search instruments'), { target: { value: text } })
   }
 
-  it('sends the selected venue with the typed code, normalized', async () => {
+  it('sends the trimmed query with the limit the picker will draw', async () => {
     const { view, injected } = mount()
     await screen.findByText('宁德时代')
 
-    fireEvent.change(view.getByLabelText('Venue'), { target: { value: 'SSE' } })
-    submit(view, ' 600519 ')
+    type(view, '  茅台 ')
 
     await waitFor(() => {
-      expect(injected.follow).toHaveBeenCalledWith({ market: 'SSE', symbol: '600519' })
+      expect(injected.search).toHaveBeenCalledWith('茅台', 8, expect.anything())
     })
   })
 
-  it('refuses to submit an empty code rather than asking the host about nothing', async () => {
+  it('asks nothing while the field is empty, so a cleared box costs no request', async () => {
     const { view, injected } = mount()
     await screen.findByText('宁德时代')
 
-    expect(view.getByText('Follow').hasAttribute('disabled')).toBe(true)
-    fireEvent.change(view.getByLabelText('Code'), { target: { value: '   ' } })
+    type(view, '   ')
 
-    expect(view.getByText('Follow').hasAttribute('disabled')).toBe(true)
-    expect(injected.follow).not.toHaveBeenCalled()
+    await waitFor(() => { expect(view.queryByText('Searching…')).toBeNull() })
+    expect(injected.search).not.toHaveBeenCalled()
   })
 
-  it('names the venue when a typed code is not listed there', async () => {
+  it('sends one request for a burst of keystrokes rather than one per key', async () => {
+    const { view, injected } = mount()
+    await screen.findByText('宁德时代')
+
+    type(view, '6')
+    type(view, '60')
+    type(view, '600519')
+
+    await waitFor(() => { expect(injected.search).toHaveBeenCalledTimes(1) })
+    expect(injected.search).toHaveBeenCalledWith('600519', 8, expect.anything())
+  })
+
+  it('lists each match with its identity and an add control', async () => {
+    const { view } = mount()
+    type(view, '600519')
+
+    expect(await view.findByText('贵州茅台')).toBeTruthy()
+    expect(view.getByText('SSE:600519')).toBeTruthy()
+    expect(view.getByLabelText('Follow 贵州茅台')).toBeTruthy()
+  })
+
+  it('marks a match already on the watchlist instead of offering to add it twice', async () => {
+    const search = vi.fn(() => Promise.resolve({
+      matches: [{ instrument: CATL, name: '宁德时代', followed: true }],
+    }))
+    const { view } = mount({ search })
+    type(view, '300750')
+
+    expect(await view.findByText('On the watchlist')).toBeTruthy()
+    expect(view.queryByLabelText('Follow 宁德时代')).toBeNull()
+  })
+
+  it('says nothing matched rather than leaving the picker blank', async () => {
+    const search = vi.fn(() => Promise.resolve({ matches: [] }))
+    const { view } = mount({ search })
+    type(view, 'zzzz')
+
+    expect(await view.findByText('Nothing matched.')).toBeTruthy()
+  })
+
+  it('reports a failed lookup without touching the rows below', async () => {
+    const search = vi.fn(() => Promise.reject(new Error('offline')))
+    const { view } = mount({ search })
+    await screen.findByText('宁德时代')
+    type(view, '600519')
+
+    expect(await view.findByText('The search failed. Try again.')).toBeTruthy()
+    expect(view.getByText('212.30 CNY')).toBeTruthy()
+  })
+})
+
+describe('following a match', () => {
+  it('follows the picked instrument, then reloads and clears the field', async () => {
+    const { view, injected } = mount()
+    fireEvent.change(view.getByLabelText('Search instruments'), { target: { value: '600519' } })
+    const add = await view.findByLabelText('Follow 贵州茅台')
+
+    fireEvent.click(add)
+
+    await waitFor(() => { expect(injected.follow).toHaveBeenCalledWith(MOUTAI) })
+    await waitFor(() => { expect(injected.list).toHaveBeenCalledTimes(2) })
+    expect((view.getByLabelText('Search instruments') as HTMLInputElement).value).toBe('')
+  })
+
+  it('reports a follow the host refused, and keeps the query for another try', async () => {
     const follow = vi.fn(() => Promise.resolve({ ok: false as const, reason: 'unknown-instrument' as const }))
     const { view } = mount({ follow })
-    await screen.findByText('宁德时代')
+    fireEvent.change(view.getByLabelText('Search instruments'), { target: { value: '600519' } })
+    fireEvent.click(await view.findByLabelText('Follow 贵州茅台'))
 
-    submit(view, '999999')
-
-    expect(await screen.findByText('That venue does not list this code.')).toBeTruthy()
-  })
-
-  it('reloads the list and clears the field after a name is followed', async () => {
-    const { view, injected } = mount()
-    await screen.findByText('宁德时代')
-
-    submit(view, '600519')
-
-    await waitFor(() => { expect(injected.list).toHaveBeenCalledTimes(2) })
-    expect((view.getByLabelText('Code') as HTMLInputElement).value).toBe('')
-  })
-
-  it('reports a failed follow separately from an unlisted code', async () => {
-    const follow = vi.fn(() => Promise.reject(new Error('offline')))
-    const { view } = mount({ follow })
-    await screen.findByText('宁德时代')
-
-    submit(view, '600519')
-
-    expect(await screen.findByText('Could not follow the name. Try again.')).toBeTruthy()
+    expect(await view.findByText('Could not follow the name. Try again.')).toBeTruthy()
+    expect((view.getByLabelText('Search instruments') as HTMLInputElement).value).toBe('600519')
   })
 })
 

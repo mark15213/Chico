@@ -935,6 +935,12 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         returns: 'the disposer that unregisters the provider.',
       },
       {
+        signature: 'async search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>',
+        description: 'Find the listings a typed query names, through the selected provider. Resolves the provider at call time; throws MarketDataError when the capability cannot run, and rejects a `limit` above the configured ceiling instead of trimming it, so a caller that asked for fifty and drew twenty knows it was refused.',
+        parameters: [{ name: 'request', description: 'the query and how many matches to return.' }, { name: 'signal', description: 'optional cancellation signal forwarded to the provider.' }],
+        returns: 'the matched listings, best first.',
+      },
+      {
         signature: 'async quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>',
         description: 'Read one instrument\'s latest quote through the selected provider. Resolves the provider at call time; throws MarketDataError when the capability cannot run.',
         parameters: [{ name: 'request', description: 'the instrument to price.' }, { name: 'signal', description: 'optional cancellation signal forwarded to the provider.' }],
@@ -2103,6 +2109,13 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         throws: ['{@link MarketDataError} when no usable provider can be selected.'],
       },
       {
+        signature: '@Remote(\'search\') async search(query: string, limit: number, signal?: AbortSignal): Promise<WatchlistSearchResult>',
+        description: 'Find the listings a typed query names, each marked with whether it is already followed. This is the path onto the watchlist: a user knows a name far more often than a venue and a code.',
+        parameters: [{ name: 'query', description: 'what the user typed: a code, a name, or part of either.' }, { name: 'limit', description: 'how many matches the caller will present. Passed rather than fixed here, because the surface drawing the list is what knows how many it can show; the seam refuses a limit above its own ceiling.' }, { name: 'signal', description: 'optional cancellation signal, so a keystroke supersedes the lookup the previous one started.' }],
+        returns: 'the matched listings, best first.',
+        throws: ['{@link MarketDataError} when no usable provider can be selected, when the limit is above the seam\'s ceiling, or when the selected provider\'s feed has no lookup endpoint.'],
+      },
+      {
         signature: '@Remote(\'follow\') async follow(instrument: InstrumentRef, signal?: AbortSignal): Promise<WatchlistFollowResult>',
         description: 'Follow an instrument named by venue and code, taking its display name from the venue rather than from the caller. Re-following a name that was unfollowed restores it with its original `firstFollowedAt`.',
         parameters: [{ name: 'instrument', description: 'the venue and code to follow.' }, { name: 'signal', description: 'optional cancellation signal for the resolving quote.' }],
@@ -3257,8 +3270,20 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type InboxTarget = \'next-turn\' | \'next-step\';',
   },
   {
+    name: 'InstrumentMatch',
+    declaration: 'export interface InstrumentMatch {\n    readonly instrument: InstrumentRef;\n    readonly name: string;\n}',
+  },
+  {
     name: 'InstrumentRef',
     declaration: 'export interface InstrumentRef {\n    readonly market: Market;\n    readonly symbol: string;\n}',
+  },
+  {
+    name: 'InstrumentSearchRequest',
+    declaration: 'export interface InstrumentSearchRequest {\n    readonly query: string;\n    readonly limit: number;\n}',
+  },
+  {
+    name: 'InstrumentSearchResult',
+    declaration: 'export interface InstrumentSearchResult {\n    readonly matches: readonly InstrumentMatch[];\n}',
   },
   {
     name: 'InvariantFailure',
@@ -3470,7 +3495,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'MarketDataProvider',
-    declaration: 'export interface MarketDataProvider {\n    readonly id: string;\n    available(): boolean;\n    quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>;\n    priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>;\n}',
+    declaration: 'export interface MarketDataProvider {\n    readonly id: string;\n    available(): boolean;\n    search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>;\n    quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>;\n    priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>;\n}',
   },
   {
     name: 'Message',
@@ -4675,6 +4700,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'WatchlistRow',
     declaration: 'export interface WatchlistRow {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly quote: Quote | null;\n}',
+  },
+  {
+    name: 'WatchlistSearchMatch',
+    declaration: 'export interface WatchlistSearchMatch {\n    readonly instrument: InstrumentRef;\n    readonly name: string;\n    readonly followed: boolean;\n}',
+  },
+  {
+    name: 'WatchlistSearchResult',
+    declaration: 'export interface WatchlistSearchResult {\n    readonly matches: readonly WatchlistSearchMatch[];\n}',
   },
   {
     name: 'WatchlistSnapshot',

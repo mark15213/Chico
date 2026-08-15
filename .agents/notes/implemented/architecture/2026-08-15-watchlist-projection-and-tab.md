@@ -26,6 +26,14 @@ A quote that fails leaves its row with `quote: null`. A watchlist that vanishes 
 
 Provider *selection* failures are the exception and raise for the whole call. `MARKET_DATA_PROVIDER_CONFIGURED_MISSING`, `_CONFIGURED_UNAVAILABLE`, `_AMBIGUOUS`, and `_UNAVAILABLE` describe the composition, not an instrument: every row would degrade identically, so a screen of dashes would present a misconfigured deployment as a quiet data gap. Everything else degrades, including a failure that is not a `MarketDataError` at all — a socket hangup is about one call, not about the list.
 
+### Lookup belongs to the projection, not to the seam
+
+`search` sits on `ctx.watchlist` as well as on the seam, and the difference is one field: each match says whether it is already followed. Only the registry knows that, and a picker that offers to add a name already on the list asks the user to make a mistake. Without the flag this method would be a pass-through worth deleting.
+
+The caller passes the `limit` it will draw. The surface rendering the list is what knows how many it can show, and the seam already refuses anything above its own ceiling, so a number chosen here would be a third opinion nobody asked for.
+
+An unfollowed record is reported as not followed, which makes the picker the way back to a name taken off the list — the only way, since nothing lists what was once followed.
+
 ### An unlisted code is a value, not a thrown error
 
 `follow` takes a venue and a code, reads the quote, and records the venue's own name. Reading first proves the listing exists and supplies the name a browser cannot know.
@@ -60,14 +68,14 @@ Direction is carried three ways — the sign in the text, a `data-direction` att
 
 The watchlist reads once per mount or explicit refresh. There is no subscription and no cache, so an open tab is as stale as its last read and a thirty-name list costs thirty provider calls each time. Push and caching are their own decisions and neither is needed to make the surface usable.
 
-A name can only be followed by code, because no symbol lookup exists. That was invisible while the registry had no surface; the add form makes it the first thing a user hits.
+The picker inherits whatever order the provider returns. The seam states no ranking contract, so two providers can answer one query differently and neither this package nor the tab can say which is better.
 
 A row is a figure and not a way into the name. The details-column dossier the [workbench design](../../../../products/chico/workbench-design.md) specifies is the next surface, and until it exists the tab reads rather than navigates.
 
 ## Testing
 
-`packages/investment/watchlist/tests` boots the real registry, storage, and market-data composition: the join, the recorded-versus-venue name, the omission of unfollowed records, the empty list, per-row degradation for both a seam refusal and a raw socket error, the selection failure that raises instead, the venue-resolved display name, the unlisted code as a value, the preserved `firstFollowedAt` across a re-follow, the remaining count from `unfollow`, and service withdrawal on fiber disposal.
+`packages/investment/watchlist/tests` boots the real registry, storage, and market-data composition: the join, the recorded-versus-venue name, the omission of unfollowed records, the empty list, per-row degradation for both a seam refusal and a raw socket error, the selection failure that raises instead, the venue-resolved display name, the unlisted code as a value, the preserved `firstFollowedAt` across a re-follow, the remaining count from `unfollow`, and service withdrawal on fiber disposal. Lookup adds matching by code and by name, the followed flag over a followed and an unfollowed record, the empty query, and the refused over-ceiling limit.
 
-`packages/client/ui-watchlist/tests` covers the pure derivations (sign, direction including flat, currency, the no-quote nulls, venue coverage, code normalization) and the view over a stubbed Remote face: the populated list, the direction attribute, the surviving unpriceable row, the empty state, retry after a failed read, the normalized follow request, the disabled submit for a blank code, the unlisted-code message distinct from a transport failure, the reload and cleared field after a follow, and the named row after a failed unfollow — plus view-ring registration with fiber teardown proving removal.
+`packages/client/ui-watchlist/tests` covers the pure derivations (sign, direction including flat, currency, the no-quote nulls, query normalization) and the view over a stubbed Remote face: the populated list, the direction attribute, the surviving unpriceable row, the empty state, retry after a failed read, the trimmed query with its draw limit, the empty field that costs no request, one request for a burst of keystrokes, the match list, the already-followed marker, the nothing-matched and failed-lookup states, the reload and cleared field after a follow, the refused follow that keeps the query, and the named row after a failed unfollow — plus view-ring registration with fiber teardown proving removal.
 
 `packages/bundle/chico-web-app/tests` asserts the shipped patch inserts the projection with no config and the one browser row that makes it visible.

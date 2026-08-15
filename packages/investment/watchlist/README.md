@@ -16,6 +16,14 @@ A quote that fails degrades its own row to `quote: null` rather than failing the
 
 Provider *selection* failures are the exception and raise for the whole call: no usable provider, a configured provider that is missing or unavailable, and an ambiguous choice are composition errors. Every row would degrade identically, so a watchlist of dashes would hide the real cause behind what looks like missing prices.
 
+## Lookup is how a name reaches the list
+
+`search` takes what the user typed and returns the listings it names, each marked with whether it is already followed. That flag is what makes the operation belong here rather than on the market-data seam: a picker that offers to add a name already on the list asks the user to make a mistake, and only the registry knows.
+
+The caller passes the `limit` it will draw rather than receiving a number this package chose, because the surface rendering the list is what knows how many it can show. The seam refuses anything above its own ceiling.
+
+An unfollowed record is reported as *not* followed. The picker is therefore also the way back to a name taken off the list: re-following restores the record with its original `firstFollowedAt`.
+
 ## Following resolves the name from the venue
 
 `follow` takes a venue and a code, reads the quote, and records the venue's own name for the instrument. The caller does not supply a display name, because a user who types `SZSE:300750` does not know it, and a browser that guessed one would write a wrong name into a durable record.
@@ -36,4 +44,5 @@ None; the package never touches a request prefix.
 
 - **Quotes are read once per call with no caching or push.** A browser refreshes by calling `list` again, so an open watchlist is as stale as its last read, and a thirty-name list costs thirty provider calls each time.
 - **No model-facing tools.** The watchlist can only be changed from a UI; an agent asked to follow a name has no way to do it, which is the next piece of this surface rather than a permanent split.
-- **`list` returns followed rows only.** The registry keeps unfollowed records, but nothing here surfaces them, so a name taken off the watchlist stays unreachable through this package.
+- **Lookup inherits the provider's ranking with no contract over it.** `search` forwards whatever order the provider returns, so two providers can rank the same query differently and this package cannot say which is better.
+- **Only lookup reaches an unfollowed record.** `list` returns followed rows, and a removed name is reachable only by searching for it again; there is no way to browse what was once followed.

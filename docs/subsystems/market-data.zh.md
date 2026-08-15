@@ -24,6 +24,28 @@ interface InstrumentRef {
 }
 ```
 
+## 标的检索
+
+用户知道名字的时候远多于知道交易场所和代码的时候，因此接缝在定价之前先解析身份。一条匹配只携带标的与名称：随后需要价格的调用方再去取报价，而一次顺带定价的检索会让每一次搜索都为大多数匹配用不到的数据付费。
+
+```ts type-equiv
+/**
+ * One listing a search matched. Carries identity and name only: a search
+ * answers "which instrument does the user mean", and a caller that then needs
+ * a price asks for a quote.
+ */
+interface InstrumentMatch {
+  /** The matched instrument. */
+  readonly instrument: InstrumentRef
+  /** Display name in the venue's own language. */
+  readonly name: string
+}
+```
+
+接缝拒绝超过配置 `maxSearchMatches`（默认 20）的 `limit` 而不是截断它，理由与拒绝过长历史相同：请求五十条却画出二十条的调用方，会把一份被截断的列表当成完整答案呈现。
+
+数据源没有检索端点的提供方会以 `MARKET_DATA_SEARCH_UNSUPPORTED` 拒绝，而不是解析出空列表。空结果与无能力的来源会把消费方引向相反的结论——"这个名字不存在"对"去别处问"——因此它们不能共用一种表示。
+
 ## 报价
 
 报价是某一时刻的观测值，而这个时刻属于取值本身。`asOf` 是交易场所为该标的定价的时间——绝不是提供方被询问的时间或界面渲染的时间——因此消费方能区分陈旧读数和新鲜读数。`session` 则区分"因为闭市所以不会动"和"本该在动却没有动"。
@@ -148,6 +170,16 @@ interface MarketDataProvider {
    */
   available(): boolean
   /**
+   * Find the listings a typed query names. A provider whose feed has no
+   * lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than
+   * resolving empty, so a consumer can tell "nothing matched" from "this
+   * source cannot answer".
+   * @param request - the query and how many matches to return.
+   * @param signal - optional cancellation signal.
+   * @returns the matched listings, best first.
+   */
+  search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>
+  /**
    * Read one instrument's latest quote.
    * @param request - the instrument to price.
    * @param signal - optional cancellation signal.
@@ -200,6 +232,18 @@ Selection semantics, resolved at execution time and never order-dependent:
 registerProvider(provider: MarketDataProvider): () => void
 
 /**
+ * Find the listings a typed query names, through the selected provider.
+ * Resolves the provider at call time; throws {@link MarketDataError} when the
+ * capability cannot run, and rejects a `limit` above the configured ceiling
+ * instead of trimming it, so a caller that asked for fifty and drew twenty
+ * knows it was refused.
+ * @param request - the query and how many matches to return.
+ * @param signal - optional cancellation signal forwarded to the provider.
+ * @returns the matched listings, best first.
+ */
+async search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>
+
+/**
  * Read one instrument's latest quote through the selected provider. Resolves
  * the provider at call time; throws {@link MarketDataError} when the
  * capability cannot run.
@@ -221,5 +265,5 @@ async quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>
 async priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>
 ```
 
-Source: [`packages/investment/market-data/src/index.ts:77`](../../packages/investment/market-data/src/index.ts)
+Source: [`packages/investment/market-data/src/index.ts:95`](../../packages/investment/market-data/src/index.ts)
 <!-- END GENERATED cordis-surface -->

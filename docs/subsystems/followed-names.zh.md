@@ -105,5 +105,5 @@ async unfollow(instrument: InstrumentRef, now: string): Promise<FollowedName>
 
 Types: [InstrumentRef](market-data.md)
 
-Source: [`packages/investment/followed-names/src/index.ts:63`](../../packages/investment/followed-names/src/index.ts)
+Source: [`packages/investment/followed-names/src/index.ts:69`](../../packages/investment/followed-names/src/index.ts)
 <!-- END GENERATED cordis-surface -->

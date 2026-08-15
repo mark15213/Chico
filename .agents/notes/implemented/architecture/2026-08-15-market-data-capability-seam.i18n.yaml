@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-08-15-market-data-capability-seam.md
-2026-08-15-market-data-capability-seam.md: 936ed155812c897dc63a572284a0b076bdbc01e5
-2026-08-15-market-data-capability-seam.zh.md: 8a300f3306aef476281a79935b78828fd43e2f31
+2026-08-15-market-data-capability-seam.md: 34ae82dc626b941eafbaf43ce44148cc0b7cea9c
+2026-08-15-market-data-capability-seam.zh.md: 22bb043759334913e877ef28a71810ed29b5f154

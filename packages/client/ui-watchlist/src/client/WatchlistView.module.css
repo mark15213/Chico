@@ -35,34 +35,73 @@
   margin-inline-start: auto;
 }
 
-.add {
+.lookup {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
 .field {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
   min-width: 0;
 }
 
-.fieldLabel {
+.input {
+  font: inherit;
+  padding: 4px 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The picker sits under the field as a short list, not a dropdown: it never
+   covers the rows below, so a reader compares a match against what they
+   already follow without dismissing anything. */
+.matches {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.match {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 0;
+}
+
+.match:hover {
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+}
+
+.match .code {
+  margin-inline-end: auto;
+}
+
+.followedTag {
   font-size: 11px;
   color: var(--ds-color-text-tertiary, #6b7686);
 }
 
-.select,
-.input {
-  font: inherit;
-  padding: 4px 6px;
-}
-
-.input {
-  width: 10ch;
-  font-variant-numeric: tabular-nums;
+.add {
+  flex: 0 0 auto;
+  font-size: 11px;
 }
 
 .status,

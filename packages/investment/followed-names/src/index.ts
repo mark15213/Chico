@@ -51,8 +51,14 @@ export interface FollowedNamesConfig {
   readonly archivePath?: string
 }
 
-/** Registry key for one instrument: the identity, not a generated id. */
-function nameKey(instrument: InstrumentRef): string {
+/**
+ * Registry key for one instrument: the identity, not a generated id. Exported
+ * so a consumer comparing records against instruments from elsewhere derives
+ * the same key rather than restating the format.
+ * @param instrument - the instrument to key.
+ * @returns the `MARKET:SYMBOL` registry key.
+ */
+export function nameKey(instrument: InstrumentRef): string {
   return `${instrument.market}:${instrument.symbol}`
 }
 

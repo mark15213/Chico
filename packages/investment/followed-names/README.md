@@ -34,6 +34,6 @@ None; the package never touches a request prefix.
 
 ## Known Limitations and Deferred Work
 
-- **No way to reach an unfollowed name from the product yet.** The record survives, but nothing lists it: a name taken off the watchlist is currently unreachable through any surface. A "all names" view or a search over records is required before unfollowing is safe to expose.
+- **An unfollowed name is reachable only by searching for it again.** The record survives and instrument lookup will surface it as not-followed, so re-following restores everything; nothing lists what was once followed, so a name whose code the user has forgotten is effectively lost.
 - **No association between a session and a name.** The record carries no session ids, so "conversations about this name" cannot be answered yet; that association is its own decision about where it lives.
 - **The archive is one directory with no internal convention.** Nothing yet says where a name's notes go inside it, so two consumers could choose different layouts.

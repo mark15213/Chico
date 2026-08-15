@@ -44,6 +44,11 @@ export function apply(ctx: ClientContext): void {
     if (!result.ok) throw new Error(`watchlist.list failed: ${result.error.code}: ${result.error.message}`)
     return result.value
   }
+  const search: WatchlistViewInjected['search'] = async (query, limit, signal) => {
+    const result = await ctx.remote.watchlist.search(query, limit, signal)
+    if (!result.ok) throw new Error(`watchlist.search failed: ${result.error.code}: ${result.error.message}`)
+    return result.value
+  }
   const follow: WatchlistViewInjected['follow'] = async (instrument: InstrumentRef) => {
     const result = await ctx.remote.watchlist.follow(instrument)
     if (!result.ok) throw new Error(`watchlist.follow failed: ${result.error.code}: ${result.error.message}`)
@@ -53,7 +58,7 @@ export function apply(ctx: ClientContext): void {
     const result = await ctx.remote.watchlist.unfollow(instrument)
     if (!result.ok) throw new Error(`watchlist.unfollow failed: ${result.error.code}: ${result.error.message}`)
   }
-  const injected = (): WatchlistViewInjected => ({ list, follow, unfollow })
+  const injected = (): WatchlistViewInjected => ({ list, search, follow, unfollow })
 
   ctx.slots.inject('conversation.view', () => ctx.slots.register({
     name: 'conversation.view',

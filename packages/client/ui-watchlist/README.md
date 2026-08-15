@@ -4,7 +4,9 @@ English | [中文](README.zh.md)
 
 **Watchlist** tab for the Web conversation view ring. The browser plugin registers one localized `conversation.view` contribution with id `watchlist` at order 20, beside the chat and trajectory tabs; the conversation body owns the ring chrome and renders one tab at a time. Mounting the tab calls `ctx.remote.watchlist.list()` through [`api-remotes`](../../api/remotes/README.md), which serves the [watchlist projection](../../investment/watchlist/README.md).
 
-Each row is a followed name, its `MARKET:SYMBOL` identity, its last price with the venue's currency, and the signed change. A row whose quote is absent keeps its place and reads **No quote** — the record is intact, and a suspended name is exactly the one a user needs to see. The one form on the tab follows a name by venue and code; the display name comes back from the venue rather than from anything typed here.
+Each row is a followed name, its `MARKET:SYMBOL` identity, its last price with the venue's currency, and the signed change. A row whose quote is absent keeps its place and reads **No quote** — the record is intact, and a suspended name is exactly the one a user needs to see.
+
+Above the rows is one search field. Typing looks up listings by code or name, and each match carries either a follow control or the note that it is already on the list; the display name comes back from the venue rather than from anything typed here. The picker renders under the field rather than over the rows, so a match can be compared against what is already followed without dismissing anything.
 
 The tab is useful with an empty record: an empty watchlist states how to fill it instead of rendering a blank panel. Loading, failure, and retry stay local to the mounted component, and a failed read never exposes transport detail.
 
@@ -30,5 +32,5 @@ None; this package neither assembles nor sends a provider request.
 
 - **One read per mount or explicit refresh** — the tab does not subscribe to quote changes or refetch on reconnect, so an open watchlist is as stale as its last read.
 - **Prices are shown to two decimals** — that is what the venues served today price in; a venue with finer ticks makes decimal places a per-venue fact this component does not yet carry.
-- **A name is followed by code, not by search** — there is no symbol lookup, so a user must already know the venue and the code. A search over listings is the missing half of this form.
+- **Lookup shows a flat list with no grouping or ranking of its own** — matches arrive in the provider's order, so a query that names many listings offers no way to narrow by venue or by kind.
 - **No row opens anything** — a row is a figure, not a way into the name. The dossier the [workbench design](../../../products/chico/workbench-design.md) puts in the details column is the next surface, and until it exists the tab reads rather than navigates.

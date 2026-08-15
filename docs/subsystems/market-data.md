@@ -24,6 +24,28 @@ interface InstrumentRef {
 }
 ```
 
+## Instrument lookup
+
+A user knows a name far more often than a venue and a code, so the seam resolves identity before it prices anything. A match carries the instrument and its name and nothing else: a caller that then needs a price asks for a quote, and a lookup that also priced would charge every search for data most matches never use.
+
+```ts type-equiv
+/**
+ * One listing a search matched. Carries identity and name only: a search
+ * answers "which instrument does the user mean", and a caller that then needs
+ * a price asks for a quote.
+ */
+interface InstrumentMatch {
+  /** The matched instrument. */
+  readonly instrument: InstrumentRef
+  /** Display name in the venue's own language. */
+  readonly name: string
+}
+```
+
+The seam refuses a `limit` above the configured `maxSearchMatches` (default 20) instead of trimming it, for the same reason it refuses an over-long history: a caller that asked for fifty and drew twenty would present a truncated list as the whole answer.
+
+A provider whose feed has no lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than resolving empty. An empty result and an incapable source lead a consumer to opposite conclusions — "that name does not exist" against "ask somewhere else" — so they cannot share a representation.
+
 ## Quote
 
 A quote is an observation at an instant, and the instant is part of the value. `asOf` is when the venue priced the instrument — never when the provider was asked or when a UI rendered it — so a consumer can tell a stale reading from a fresh one. `session` distinguishes a quote that will not move because the venue is closed from one that should be moving and is not.
@@ -148,6 +170,16 @@ interface MarketDataProvider {
    */
   available(): boolean
   /**
+   * Find the listings a typed query names. A provider whose feed has no
+   * lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than
+   * resolving empty, so a consumer can tell "nothing matched" from "this
+   * source cannot answer".
+   * @param request - the query and how many matches to return.
+   * @param signal - optional cancellation signal.
+   * @returns the matched listings, best first.
+   */
+  search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>
+  /**
    * Read one instrument's latest quote.
    * @param request - the instrument to price.
    * @param signal - optional cancellation signal.
@@ -200,6 +232,18 @@ Selection semantics, resolved at execution time and never order-dependent:
 registerProvider(provider: MarketDataProvider): () => void
 
 /**
+ * Find the listings a typed query names, through the selected provider.
+ * Resolves the provider at call time; throws {@link MarketDataError} when the
+ * capability cannot run, and rejects a `limit` above the configured ceiling
+ * instead of trimming it, so a caller that asked for fifty and drew twenty
+ * knows it was refused.
+ * @param request - the query and how many matches to return.
+ * @param signal - optional cancellation signal forwarded to the provider.
+ * @returns the matched listings, best first.
+ */
+async search(request: InstrumentSearchRequest, signal?: AbortSignal): Promise<InstrumentSearchResult>
+
+/**
  * Read one instrument's latest quote through the selected provider. Resolves
  * the provider at call time; throws {@link MarketDataError} when the
  * capability cannot run.
@@ -221,5 +265,5 @@ async quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>
 async priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>
 ```
 
-Source: [`packages/investment/market-data/src/index.ts:77`](../../packages/investment/market-data/src/index.ts)
+Source: [`packages/investment/market-data/src/index.ts:95`](../../packages/investment/market-data/src/index.ts)
 <!-- END GENERATED cordis-surface -->

@@ -28,6 +28,16 @@ Putting a venue client directly in a tool would fix the product to one source, a
 
 `maxHistorySessions` (default 500) bounds one provider call. A larger `sessions` request throws `MARKET_DATA_HISTORY_RANGE_REFUSED` and never reaches the provider. Trimming would let a caller that asked for five years render a chart labelled five years from one year of bars — a wrong answer that looks right, which is the failure class the product cannot afford.
 
+`maxSearchMatches` (default 20) is the same rule applied to lookup, and refuses for the same reason: a caller that asked for fifty matches and drew twenty would present a truncated list as the whole answer.
+
+### Lookup is identity resolution, and a provider may not have it
+
+A user knows a name far more often than a venue and a code, so `search` joined the seam rather than staying a consumer's problem: without it a watchlist can only be filled by someone who already knows what `SZSE:300750` is.
+
+`InstrumentMatch` carries the instrument and its name and nothing else. A lookup that also priced would charge every keystroke for data most matches never use, and the caller that needs a price already has `quote`.
+
+A provider whose feed has no lookup endpoint rejects with `MARKET_DATA_SEARCH_UNSUPPORTED` rather than resolving empty. An empty result and an incapable source lead a consumer to opposite conclusions — "that name does not exist" against "ask somewhere else" — so they cannot share a representation. The method is required rather than optional on the provider interface for the same reason: an absent method would make every consumer probe for it.
+
 ## Alternatives considered
 
 **One `prices` operation returning both the latest value and the history.** Rejected: the two have different cost, different freshness requirements, and different cache lifetimes. A watchlist row wants a quote per name per interval; a chart wants many bars once. Fusing them makes every quote pay for bars nobody asked for.
@@ -50,4 +60,4 @@ No caching and no rate limiting: a consumer polling in a loop reaches the provid
 
 ## Testing
 
-`tests/market-data.spec.ts` covers registration, duplicate rejection, disposal, every selection branch (auto, ambiguous, configured-missing, configured-unavailable, none-usable), signal forwarding, and the history ceiling at and above the limit — including that a refused range never reaches the provider.
+`tests/market-data.spec.ts` covers registration, duplicate rejection, disposal, every selection branch (auto, ambiguous, configured-missing, configured-unavailable, none-usable), signal forwarding, and both ceilings at and above their limits — including that a refused request never reaches the provider. `market-data-fixture/tests` covers lookup by code prefix, by name substring, by venue, the caller limit, and the blank query that lists nothing rather than the whole table.
