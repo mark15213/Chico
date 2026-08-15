@@ -26,19 +26,17 @@ Two of these are worth more to Chico than they look. **Produced files plus tool 
 
 ## The integration decision
 
-**A followed name is a workspace.**
+**One investment archive, and it is a directory rather than a registered workspace. Followed names are Chico's own objects inside it.**
 
-The harness workspace is already a durable object that groups sessions, carries its own ordering and search, and survives across sessions. That is exactly the relationship a name needs: conversations about 宁德时代 belong to 宁德时代, and the user never has to remember which chat something was in. Notes, models, and research output are files in it, which the produced-files surface already lists and links.
+A workspace is bound to a real directory: `create` rejects a non-directory path, and session membership is enforced by the session's canonical cwd equalling the workspace path rather than by convention ([evidence](analysis/harness/component-inventory.md#专项分析标的能否使用-workspace-实体)). Making each followed name a workspace therefore means a folder per name — a heavy, irreversible side effect for the lightest action in the product. Following a name is a glance; it must not put 200 directories on disk, and unfollowing would not remove them, because deleting a workspace registration deliberately never deletes its directory.
 
-This has been checked against the code, and the answer splits in two ([evidence](analysis/harness/component-inventory.md#专项分析标的能否使用-workspace-实体)).
+So Chico keeps **one** archive directory. Every Chico session runs with it as cwd, which buys the things the directory was wanted for: notes, models, and research output are real files, and the existing produced-files surface lists and links them unchanged.
 
-**The entity layer needs no change.** A workspace is bound to a real directory — `create` rejects a non-directory path, and session membership is enforced by the session's canonical cwd equalling the workspace path rather than being a convention. So the relationship works provided Chico materializes a directory per followed name and starts that name's sessions with it as cwd. That matches the product intent rather than fighting it: notes, models, and research output belong in the name's directory, which makes the existing produced-files surface work unchanged. Conversations belonging to no name land in Ungrouped, which is where open-ended chat should be anyway.
+**The archive is deliberately not registered as a Workspace.** The registry only adopts historical sessions during its one-time bootstrap; after that, `Later cwd-only sessions remain Ungrouped`. A directory that is never registered therefore produces no workspace row at all — which is exactly the requirement that the user must never see a workspace they did not create. No hiding mechanism, no session-origin change, and no durable format change is needed to get it.
 
-**Adding a name also needs no change.** The sidebar's picker hole takes an occupant that reports one chosen path per open, so a Chico component that searches by ticker or name, materializes the directory, and reports its path satisfies the existing contract.
+**Names are Chico-owned records, and Chico's own surfaces own their navigation.** The watchlist is a view in the conversation ring, the name page is a Chico surface, and a session's association to a name is a Chico record rather than workspace membership. The sidebar keeps doing what it already does for ordinary sessions; it is not the navigation for names.
 
-**The sidebar row did need one shared modification, and it has shipped.** The browser declared exactly one child slot — the picker hole — and no row-level extension point, so last price, change, and status could not be added by registration. Rather than take over the whole browser and forfeit grouping, ordering, drag reorder, search, rename, fork, and archive, the browser now declares `sidebar.workspaces.rowDecoration`, a trailing region carrying the row's workspace id and title ([decision](../../.agents/notes/implemented/architecture/2026-08-14-workspace-row-decoration-slot.md)).
-
-**What remains open is the mapping the decoration needs.** A decorator receives a workspace and must resolve it to an instrument, and nothing yet says which directory corresponds to which listing. That is the same question as where name directories live, below; until it is answered, a row cannot be decorated with a price.
+What this gives up is the reuse the earlier draft was chasing: grouping, ordering, drag reorder, search, rename, fork, and archive come free for workspaces and have to be built for names. That is the price of not putting a folder on disk for every glance, and it is worth paying. It also means the workspace row needs no extension point — an earlier `sidebar.workspaces.rowDecoration` slot was built for the per-name arrangement and reverted with it, because an extension point with no consumer is one the next reader has to wonder about.
 
 ## The increment
 
@@ -46,7 +44,7 @@ Categories are the ones in [`architecture/change-map.md`](architecture/change-ma
 
 | Product need | Existing surface | Chico's increment | Category |
 |---|---|---|---|
-| Followed names, navigation and search | Workspace browser | Market columns and status on the row; names materialized rather than picked | Plugin extension, possibly shared modification |
+| Followed names, navigation and search | Nothing reusable | Chico's own name records, watchlist view, and name page over one archive directory | Plugin extension |
 | The name dossier | Details column | A Chico panel: overview, financials, disclosure, ownership, my record | Plugin extension |
 | Ask scoped to a name | Sessions belong to a workspace | Nothing | Direct reuse |
 | Investment data in answers | Tool call views and render intents | New investment tools declaring chart and table render intents | Plugin extension |
@@ -116,8 +114,8 @@ This is an MVP concern rather than a later one, because a fund investor with no 
 
 ## Open questions
 
-- **Where do name directories live, how does a directory map back to a listing, and which user boundary owns that tree under a remote deployment?** This is the one blocking question: the row-decoration slot exists, but a decorator cannot resolve a workspace to an instrument until the mapping is decided, so the followed-names surface cannot be built on top of it yet.
-- Does unfollowing a name delete its workspace registration, given the directory itself is never removed?
+- Where does the archive directory live by default, and which user boundary owns it under a remote deployment? A configuration value rather than a design decision, but it needs an answer before the first release.
+- Does a followed name keep its recorded material after unfollowing, or is unfollowing a delete? The archive is one directory either way, so this is a product choice about the name record rather than about files.
 - Does the dossier share the details column with the tool inspector, or does one of them move?
 - Does release one target a professional working alone, or a small team sharing a book? Sharing changes the name browser, notes, and permissions, and is cheaper to decide now than to retrofit.
 - Which market data licenses cover the disclosure and ownership content, and which permit derived computation and export?

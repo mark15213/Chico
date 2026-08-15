@@ -50,27 +50,12 @@ export interface DirectoryFlowOwnerProps {
   onError: (message: string) => void
 }
 
-/**
- * Owner share of the workspace-row decoration list: the row identity a
- * decorator needs to resolve its own data. Only real Workspace rows carry it —
- * the ungrouped bucket has no backing Workspace, so the list is not rendered
- * there and a decorator never sees a row without an id.
- */
-export interface WorkspaceRowDecorationOwnerProps {
-  /** The row's Workspace. */
-  workspaceId: WorkspaceId
-  /** The row's current display title, already resolved for presentation. */
-  title: string
-}
-
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
     /** Directory-flow hole under the conversation empty-state picker (declared by the WorkspacePicker entry). */
     'conversation.hero.workspace.directoryFlow': { kind: 'single'; scope: 'root'; owner: DirectoryFlowOwnerProps }
     /** Directory-flow hole under the sidebar browsing region (declared by the WorkspaceBrowser entry). */
     'sidebar.workspaces.directoryFlow': { kind: 'single'; scope: 'root'; owner: DirectoryFlowOwnerProps }
-    /** Trailing decoration list on each real Workspace row (declared by the WorkspaceBrowser entry). */
-    'sidebar.workspaces.rowDecoration': { kind: 'list'; scope: 'root'; owner: WorkspaceRowDecorationOwnerProps }
   }
 }
 
@@ -155,7 +140,7 @@ export type WorkspaceBrowserInjected = DirectoryPickingInjected & {
 /** Full browser props: shell owner share + viewing store + injected actions + the locale seat. */
 export type WorkspaceBrowserProps =
   PropsRuntime<'sidebar.workspaces'>
-  & PropsRenderSlots<'sidebar.workspaces.directoryFlow' | 'sidebar.workspaces.rowDecoration'>
+  & PropsRenderSlots<'sidebar.workspaces.directoryFlow'>
   & PropsStore<ReturnType<typeof createWorkspaceViewStore>>
   & Omit<WorkspaceBrowserInjected, 'hooks'>
   & DirectoryPickingHooks

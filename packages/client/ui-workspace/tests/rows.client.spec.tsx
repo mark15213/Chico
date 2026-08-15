@@ -111,30 +111,6 @@ describe('workspace browser rows', () => {
     expect(screen.getByText(label)).toBeTruthy()
   })
 
-  it('renders row decoration for a real Workspace and passes the row identity', () => {
-    const group: GroupNode = {
-      key: 'project', workspaceId: wid('project'), cwd: '/projects/project', createdAt: 0, label: 'Project',
-      sessionCount: 1, expanded: false, containsCurrent: false, sessions: [],
-    }
-    const renderDecoration = vi.fn((_id: WorkspaceId, title: string) => <span>{`decorated ${title}`}</span>)
-    render(<ProjectRowItem group={group} onToggle={vi.fn()} onCreate={vi.fn()} renderDecoration={renderDecoration} t={t} />)
-
-    expect(screen.getByText('decorated Project')).toBeTruthy()
-    expect(renderDecoration).toHaveBeenCalledWith(wid('project'), 'Project')
-  })
-
-  it('asks for no decoration on the ungrouped bucket, which has no backing Workspace', () => {
-    const group: GroupNode = {
-      key: 'ungrouped', workspaceId: undefined, cwd: undefined, createdAt: undefined, label: '',
-      sessionCount: 1, expanded: false, containsCurrent: false, sessions: [],
-    }
-    const renderDecoration = vi.fn(() => <span>decorated</span>)
-    render(<ProjectRowItem group={group} onToggle={vi.fn()} onCreate={vi.fn()} renderDecoration={renderDecoration} t={t} />)
-
-    expect(screen.queryByText('decorated')).toBeNull()
-    expect(renderDecoration).not.toHaveBeenCalled()
-  })
-
   it('renders an active Workspace and keeps its create action separate from toggling', () => {
     const onToggle = vi.fn()
     const onCreate = vi.fn()
