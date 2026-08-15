@@ -13,6 +13,13 @@
 # surface stays exactly as dsh-web-app left it.
 
 - insert:
+    # The followed-names registry and the one archive directory Chico's own
+    # work lives in. `archivePath` is left unset so it resolves under the
+    # harness home beside `sessions` and `storages`; a deployment that wants
+    # the directory visible or synced points it elsewhere in a later layer.
+    - id: followed-names
+      name: '@deepseek-ai/dsh-followed-names'
+
     # The market-data seam. No provider is configured, so selection resolves to
     # the single usable one below; a deployment with a licensed feed adds it and
     # pins `provider` in a later patch layer rather than editing this row.

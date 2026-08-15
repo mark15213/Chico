@@ -587,6 +587,30 @@ export interface Config {
 
 来源：[`packages/e2b/e2b/src/index.ts:43`](../packages/e2b/e2b/src/index.ts)
 
+<a id="deepseek-aidsh-followed-names"></a>
+
+## `@deepseek-ai/dsh-followed-names`
+
+需要：`storageDomain`
+
+```ts config-catalog
+/** Config for the followed-names registry. */
+export interface FollowedNamesConfig {
+  /**
+   * Directory Chico's own work lives in: notes, models, and research output.
+   * Absolute, or `~`-prefixed. Omitted resolves under the harness home.
+   *
+   * The directory is deliberately never registered as a Workspace. The registry
+   * adopts historical sessions only during its one-time bootstrap, so an
+   * unregistered directory produces no workspace row and the user never sees a
+   * workspace they did not create.
+   */
+  readonly archivePath?: string
+}
+```
+
+来源：[`packages/investment/followed-names/src/index.ts:41`](../packages/investment/followed-names/src/index.ts)
+
 <a id="deepseek-aidsh-fs-local"></a>
 
 ## `@deepseek-ai/dsh-fs-local`

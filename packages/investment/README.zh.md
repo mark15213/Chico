@@ -6,6 +6,7 @@
 
 | 包 | 职责 | ctx 键 |
 |---|---|---|
+| [`followed-names/`](followed-names/README.md) | 保存每个关注标的的持久记录和档案目录 | `ctx.followedNames` |
 | [`market-data/`](market-data/README.md) | 定义行情提供方的注册、选择和共享错误 | `ctx.marketData` |
 | [`market-data-fixture/`](market-data-fixture/README.md) | 为无密钥测试和演示提供确定性的标的表与 K 线序列 | 注册到 `ctx.marketData` |
 | [`tool-market-data/`](tool-market-data/README.md) | 向模型暴露报价和日频 K 线 | 注册到 `ctx.tools` |

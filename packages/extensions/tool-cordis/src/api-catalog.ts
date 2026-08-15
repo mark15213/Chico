@@ -563,6 +563,48 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'followedNames',
+    summary: 'The followed-names service.',
+    description: 'The followed-names service. Registered as `ctx.followedNames` (one instance per context).',
+    methods: [
+      {
+        signature: 'readonly archivePath: string',
+        description: 'Resolved absolute archive directory, materialized at init.',
+        parameters: [],
+      },
+      {
+        signature: 'list(): readonly FollowedName[]',
+        description: 'Every record the registry holds, followed or not, in no guaranteed order.',
+        parameters: [],
+        returns: 'a snapshot array; iteration order is the table\'s own.',
+      },
+      {
+        signature: 'listFollowed(): readonly FollowedName[]',
+        description: 'The records currently on the watchlist.',
+        parameters: [],
+        returns: 'a snapshot array of records whose `followed` is true.',
+      },
+      {
+        signature: 'get(instrument: InstrumentRef): FollowedName | undefined',
+        description: 'One instrument\'s record, followed or not.',
+        parameters: [{ name: 'instrument', description: 'the instrument to look up.' }],
+        returns: 'the record, or `undefined` when the instrument was never followed.',
+      },
+      {
+        signature: 'async follow(instrument: InstrumentRef, displayName: string, now: string): Promise<FollowedName>',
+        description: 'Follow an instrument, or re-follow one that was unfollowed. A re-follow keeps `firstFollowedAt` and everything else the record carries, which is what makes unfollowing safe.',
+        parameters: [{ name: 'instrument', description: 'the instrument to follow.' }, { name: 'displayName', description: 'display name; must contain a non-whitespace character.' }, { name: 'now', description: 'ISO-8601 instant to stamp, supplied by the caller so the registry stays free of a clock and its records stay reproducible in tests.' }],
+        returns: 'the stored record.',
+      },
+      {
+        signature: 'async unfollow(instrument: InstrumentRef, now: string): Promise<FollowedName>',
+        description: 'Take an instrument off the watchlist without losing anything recorded about it. Unfollowing an already-unfollowed name is a no-op that still resolves, so a repeated action is not an error.',
+        parameters: [{ name: 'instrument', description: 'the instrument to unfollow.' }, { name: 'now', description: 'ISO-8601 instant to stamp.' }],
+        returns: 'the stored record.',
+      },
+    ],
+  },
+  {
     key: 'fs',
     summary: 'Abstract filesystem provider.',
     description: 'Abstract filesystem provider. Targets must preserve identity across aliases; reads expose regular UTF-8 text or typed errors, listings are stable and content-free, and mutations are atomic. Optional guards add stale protection without changing the unguarded provider contract.',
@@ -3069,6 +3111,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'FinishReasonMap',
     declaration: 'export interface FinishReasonMap {\n    \'stop\': {\n        kind: \'stop\';\n    };\n    \'tool-calls\': {\n        kind: \'tool-calls\';\n    };\n    \'max-tokens\': {\n        kind: \'max-tokens\';\n    };\n    \'aborted\': {\n        kind: \'aborted\';\n        failure: LlmFailure;\n    };\n    \'error\': {\n        kind: \'error\';\n        failure: LlmFailure;\n    };\n}',
+  },
+  {
+    name: 'FollowedName',
+    declaration: 'export interface FollowedName {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly followed: boolean;\n    readonly firstFollowedAt: string;\n    readonly updatedAt: string;\n}',
   },
   {
     name: 'FsDirEntry',

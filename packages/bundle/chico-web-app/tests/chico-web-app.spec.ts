@@ -41,6 +41,12 @@ function insertedRow(id: string): PatchRow | undefined {
 }
 
 describe('chico bundle patch', () => {
+  it('inserts the followed-names registry with no archive override', () => {
+    expect(insertedRow('followed-names')?.name).toBe('@deepseek-ai/dsh-followed-names')
+    // Unset resolves under the harness home; a later layer relocates it.
+    expect(insertedRow('followed-names')?.config).toBeUndefined()
+  })
+
   it('inserts the whole market-data seam: definition, provider, and tools', () => {
     expect(insertedRow('market-data')?.name).toBe('@deepseek-ai/dsh-market-data')
     expect(insertedRow('market-data-fixture')?.name).toBe('@deepseek-ai/dsh-market-data-fixture')

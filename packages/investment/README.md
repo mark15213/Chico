@@ -6,6 +6,7 @@ This family provides the investment-domain capabilities the Chico workbench is b
 
 | Package | Role | ctx key |
 |---|---|---|
+| [`followed-names/`](followed-names/README.md) | Holds the durable record of every followed instrument and the archive directory | `ctx.followedNames` |
 | [`market-data/`](market-data/README.md) | Defines market-data provider registration, selection, and shared errors | `ctx.marketData` |
 | [`market-data-fixture/`](market-data-fixture/README.md) | Provides a deterministic instrument table and bar series for keyless tests and demos | registers on `ctx.marketData` |
 | [`tool-market-data/`](tool-market-data/README.md) | Exposes quotes and session bars to the model | registers on `ctx.tools` |

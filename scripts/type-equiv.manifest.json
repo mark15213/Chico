@@ -1931,6 +1931,11 @@
       "source": "packages/investment/market-data/src/types.ts"
     },
     {
+      "doc": "docs/subsystems/followed-names.md",
+      "symbol": "FollowedName",
+      "source": "packages/investment/followed-names/src/types.ts"
+    },
+    {
       "doc": "docs/subsystems/market-data.md",
       "symbol": "QuoteRequest",
       "source": "packages/investment/market-data/src/types.ts"

@@ -1,6 +1,6 @@
 {
-  "name": "@deepseek-ai/dsh-chico-web-app",
-  "description": "The Chico investment-surface bundle: a patch layer over dsh-web-app that inserts the market-data seam, its provider and tools, and the price-series toolview",
+  "name": "@deepseek-ai/dsh-followed-names",
+  "description": "Followed-names registry (ctx.followedNames) for the DeepSeek Harness — durable per-instrument records where unfollowing clears a flag rather than deleting, plus the archive directory Chico's own work lives in",
   "version": "0.1.0-rc.5",
   "publishConfig": {
     "access": "public"
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
-    "directory": "packages/bundle/chico-web-app"
+    "directory": "packages/investment/followed-names"
   },
   "type": "module",
   "main": "lib/index.js",
@@ -22,35 +22,32 @@
       "types": "./lib/types/invariant.d.ts",
       "default": "./lib/invariant.js"
     },
-    "./cordis.patch.yml": "./cordis.patch.yml",
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "files": [
     "lib/index.js",
     "lib/invariant.js",
-    "cordis.patch.yml",
     "lib/types/**/*.d.ts"
   ],
   "license": "MIT",
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    }
-  },
   "peerDependencies": {
     "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-market-data": "workspace:^",
+    "@deepseek-ai/dsh-storage-domain": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/dsh-followed-names": "workspace:^",
-    "@deepseek-ai/dsh-market-data": "workspace:^",
-    "@deepseek-ai/dsh-market-data-fixture": "workspace:^",
-    "@deepseek-ai/dsh-tool-market-data": "workspace:^",
-    "@deepseek-ai/dsh-web-app": "workspace:^"
+    "@deepseek-ai/dsh-home-paths": "workspace:^",
+    "@deepseek-ai/schemastery": "workspace:^",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-market-data": "workspace:^",
+    "@deepseek-ai/dsh-storage-domain": "workspace:^",
+    "@deepseek-ai/dsh-storage-json": "workspace:^",
+    "@deepseek-ai/dsh-storage": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

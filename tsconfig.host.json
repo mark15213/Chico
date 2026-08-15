@@ -226,6 +226,7 @@
     { "path": "./packages/compaction/command-compact" },
     { "path": "./packages/compaction/compaction-tool-result-pruner" },
     { "path": "./packages/bundle/chico-web-app" },
+    { "path": "./packages/investment/followed-names" },
     { "path": "./packages/investment/market-data" },
     { "path": "./packages/investment/market-data-fixture" },
     { "path": "./packages/investment/tool-market-data" },

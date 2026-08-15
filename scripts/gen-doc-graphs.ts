@@ -80,6 +80,7 @@ const GROUP_ORDER = [
   'workflow',
   'web',
   'market-data',
+  'followed-names',
   'spill',
   'todo',
   'plan',
@@ -478,6 +479,15 @@ const SERVICE_ROLES: ServiceRole[] = [
     implementations: ['jobs-local'],
     consumers: ['tool-bash', 'tool-terminal', 'tool-subagent', 'tool-jobs'],
     note: 'Producers (background bash, PTY sends, and subagent delegations) register running work; tool-jobs is the model-facing controller that reads, lists, and kills it; jobs-local is the process-local registry.',
+  },
+  {
+    key: 'followedNames',
+    pkg: 'followed-names',
+    title: 'Followed-names registry',
+    mode: 'core',
+    implementations: [],
+    consumers: [],
+    note: 'One service over its own storage domain, not a seam: unfollowing clears a flag so the record survives, and the archive directory it owns is deliberately never registered as a Workspace.',
   },
   {
     key: 'marketData',

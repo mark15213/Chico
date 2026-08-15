@@ -143,6 +143,7 @@
   },
   "devDependencies": {
     "@agentclientprotocol/sdk": "0.25.1",
+    "@deepseek-ai/dsh-followed-names": "workspace:^",
     "@deepseek-ai/dsh-market-data": "workspace:^",
     "@deepseek-ai/dsh-market-data-fixture": "workspace:^",
     "@deepseek-ai/dsh-tool-market-data": "workspace:^",
