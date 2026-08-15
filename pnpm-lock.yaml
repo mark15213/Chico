@@ -1248,6 +1248,9 @@ importers:
 
   packages/bundle/chico-web-app:
     dependencies:
+      '@deepseek-ai/dsh-client-ui-watchlist':
+        specifier: workspace:^
+        version: link:../../client/ui-watchlist
       '@deepseek-ai/dsh-followed-names':
         specifier: workspace:^
         version: link:../../investment/followed-names
@@ -1260,6 +1263,9 @@ importers:
       '@deepseek-ai/dsh-tool-market-data':
         specifier: workspace:^
         version: link:../../investment/tool-market-data
+      '@deepseek-ai/dsh-watchlist':
+        specifier: workspace:^
+        version: link:../../investment/watchlist
       '@deepseek-ai/dsh-web-app':
         specifier: workspace:^
         version: link:../web-app

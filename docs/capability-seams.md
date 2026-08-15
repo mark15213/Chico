@@ -167,6 +167,8 @@ flowchart LR
   svc_marketData["ctx.marketData<br/>Market-data provider registry"]
   pkg_market_data_fixture["market-data-fixture"]
   pkg_tool_market_data["tool-market-data"]
+  pkg_watchlist["watchlist"]
+  svc_watchlist["ctx.watchlist<br/>Watchlist projection"]
   pkg_web["web"]
   svc_web["ctx.web<br/>Web access provider registry"]
   pkg_web_search_exa["web-search-exa"]
@@ -294,6 +296,7 @@ flowchart LR
   pkg_tools --> svc_tools
   pkg_typert_registry --> svc_typert
   pkg_user_questions --> svc_userQuestions
+  pkg_watchlist --> svc_watchlist
   pkg_web --> svc_web
   pkg_web_fetch_http --> svc_web
   pkg_web_search_deepseek --> svc_web
@@ -469,6 +472,7 @@ flowchart LR
 | `ctx.jobs` | `seam` | [`jobs`](../packages/jobs/jobs) | [`jobs-local`](../packages/jobs/jobs-local) | [`tool-bash`](../packages/shell/tool-bash), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-subagent`](../packages/subagent/tool-subagent), [`tool-jobs`](../packages/jobs/tool-jobs) | - | Producers (background bash, PTY sends, and subagent delegations) register running work; tool-jobs is the model-facing controller that reads, lists, and kills it; jobs-local is the process-local registry. |
 | `ctx.followedNames` | `core` | [`followed-names`](../packages/investment/followed-names) | - | - | - | One service over its own storage domain, not a seam: unfollowing clears a flag so the record survives, and the archive directory it owns is deliberately never registered as a Workspace. |
 | `ctx.marketData` | `seam` | [`market-data`](../packages/investment/market-data) | [`market-data-fixture`](../packages/investment/market-data-fixture) | [`tool-market-data`](../packages/investment/tool-market-data) | - | Quote and price-history providers register into one ctx.marketData seam; selection resolves per call so an entitlement loss stops selection without re-registration. |
+| `ctx.watchlist` | `core` | [`watchlist`](../packages/investment/watchlist) | - | - | - | A Consumer of the followed-names registry and the market-data seam, not a seam of its own: it joins a record with a quote for the browser so neither of the two grows a dependency on the other. |
 | `ctx.web` | `seam` | [`web`](../packages/web/web) | [`web-search-exa`](../packages/web/web-search-exa), [`web-search-perplexity`](../packages/web/web-search-perplexity), [`web-search-deepseek`](../packages/web/web-search-deepseek), [`web-fetch-http`](../packages/web/web-fetch-http) | [`tool-web`](../packages/web/tool-web) | - | Search and fetch providers register into one ctx.web seam; tool-web owns the stable model-facing names. |
 | `ctx.spillStore` | `seam` | [`spill`](../packages/spill/spill) | [`spill-local`](../packages/spill/spill-local) | [`spill-policy`](../packages/spill/spill-policy) | - | The backend saves oversized tool text and returns a model-facing locator plus retrieval hint; spill-policy is the tools/post-execute consumer that decides when to spill. |
 | `ctx.directoryPicker` | `seam` | `directory-picker` | `directory-picker-native`, `directory-picker-browse` | `apiproxy` | - | Discriminated interaction capability: the native backend opens one OS chooser on the host display, the browse backend serves listing/creation primitives for the in-app browser; dual-face backends fill ui-workspace directory-flow slots from their browser halves (no wire advertisement). |

@@ -81,6 +81,7 @@ const GROUP_ORDER = [
   'web',
   'market-data',
   'followed-names',
+  'watchlist',
   'spill',
   'todo',
   'plan',
@@ -497,6 +498,15 @@ const SERVICE_ROLES: ServiceRole[] = [
     implementations: ['market-data-fixture'],
     consumers: ['tool-market-data'],
     note: 'Quote and price-history providers register into one ctx.marketData seam; selection resolves per call so an entitlement loss stops selection without re-registration.',
+  },
+  {
+    key: 'watchlist',
+    pkg: 'watchlist',
+    title: 'Watchlist projection',
+    mode: 'core',
+    implementations: [],
+    consumers: [],
+    note: 'A Consumer of the followed-names registry and the market-data seam, not a seam of its own: it joins a record with a quote for the browser so neither of the two grows a dependency on the other.',
   },
   {
     key: 'web',

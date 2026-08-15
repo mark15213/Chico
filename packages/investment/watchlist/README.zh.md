@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-DeepSeek Harness 的自选投影（`ctx.watchlist`）：把[关注标的注册表](../followed-names/README.zh.md)与[行情接缝](../market-data/README.zh.md)的当前报价连接起来，面向浏览器，以 `watchlist` 这个 Typert Remote 命名空间暴露。
+DeepSeek Harness 的自选投影（`ctx.watchlist`）：把[关注标的注册表](../followed-names/README.md)与[行情接缝](../market-data/README.md)的当前报价连接起来，面向浏览器，以 `watchlist` 这个 Typert Remote 命名空间暴露。
 
 ## 它是消费方，不是接缝
 

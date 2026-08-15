@@ -49,30 +49,50 @@ export const MARKETS = Object.keys(MARKET_LABEL_KEYS) as readonly Market[]
  */
 const PRICE_DECIMALS = 2
 
-/** `MARKET:SYMBOL` for one instrument. */
+/**
+ * `MARKET:SYMBOL` for one instrument.
+ * @param instrument - the venue and code.
+ * @returns the identity a user follows by.
+ */
 export function instrumentLabel(instrument: WatchlistRow['instrument']): string {
   return `${instrument.market}:${instrument.symbol}`
 }
 
-/** Which way a change moved, treating exactly zero as its own case. */
+/**
+ * Which way a change moved, treating exactly zero as its own case.
+ * @param changePercent - signed percentage change.
+ * @returns the direction the row is colored by.
+ */
 export function directionOf(changePercent: number): PriceDirection {
   if (changePercent > 0) return 'up'
   if (changePercent < 0) return 'down'
   return 'flat'
 }
 
-/** Signed percentage with a fixed sign column, so a list of rows stays aligned. */
+/**
+ * Signed percentage with a fixed sign column, so a list of rows stays aligned.
+ * @param changePercent - signed percentage change.
+ * @returns the presented change, using a true minus sign rather than a hyphen.
+ */
 export function formatChange(changePercent: number): string {
   const sign = changePercent > 0 ? '+' : changePercent < 0 ? '−' : ''
   return `${sign}${Math.abs(changePercent).toFixed(PRICE_DECIMALS)}%`
 }
 
-/** Last price with the currency the venue prices in. */
+/**
+ * Last price with the currency the venue prices in.
+ * @param quote - the quote to present.
+ * @returns the presented price.
+ */
 export function formatLast(quote: Quote): string {
   return `${quote.last.toFixed(PRICE_DECIMALS)} ${quote.currency}`
 }
 
-/** Everything one row shows, with the no-quote case carried as nulls. */
+/**
+ * Everything one row shows, with the no-quote case carried as nulls.
+ * @param row - the watchlist row.
+ * @returns the presented figures.
+ */
 export function rowFigures(row: WatchlistRow): RowFigures {
   const label = instrumentLabel(row.instrument)
   if (row.quote === null) {
@@ -89,6 +109,8 @@ export function rowFigures(row: WatchlistRow): RowFigures {
 /**
  * The code as the venue writes it, or null when the field holds nothing to
  * look up. Whitespace and case are the user's typing, not part of the code.
+ * @param input - the raw field value.
+ * @returns the normalized code, or null when there is nothing to look up.
  */
 export function normalizeSymbol(input: string): string | null {
   const trimmed = input.trim().toUpperCase()

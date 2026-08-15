@@ -1936,6 +1936,16 @@
       "source": "packages/investment/followed-names/src/types.ts"
     },
     {
+      "doc": "docs/subsystems/watchlist.md",
+      "symbol": "WatchlistRow",
+      "source": "packages/investment/watchlist/src/types.ts"
+    },
+    {
+      "doc": "docs/subsystems/watchlist.md",
+      "symbol": "WatchlistFollowResult",
+      "source": "packages/investment/watchlist/src/types.ts"
+    },
+    {
       "doc": "docs/subsystems/market-data.md",
       "symbol": "QuoteRequest",
       "source": "packages/investment/market-data/src/types.ts"

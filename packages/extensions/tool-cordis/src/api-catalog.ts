@@ -2091,6 +2091,34 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'watchlist',
+    summary: 'The watchlist service.',
+    description: 'The watchlist service. Registered as `ctx.watchlist` (one instance per context) and reachable from a browser as the `watchlist` Remote namespace.',
+    methods: [
+      {
+        signature: '@Remote(\'list\') async list(signal?: AbortSignal): Promise<WatchlistSnapshot>',
+        description: 'Every followed name with its current quote, priced concurrently.\n\nA quote that fails degrades its own row to `quote: null`, except when the failure is provider selection, which raises for the whole call.',
+        parameters: [{ name: 'signal', description: 'optional cancellation signal, forwarded to each quote.' }],
+        returns: 'the current rows in the registry\'s own order.',
+        throws: ['{@link MarketDataError} when no usable provider can be selected.'],
+      },
+      {
+        signature: '@Remote(\'follow\') async follow(instrument: InstrumentRef, signal?: AbortSignal): Promise<WatchlistFollowResult>',
+        description: 'Follow an instrument named by venue and code, taking its display name from the venue rather than from the caller. Re-following a name that was unfollowed restores it with its original `firstFollowedAt`.',
+        parameters: [{ name: 'instrument', description: 'the venue and code to follow.' }, { name: 'signal', description: 'optional cancellation signal for the resolving quote.' }],
+        returns: 'the stored row, or the unknown-instrument outcome.',
+        throws: ['{@link MarketDataError} when no usable provider can be selected.'],
+      },
+      {
+        signature: '@Remote(\'unfollow\') async unfollow(instrument: InstrumentRef): Promise<number>',
+        description: 'Take an instrument off the watchlist. The record survives, so a later re-follow keeps everything recorded about the name.',
+        parameters: [{ name: 'instrument', description: 'the venue and code to unfollow.' }],
+        returns: 'the followed count after the change, so a caller can reconcile without a second round trip.',
+        throws: ['{@link FollowedNameError} when no record exists for the instrument.'],
+      },
+    ],
+  },
+  {
     key: 'web',
     summary: 'The web access service.',
     description: 'The web access service. Registered as `ctx.web` (one instance per context).\n\nSelection semantics (resolved at execution time, never order-dependent):\n\n- A configured id that is registered and `available()` → that provider.\n- A configured id not registered → `WEB_PROVIDER_CONFIGURED_MISSING`.\n- A configured id registered but unavailable → `WEB_PROVIDER_CONFIGURED_UNAVAILABLE`.\n- No id configured, exactly one registered usable provider → that provider.\n- No id configured, multiple usable providers → `WEB_PROVIDER_AMBIGUOUS`.\n- No id configured, no usable provider → `WEB_PROVIDER_UNAVAILABLE`.',
@@ -4639,6 +4667,18 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'UserQuestionProvider',
     declaration: 'export interface UserQuestionProvider {\n    ask(request: AskUserQuestionRequest): Promise<AskUserQuestionAnswer>;\n}',
+  },
+  {
+    name: 'WatchlistFollowResult',
+    declaration: 'export type WatchlistFollowResult = {\n    readonly ok: true;\n    readonly row: WatchlistRow;\n} | {\n    readonly ok: false;\n    readonly reason: \'unknown-instrument\';\n};',
+  },
+  {
+    name: 'WatchlistRow',
+    declaration: 'export interface WatchlistRow {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly quote: Quote | null;\n}',
+  },
+  {
+    name: 'WatchlistSnapshot',
+    declaration: 'export interface WatchlistSnapshot {\n    readonly rows: readonly WatchlistRow[];\n}',
   },
   {
     name: 'WebBootEntry',

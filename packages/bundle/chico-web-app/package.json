@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-chico-web-app",
-  "description": "The Chico investment-surface bundle: a patch layer over dsh-web-app that inserts the market-data seam, its provider and tools, and the price-series toolview",
+  "description": "The Chico investment-surface bundle: a patch layer over dsh-web-app that inserts the market-data seam, its provider and tools, the watchlist projection, and the watchlist tab",
   "version": "0.1.0-rc.5",
   "publishConfig": {
     "access": "public"
@@ -43,10 +43,12 @@
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
+    "@deepseek-ai/dsh-client-ui-watchlist": "workspace:^",
     "@deepseek-ai/dsh-followed-names": "workspace:^",
     "@deepseek-ai/dsh-market-data": "workspace:^",
     "@deepseek-ai/dsh-market-data-fixture": "workspace:^",
     "@deepseek-ai/dsh-tool-market-data": "workspace:^",
+    "@deepseek-ai/dsh-watchlist": "workspace:^",
     "@deepseek-ai/dsh-web-app": "workspace:^"
   },
   "devDependencies": {

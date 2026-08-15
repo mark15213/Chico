@@ -76,6 +76,8 @@ const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
   'packages/client/ui-jobs': { kind: 'none', reason: 'Browser-side read-only projection of ctx.jobs records; dsh-tool-jobs owns the model-facing behavior.' },
   'packages/bundle/chico-web-app': { kind: 'indirect', reason: 'A patch layer composing rows; dsh-tool-market-data owns the model-facing tools and prompt guidance it enables.' },
   'packages/investment/followed-names': { kind: 'none', reason: 'Durable product state behind ctx.followedNames; a consumer that renders a watchlist to a model owns that surface.' },
+  'packages/investment/watchlist': { kind: 'none', reason: 'A browser-facing Remote join of ctx.followedNames with quotes; a tool that puts a watchlist in front of a model owns that surface.' },
+  'packages/client/ui-watchlist': { kind: 'none', reason: 'Browser-side UI plugin layer; renders the watchlist projection without changing model context.' },
   'packages/client/ui-workflow-run': { kind: 'none', reason: 'Browser-side UI plugin layer; renders durable workflow records without changing model context.' },
   'packages/client/ui-input-trigger': { kind: 'none', reason: 'Browser-side UI plugin layer; registers nothing model-facing.' },
   'packages/client/ui-commands': { kind: 'indirect', reason: 'The dispatch paths trigger the host command.execute RPC; each command handler\'s host package owns any model-visible effect.' },

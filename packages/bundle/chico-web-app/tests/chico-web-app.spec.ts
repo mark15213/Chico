@@ -65,6 +65,19 @@ describe('chico bundle patch', () => {
       .toMatchObject({ quote: true, history: true, defaultHistorySessions: 60 })
   })
 
+  it('inserts the watchlist projection with no config of its own', () => {
+    // What a user follows is data, and which provider prices it is already the
+    // market-data row's decision, so this row has nothing left to configure.
+    expect(insertedRow('watchlist')?.name).toBe('@deepseek-ai/dsh-watchlist')
+    expect(insertedRow('watchlist')?.config).toBeUndefined()
+  })
+
+  it('adds the watchlist tab, the one browser row the seam exists to serve', () => {
+    // A composition carrying the projection without the tab would hold a
+    // watchlist nobody can see.
+    expect(insertedRow('ui-watchlist')?.name).toBe('@deepseek-ai/dsh-client-ui-watchlist')
+  })
+
   it('disables no row from the layer below', () => {
     // This layer adds capability and never removes surface: a disabled row here
     // would be surface policy the web layer already decided.
