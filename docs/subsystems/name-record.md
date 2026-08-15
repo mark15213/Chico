@@ -103,6 +103,35 @@ The name-record service. Registered as `ctx.nameRecord` (one instance per contex
 
 ```ts cordis-catalog
 /**
+ * Everything recorded about one name, read together. The browser's right
+ * column shows the stance against the chain that produced it, so the two
+ * must come from one observation rather than from two round trips.
+ * @param instrument - the instrument to read.
+ * @returns the stance, the chain newest first, and the bound sessions.
+ */
+@Remote('read') read(instrument: InstrumentRef): NameRecordView
+
+/**
+ * Record one entry, stamped now. The service takes the instant as a
+ * parameter so its records stay reproducible under test; this is the entry
+ * point that knows a user action happens at this moment.
+ * @param instrument - the instrument the entry is about.
+ * @param request - what to record.
+ * @returns the stored entry.
+ * @throws {@link NameRecordError} on every refusal {@link append} raises.
+ */
+@Remote('append') recordEntry(instrument: InstrumentRef, request: ChainEntryRequest): Promise<ChainEntry>
+
+/**
+ * Set where the user stands, stamped now.
+ * @param instrument - the instrument to set.
+ * @param request - the fields to change.
+ * @returns the stored stance.
+ * @throws {@link NameRecordError} when a position is outside 0..100.
+ */
+@Remote('setStance') updateStance(instrument: InstrumentRef, request: StanceRequest): Promise<NameStance>
+
+/**
  * One name's decision chain, newest first.
  * @param instrument - the instrument to read.
  * @returns a snapshot array; empty when nothing has been recorded.
@@ -164,10 +193,10 @@ async setStance(instrument: InstrumentRef, request: StanceRequest, now: string):
  * @param sessionId - the conversation to bind.
  * @returns the bound sessions in order.
  */
-async bindSession(instrument: InstrumentRef, sessionId: SessionId): Promise<readonly SessionId[]>
+@Remote('bindSession') async bindSession(instrument: InstrumentRef, sessionId: SessionId): Promise<readonly SessionId[]>
 ```
 
 Types: [InstrumentRef](market-data.md) · [SessionId](core.md)
 
-Source: [`packages/investment/name-record/src/index.ts:86`](../../packages/investment/name-record/src/index.ts)
+Source: [`packages/investment/name-record/src/index.ts:92`](../../packages/investment/name-record/src/index.ts)
 <!-- END GENERATED cordis-surface -->

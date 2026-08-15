@@ -471,6 +471,7 @@ export const LINK_MAP: Readonly<Record<string, string>> = {
   ChainEntryRequest: 'name-record.md',
   ChainSource: 'name-record.md',
   NameDossier: 'watchlist.md',
+  NameRecordView: 'name-record.md',
   NameStance: 'name-record.md',
   StanceRequest: 'name-record.md',
   WatchlistRow: 'watchlist.md',

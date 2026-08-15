@@ -133,6 +133,20 @@ export interface StanceRequest {
   readonly conviction?: 'low' | 'medium' | 'high' | null
 }
 
+/**
+ * Everything one name's record holds, read together. A right column assembled
+ * from three round trips shows three different instants, and the stance is
+ * read against the chain that produced it.
+ */
+export interface NameRecordView {
+  /** Where the user stands, or null until they say. */
+  readonly stance: NameStance | null
+  /** The decision chain, newest first. */
+  readonly chain: readonly ChainEntry[]
+  /** The conversations bound to this name, in the order they were bound. */
+  readonly sessions: readonly SessionId[]
+}
+
 /** Reasons the name-record service refuses a request. */
 export type NameRecordErrorCode =
   | 'NAME_RECORD_EMPTY_BODY'

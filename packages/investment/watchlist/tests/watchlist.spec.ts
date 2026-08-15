@@ -13,6 +13,7 @@ import Storage from '@deepseek-ai/dsh-storage'
 import { DomainFacility } from '@deepseek-ai/dsh-storage-domain'
 import { MemoryMediaPool, MemoryStorageBackend } from '../../../storage/storage-domain/tests/helpers/memory-backend.ts'
 import FollowedNamesService from '@deepseek-ai/dsh-followed-names'
+import NameRecordService from '@deepseek-ai/dsh-name-record'
 import MarketDataRuntime, { MarketDataError } from '@deepseek-ai/dsh-market-data'
 import type { MarketDataProvider, Quote } from '@deepseek-ai/dsh-market-data'
 // Source-plane import: the fixture raises MarketDataError, and the built
@@ -53,6 +54,7 @@ async function composition(provider?: MarketDataProvider | 'none') {
   ctx.storage.mount('domain', facility)
   ctx.provide('storageDomain', facility)
   await ctx.plugin(FollowedNamesService, { archivePath: archiveRoot() }).await()
+  await ctx.plugin(NameRecordService).await()
   await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500, maxSearchMatches: 20 }).await()
   if (provider === undefined) await ctx.plugin(marketDataFixture, {}).await()
   else if (provider !== 'none') ctx.marketData.registerProvider(provider)
@@ -105,6 +107,7 @@ describe('the watchlist join', () => {
     expect(rows[0]?.instrument).toEqual(CATL)
     expect(rows[0]?.displayName).toBe('宁德时代')
     expect(rows[0]?.firstFollowedAt).toBe(T1)
+    expect(rows[0]?.openTheses).toBe(0)
     expect(rows[0]?.quote?.last).toBeGreaterThan(0)
     expect(rows[0]?.quote?.currency).toBe('CNY')
   })
@@ -135,6 +138,34 @@ describe('the watchlist join', () => {
     const ctx = await bench()
 
     expect(await ctx.watchlist.list()).toEqual({ rows: [] })
+  })
+})
+
+describe('the row markers', () => {
+  it('lists names in follow order, so the list does not reshuffle between glances', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(MOUTAI, '贵州茅台', '2026-08-20T07:00:00.000Z')
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    const { rows } = await ctx.watchlist.list()
+
+    // CATL was followed first, so it leads regardless of write order.
+    expect(rows.map(row => row.instrument.symbol)).toEqual([CATL.symbol, MOUTAI.symbol])
+  })
+
+  it('counts the theses still waiting, which is what the unverified marker draws', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    const thesis = await ctx.nameRecord.append(CATL, { kind: 'thesis', body: '毛利率见底', source: { kind: 'manual' } }, T1)
+    await ctx.nameRecord.append(CATL, { kind: 'thesis', body: '订单慢一个季度', source: { kind: 'manual' } }, T1)
+
+    expect((await ctx.watchlist.list()).rows[0]?.openTheses).toBe(2)
+
+    await ctx.nameRecord.append(CATL, {
+      kind: 'verification', body: '成立', source: { kind: 'manual' }, settles: thesis.id, verdict: 'confirmed',
+    }, T1)
+
+    expect((await ctx.watchlist.list()).rows[0]?.openTheses).toBe(1)
   })
 })
 

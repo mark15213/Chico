@@ -21,6 +21,9 @@
       "path": "../market-data"
     },
     {
+      "path": "../name-record"
+    },
+    {
       "path": "../../typert/protocol"
     },
     {

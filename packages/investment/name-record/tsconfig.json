@@ -30,6 +30,9 @@
       "path": "../market-data"
     },
     {
+      "path": "../../typert/protocol"
+    },
+    {
       "path": "../../runtime-diagnostics/invariants"
     }
   ]

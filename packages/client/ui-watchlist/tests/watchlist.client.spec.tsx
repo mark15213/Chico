@@ -54,6 +54,7 @@ function row(over?: Partial<WatchlistRow>): WatchlistRow {
     instrument: CATL,
     displayName: '宁德时代',
     firstFollowedAt: '2026-08-14T07:00:00.000Z',
+    openTheses: 0,
     quote: quote(),
     ...over,
   }

@@ -43,6 +43,9 @@
       "path": "../../investment/market-data"
     },
     {
+      "path": "../../investment/name-record"
+    },
+    {
       "path": "../../investment/watchlist"
     },
     {

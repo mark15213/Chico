@@ -888,6 +888,9 @@ importers:
       '@deepseek-ai/dsh-message-feedback':
         specifier: workspace:^
         version: link:../../feedback/message-feedback
+      '@deepseek-ai/dsh-name-record':
+        specifier: workspace:^
+        version: link:../../investment/name-record
       '@deepseek-ai/dsh-session':
         specifier: workspace:^
         version: link:../../core/session
@@ -5273,6 +5276,9 @@ importers:
       '@deepseek-ai/dsh-storage-domain':
         specifier: workspace:^
         version: link:../../storage/storage-domain
+      '@deepseek-ai/dsh-typert-protocol':
+        specifier: workspace:^
+        version: link:../../typert/protocol
 
   packages/investment/tool-market-data:
     dependencies:
@@ -5320,6 +5326,9 @@ importers:
       '@deepseek-ai/dsh-market-data':
         specifier: workspace:^
         version: link:../market-data
+      '@deepseek-ai/dsh-name-record':
+        specifier: workspace:^
+        version: link:../name-record
       '@deepseek-ai/dsh-storage':
         specifier: workspace:^
         version: link:../../storage/storage

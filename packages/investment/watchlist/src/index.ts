@@ -2,9 +2,10 @@
  * Watchlist projection (`ctx.watchlist`): the browser-facing join of the
  * followed-names registry with market data — quotes for the rows, session
  * history for one name read on its own, and instrument lookup for the path
- * onto the list — exposed over Typert Remote.
+ * onto the list — plus the open-thesis count each row's marker is drawn from.
+ * Exposed over Typert Remote.
  *
- * This is a Consumer of two capability seams rather than a seam of its own.
+ * This is a Consumer of three sources rather than a seam of its own.
  * The registry deliberately knows nothing about prices, and the market-data
  * seam knows nothing about what a user follows; a surface that shows a name
  * beside its price needs both, and that join lives here so neither seam grows
@@ -16,6 +17,7 @@ import { Context } from '@deepseek-ai/cordis'
 import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol'
 // Typert-generated ./typert and ./remote artifacts import Zod at runtime.
 import type {} from 'zod'
+import type {} from '@deepseek-ai/dsh-name-record'
 import type { FollowedName } from '@deepseek-ai/dsh-followed-names'
 import { FollowedNameError, nameKey } from '@deepseek-ai/dsh-followed-names'
 import type { InstrumentRef, Quote } from '@deepseek-ai/dsh-market-data'
@@ -63,7 +65,7 @@ function isUnknownInstrument(error: unknown): boolean {
  * context) and reachable from a browser as the `watchlist` Remote namespace.
  */
 export class WatchlistService extends TypertRemoteService {
-  static inject = ['followedNames', 'marketData']
+  static inject = ['followedNames', 'marketData', 'nameRecord']
 
   /** @param ctx - Host context carrying the registry and the market-data seam. */
   constructor(ctx: Context) {
@@ -81,7 +83,11 @@ export class WatchlistService extends TypertRemoteService {
    */
   @Remote('list')
   async list(signal?: AbortSignal): Promise<WatchlistSnapshot> {
-    const records = this.ctx.followedNames.listFollowed()
+    // Follow order, which is the order the user built the list in. Sorting by
+    // anything the market decides would reshuffle the list under the reader
+    // between two glances.
+    const records = [...this.ctx.followedNames.listFollowed()]
+      .sort((left, right) => left.firstFollowedAt.localeCompare(right.firstFollowedAt))
     const rows = await Promise.all(records.map(record => this.row(record, signal)))
     return { rows }
   }
@@ -169,7 +175,7 @@ export class WatchlistService extends TypertRemoteService {
       throw error
     }
     const record = await this.ctx.followedNames.follow(instrument, quote.name, new Date().toISOString())
-    return { ok: true, row: { ...projection(record), quote } }
+    return { ok: true, row: { ...this.projection(record), quote } }
   }
 
   /**
@@ -186,10 +192,20 @@ export class WatchlistService extends TypertRemoteService {
     return this.ctx.followedNames.listFollowed().length
   }
 
+  /** The record fields a row carries, with the open-thesis count beside them. */
+  private projection(record: FollowedName): Omit<WatchlistRow, 'quote'> {
+    return {
+      instrument: record.instrument,
+      displayName: record.displayName,
+      firstFollowedAt: record.firstFollowedAt,
+      openTheses: this.ctx.nameRecord.openTheses(record.instrument).length,
+    }
+  }
+
   /** One record joined with its quote, degrading the quote rather than the row. */
   private async row(record: FollowedName, signal?: AbortSignal): Promise<WatchlistRow> {
     const quote = await this.degrade(() => this.ctx.marketData.quote({ instrument: record.instrument }, signal))
-    return { ...projection(record), quote }
+    return { ...this.projection(record), quote }
   }
 
   /**
@@ -209,12 +225,6 @@ export class WatchlistService extends TypertRemoteService {
 }
 
 /** The record fields a row carries; `followed` and `updatedAt` stay internal. */
-function projection(record: FollowedName): Omit<WatchlistRow, 'quote'> {
-  return {
-    instrument: record.instrument,
-    displayName: record.displayName,
-    firstFollowedAt: record.firstFollowedAt,
-  }
-}
+
 
 export default WatchlistService

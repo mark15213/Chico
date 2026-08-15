@@ -6,6 +6,7 @@ import goalsRemote from '@deepseek-ai/dsh-goal/remote'
 import dynamicRemote from '@deepseek-ai/dsh-cordis-host-runner/remote'
 import pluginInventoryRemote from '@deepseek-ai/dsh-host-plugin-inventory/remote'
 import messageFeedbackRemote from '@deepseek-ai/dsh-message-feedback/remote'
+import nameRecordRemote from '@deepseek-ai/dsh-name-record/remote'
 import watchlistRemote from '@deepseek-ai/dsh-watchlist/remote'
 import type { TypertClientRemote } from '@deepseek-ai/dsh-typert-protocol'
 
@@ -16,10 +17,15 @@ export type {
   WatchlistSnapshot,
 } from '@deepseek-ai/dsh-watchlist/types'
 export type { InstrumentRef, Market, PriceBar, Quote } from '@deepseek-ai/dsh-market-data/types'
+export type {
+  ChainEntry, ChainEntryId, ChainEntryRequest, ChainSource, NameRecordView, NameStance,
+  StancePosture, StanceRequest, ThesisResolution,
+} from '@deepseek-ai/dsh-name-record/types'
 export type {} from '@deepseek-ai/dsh-commands/remote'
 export type {} from '@deepseek-ai/dsh-goal/remote'
 export type {} from '@deepseek-ai/dsh-host-plugin-inventory/remote'
 export type {} from '@deepseek-ai/dsh-message-feedback/remote'
+export type {} from '@deepseek-ai/dsh-name-record/remote'
 export type {} from '@deepseek-ai/dsh-watchlist/remote'
 // The forwarded-event allowlist's selection seat: without it in the consumer's
 // compilation face `TypertRemoteEvent` is `never` and every `$on` call fails.
@@ -114,7 +120,7 @@ export async function apply(ctx: Context): Promise<() => Promise<void>> {
   try {
     for (const contribution of [
       commandsRemote, goalsRemote, dynamicRemote, pluginInventoryRemote, messageFeedbackRemote,
-      watchlistRemote,
+      watchlistRemote, nameRecordRemote,
     ]) {
       disposers.push(await ctx.remote.$mount(contribution))
     }

@@ -1,7 +1,8 @@
 /**
  * Name record (`ctx.nameRecord`): everything the user has said and done about
  * one instrument — the stance they hold, the decision chain behind it, and the
- * conversations bound to it.
+ * conversations bound to it. Also the `nameRecord` Typert Remote namespace,
+ * because the workbench's right column is the record's only surface.
  *
  * It is deliberately independent of whether the name is followed. A user can
  * open any instrument, write a thesis, and decide about the watchlist later;
@@ -11,6 +12,9 @@
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
+import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol'
+// Typert-generated ./typert and ./remote artifacts import Zod at runtime.
+import type {} from 'zod'
 import type { KvTable } from '@deepseek-ai/dsh-storage-domain'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { InstrumentRef } from '@deepseek-ai/dsh-market-data'
@@ -19,6 +23,7 @@ import type {
   ChainEntry,
   ChainEntryId,
   ChainEntryRequest,
+  NameRecordView,
   NameStance,
   StanceRequest,
 } from './types.ts'
@@ -31,6 +36,7 @@ export type {
   ChainEntryRequest,
   ChainSource,
   NameRecordErrorCode,
+  NameRecordView,
   NameStance,
   StancePosture,
   StanceRequest,
@@ -83,7 +89,7 @@ function daysBetween(from: string, to: string): number {
  * The name-record service. Registered as `ctx.nameRecord` (one instance per
  * context).
  */
-export class NameRecordService extends Service {
+export class NameRecordService extends TypertRemoteService {
   static inject = ['storageDomain']
 
   private table?: KvTable<string, NameRecordRow>
@@ -92,6 +98,48 @@ export class NameRecordService extends Service {
   /** @param ctx - Host context carrying the storage-domain form. */
   constructor(ctx: Context) {
     super(ctx, 'nameRecord')
+  }
+
+  /**
+   * Everything recorded about one name, read together. The browser's right
+   * column shows the stance against the chain that produced it, so the two
+   * must come from one observation rather than from two round trips.
+   * @param instrument - the instrument to read.
+   * @returns the stance, the chain newest first, and the bound sessions.
+   */
+  @Remote('read')
+  read(instrument: InstrumentRef): NameRecordView {
+    return {
+      stance: this.stance(instrument) ?? null,
+      chain: this.chain(instrument),
+      sessions: this.sessions(instrument),
+    }
+  }
+
+  /**
+   * Record one entry, stamped now. The service takes the instant as a
+   * parameter so its records stay reproducible under test; this is the entry
+   * point that knows a user action happens at this moment.
+   * @param instrument - the instrument the entry is about.
+   * @param request - what to record.
+   * @returns the stored entry.
+   * @throws {@link NameRecordError} on every refusal {@link append} raises.
+   */
+  @Remote('append')
+  recordEntry(instrument: InstrumentRef, request: ChainEntryRequest): Promise<ChainEntry> {
+    return this.append(instrument, request, new Date().toISOString())
+  }
+
+  /**
+   * Set where the user stands, stamped now.
+   * @param instrument - the instrument to set.
+   * @param request - the fields to change.
+   * @returns the stored stance.
+   * @throws {@link NameRecordError} when a position is outside 0..100.
+   */
+  @Remote('setStance')
+  updateStance(instrument: InstrumentRef, request: StanceRequest): Promise<NameStance> {
+    return this.setStance(instrument, request, new Date().toISOString())
   }
 
   /** Open the record's own domain. */
@@ -220,6 +268,7 @@ export class NameRecordService extends Service {
    * @param sessionId - the conversation to bind.
    * @returns the bound sessions in order.
    */
+  @Remote('bindSession')
   async bindSession(instrument: InstrumentRef, sessionId: SessionId): Promise<readonly SessionId[]> {
     const row = this.row(instrument)
     if (row.sessions.includes(sessionId)) return brandSessions(row.sessions)

@@ -985,6 +985,26 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     description: 'The name-record service. Registered as `ctx.nameRecord` (one instance per context).',
     methods: [
       {
+        signature: '@Remote(\'read\') read(instrument: InstrumentRef): NameRecordView',
+        description: 'Everything recorded about one name, read together. The browser\'s right column shows the stance against the chain that produced it, so the two must come from one observation rather than from two round trips.',
+        parameters: [{ name: 'instrument', description: 'the instrument to read.' }],
+        returns: 'the stance, the chain newest first, and the bound sessions.',
+      },
+      {
+        signature: '@Remote(\'append\') recordEntry(instrument: InstrumentRef, request: ChainEntryRequest): Promise<ChainEntry>',
+        description: 'Record one entry, stamped now. The service takes the instant as a parameter so its records stay reproducible under test; this is the entry point that knows a user action happens at this moment.',
+        parameters: [{ name: 'instrument', description: 'the instrument the entry is about.' }, { name: 'request', description: 'what to record.' }],
+        returns: 'the stored entry.',
+        throws: ['{@link NameRecordError} on every refusal {@link append} raises.'],
+      },
+      {
+        signature: '@Remote(\'setStance\') updateStance(instrument: InstrumentRef, request: StanceRequest): Promise<NameStance>',
+        description: 'Set where the user stands, stamped now.',
+        parameters: [{ name: 'instrument', description: 'the instrument to set.' }, { name: 'request', description: 'the fields to change.' }],
+        returns: 'the stored stance.',
+        throws: ['{@link NameRecordError} when a position is outside 0..100.'],
+      },
+      {
         signature: 'chain(instrument: InstrumentRef): readonly ChainEntry[]',
         description: 'One name\'s decision chain, newest first.',
         parameters: [{ name: 'instrument', description: 'the instrument to read.' }],
@@ -1023,7 +1043,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         throws: ['{@link NameRecordError} when a position is outside 0..100.'],
       },
       {
-        signature: 'async bindSession(instrument: InstrumentRef, sessionId: SessionId): Promise<readonly SessionId[]>',
+        signature: '@Remote(\'bindSession\') async bindSession(instrument: InstrumentRef, sessionId: SessionId): Promise<readonly SessionId[]>',
         description: 'Bind a conversation to a name, so the name\'s surfaces can list it and the chain\'s provenance links can reach it. Binding the same session twice is a no-op rather than an error, because a surface may bind on every send.',
         parameters: [{ name: 'instrument', description: 'the instrument the conversation is about.' }, { name: 'sessionId', description: 'the conversation to bind.' }],
         returns: 'the bound sessions in order.',
@@ -3680,6 +3700,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface NameDossier {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly followed: boolean;\n    readonly quote: Quote | null;\n    readonly bars: readonly PriceBar[];\n    readonly adjustment: \'none\' | \'backward\' | \'forward\';\n}',
   },
   {
+    name: 'NameRecordView',
+    declaration: 'export interface NameRecordView {\n    readonly stance: NameStance | null;\n    readonly chain: readonly ChainEntry[];\n    readonly sessions: readonly SessionId[];\n}',
+  },
+  {
     name: 'NameStance',
     declaration: 'export interface NameStance {\n    readonly instrument: InstrumentRef;\n    readonly posture: StancePosture;\n    readonly positionPercent: number | null;\n    readonly conviction: \'low\' | \'medium\' | \'high\' | null;\n    readonly updatedAt: string;\n}',
   },
@@ -4793,7 +4817,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'WatchlistRow',
-    declaration: 'export interface WatchlistRow {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly quote: Quote | null;\n}',
+    declaration: 'export interface WatchlistRow {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly openTheses: number;\n    readonly quote: Quote | null;\n}',
   },
   {
     name: 'WatchlistSearchMatch',

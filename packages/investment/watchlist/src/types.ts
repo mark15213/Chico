@@ -23,6 +23,12 @@ export interface WatchlistRow {
   /** ISO-8601 instant of the first follow, which is the row's age. */
   readonly firstFollowedAt: string
   /**
+   * How many of this name's theses are still waiting to be settled. The
+   * marker a list draws from it is the product's own: a general agent neither
+   * remembers what you claimed nor tells you it is time to check.
+   */
+  readonly openTheses: number
+  /**
    * Current quote, or `null` when the provider could not price this
    * instrument. A row that cannot be priced still belongs on the watchlist:
    * a suspended or delisted name is exactly the one a user needs to see.
