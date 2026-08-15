@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 /**
- * Watchlist tab: the pure row derivations, the instrument lookup and its
- * debounce, the view's states over a stubbed Remote face, and the view-ring
- * registration with fiber teardown proving removal (HMR safety).
+ * Watchlist surfaces: the pure row derivations, the instrument lookup and its
+ * debounce, the tab's states over a stubbed Remote face, the name page, the
+ * pinned sidebar list, the one store both surfaces read, and the registrations
+ * with fiber teardown proving removal (HMR safety).
  */
 import { Context, Service } from '@deepseek-ai/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -22,6 +23,8 @@ import {
   rowFigures,
 } from '../src/client/watchlist-model.ts'
 import { WatchlistView, type WatchlistViewInjected } from '../src/client/WatchlistView.tsx'
+import { WatchlistRail } from '../src/client/WatchlistRail.tsx'
+import { WatchlistFeed } from '../src/client/watchlist-store.ts'
 import * as watchlistPlugin from '../src/client/index.ts'
 
 afterEach(cleanup)
@@ -77,10 +80,22 @@ function dossierOf(over?: Partial<NameDossier>): NameDossier {
   }
 }
 
-/** A view over a stubbed Remote face; every call resolves unless overridden. */
-function mount(over?: Partial<WatchlistViewInjected>, snapshot: WatchlistSnapshot = { rows: [row()] }) {
+/** How the host answers `watchlist.list` for one mounted view. */
+type ListRead = () => Promise<WatchlistSnapshot>
+
+/**
+ * A view over a stubbed Remote face and the real feed. `read` replaces what
+ * the rows come from; everything else resolves unless overridden.
+ */
+function mount(
+  over?: Partial<Omit<WatchlistViewInjected, 'rows'>>,
+  snapshot: WatchlistSnapshot = { rows: [row()] },
+  read?: ListRead,
+) {
+  const list = vi.fn(read ?? (() => Promise.resolve(snapshot)))
+  const feed = new WatchlistFeed(list)
   const injected: WatchlistViewInjected = {
-    list: vi.fn(() => Promise.resolve(snapshot)),
+    rows: feed,
     search: vi.fn(() => Promise.resolve({
       matches: [{ instrument: MOUTAI, name: '贵州茅台', followed: false }],
     })),
@@ -89,11 +104,11 @@ function mount(over?: Partial<WatchlistViewInjected>, snapshot: WatchlistSnapsho
     unfollow: vi.fn(() => Promise.resolve()),
     ...over,
   }
-  // The view reads only the inject face plus the locale seat off the full
-  // runtime share, so the cast supplies those alone (as the tool-row tests do).
+  // The view reads the inject face and the locale seat off the full runtime
+  // share, so the cast supplies those alone.
   const props = { ...injected, t } as unknown as Parameters<typeof WatchlistView>[0]
   const view = render(<WatchlistView {...props} />)
-  return { view, injected }
+  return { view, injected, list }
 }
 
 describe('row derivations', () => {
@@ -162,10 +177,10 @@ describe('the watchlist tab', () => {
   })
 
   it('offers a retry when the list cannot be read', async () => {
-    const list = vi.fn()
+    const read = vi.fn<ListRead>()
       .mockRejectedValueOnce(new Error('offline'))
       .mockResolvedValueOnce({ rows: [row()] })
-    const { view } = mount({ list })
+    const { view } = mount(undefined, undefined, read)
 
     expect(await screen.findByRole('alert')).toBeTruthy()
     fireEvent.click(view.getByText('Retry'))
@@ -254,14 +269,14 @@ describe('the instrument lookup', () => {
 
 describe('following a match', () => {
   it('follows the picked instrument, then reloads and clears the field', async () => {
-    const { view, injected } = mount()
+    const { view, injected, list } = mount()
     fireEvent.change(view.getByLabelText('Search instruments'), { target: { value: '600519' } })
     const add = await view.findByLabelText('Follow 贵州茅台')
 
     fireEvent.click(add)
 
     await waitFor(() => { expect(injected.follow).toHaveBeenCalledWith(MOUTAI) })
-    await waitFor(() => { expect(injected.list).toHaveBeenCalledTimes(2) })
+    await waitFor(() => { expect(list).toHaveBeenCalledTimes(2) })
     expect((view.getByLabelText('Search instruments') as HTMLInputElement).value).toBe('')
   })
 
@@ -278,13 +293,13 @@ describe('following a match', () => {
 
 describe('unfollowing from a row', () => {
   it('sends the row instrument and reloads', async () => {
-    const { view, injected } = mount()
+    const { view, injected, list } = mount()
     await screen.findByText('宁德时代')
 
     fireEvent.click(view.getByLabelText('Unfollow 宁德时代'))
 
     await waitFor(() => { expect(injected.unfollow).toHaveBeenCalledWith(CATL) })
-    expect(injected.list).toHaveBeenCalledTimes(2)
+    await waitFor(() => { expect(list).toHaveBeenCalledTimes(2) })
   })
 
   it('names the row that failed, since a list of rows has more than one', async () => {
@@ -350,12 +365,12 @@ describe('opening a name', () => {
   })
 
   it('returns to the list, which is read again on the way back', async () => {
-    const { view, injected } = mount()
+    const { view, list } = mount()
     await open(view)
     fireEvent.click(await view.findByText('← Watchlist'))
 
     expect(await view.findByLabelText('Open 宁德时代')).toBeTruthy()
-    expect(injected.list).toHaveBeenCalled()
+    expect(list).toHaveBeenCalled()
   })
 
   it('unfollows from the page and returns to the list', async () => {
@@ -368,6 +383,88 @@ describe('opening a name', () => {
   })
 })
 
+describe('the pinned sidebar list', () => {
+  /** The rail over the same store seat the tab uses. */
+  function mountRail(snapshot: WatchlistSnapshot = { rows: [row()] }) {
+    const list = vi.fn(() => Promise.resolve(snapshot))
+    const feed = new WatchlistFeed(list)
+    const props = { rows: feed, t } as unknown as Parameters<typeof WatchlistRail>[0]
+    return { view: render(<WatchlistRail {...props} />), list, feed }
+  }
+
+  it('lists each followed name with its price and change', async () => {
+    const { view } = mountRail()
+
+    expect(await view.findByText('宁德时代')).toBeTruthy()
+    expect(view.getByText('212.3')).toBeTruthy()
+    expect(view.getByText('+1.10%').getAttribute('data-direction')).toBe('up')
+  })
+
+  it('renders nothing while the record is empty, rather than a heading over a blank', async () => {
+    const { view, list } = mountRail({ rows: [] })
+
+    await waitFor(() => { expect(list).toHaveBeenCalled() })
+    expect(view.container.textContent).toBe('')
+  })
+
+  it('renders nothing when the read fails, since the sidebar has no room to explain', async () => {
+    const list = vi.fn(() => Promise.reject(new Error('offline')))
+    const feed = new WatchlistFeed(list)
+    const props = { rows: feed, t } as unknown as Parameters<typeof WatchlistRail>[0]
+    const view = render(<WatchlistRail {...props} />)
+
+    await waitFor(() => { expect(list).toHaveBeenCalled() })
+    expect(view.container.textContent).toBe('')
+  })
+
+  it('caps the list and says how many it left out, so it cannot squeeze the browser', async () => {
+    const many = Array.from({ length: 11 }, (_unused, index) => row({
+      instrument: { market: 'SZSE', symbol: `30000${index}` },
+      displayName: `名称${index}`,
+    }))
+    const { view } = mountRail({ rows: many })
+
+    expect(await view.findByText('名称0')).toBeTruthy()
+    expect(view.queryByText('名称8')).toBeNull()
+    expect(view.getByText('3 more')).toBeTruthy()
+  })
+
+  it('marks an unpriceable name rather than showing a blank figure', async () => {
+    const { view } = mountRail({ rows: [row({ quote: null })] })
+
+    expect(await view.findByText('No quote')).toBeTruthy()
+  })
+})
+
+describe('the shared store', () => {
+  it('gives both surfaces one answer, so following in the tab moves the sidebar', async () => {
+    let rows = [row()]
+    const list = vi.fn(() => Promise.resolve({ rows }))
+    const feed = new WatchlistFeed(list)
+    const railProps = { rows: feed, t } as unknown as Parameters<typeof WatchlistRail>[0]
+    const rail = render(<WatchlistRail {...railProps} />)
+    expect(await rail.findByText('宁德时代')).toBeTruthy()
+
+    rows = [row(), row({ instrument: MOUTAI, displayName: '贵州茅台' })]
+    await feed.refresh()
+
+    expect(await rail.findByText('贵州茅台')).toBeTruthy()
+  })
+
+  it('joins a refresh already in flight rather than reading twice', async () => {
+    let settle: (value: WatchlistSnapshot) => void = () => {}
+    const list = vi.fn(() => new Promise<WatchlistSnapshot>((resolve) => { settle = resolve }))
+    const feed = new WatchlistFeed(list)
+
+    const first = feed.refresh()
+    const second = feed.refresh()
+    settle({ rows: [row()] })
+    await Promise.all([first, second])
+
+    expect(list).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('view-ring registration', () => {
   /** The services the plugin declares, with the Remote namespace stubbed. */
   async function bench() {
@@ -376,7 +473,10 @@ describe('view-ring registration', () => {
     const slots = ctx.get('slots') as SlotRegistry
     slots.register({
       name: 'root',
-      children: { 'conversation.view': { kind: 'list', scope: 'session' } },
+      children: {
+        'conversation.view': { kind: 'list', scope: 'session' },
+        'sidebar.pinned': { kind: 'single', scope: 'root' },
+      },
     } as never, () => null)
     ctx.provide('locale', new LocaleRuntime(ctx))
     class RemoteService extends Service {
@@ -401,8 +501,23 @@ describe('view-ring registration', () => {
     expect(entry?.component).toBe(WatchlistView)
     expect(entry?.options).toMatchObject({ id: 'watchlist', order: 20 })
     expect(entry?.locale).toBe(NS)
-    // Registration must not price anything: the tab reads when it mounts.
+    // Registration must not price anything: each surface reads when it mounts.
     expect(b.list).not.toHaveBeenCalled()
+  })
+
+  it('registers the pinned sidebar list over the same store as the tab', async () => {
+    const b = await bench()
+    const fiber = b.ctx.plugin({ inject: [...watchlistPlugin.inject], apply: watchlistPlugin.apply })
+    await fiber.await()
+
+    const pinned = b.slots.entries('sidebar.pinned')[0]
+    expect(pinned?.component).toBe(WatchlistRail)
+    // One feed, so following in the tab moves the sidebar with it.
+    const railRows = (pinned?.inject as (() => { rows: unknown }) | undefined)?.().rows
+    const tab = b.slots.entries('conversation.view').find(row => row.options.id === 'watchlist')
+    const tabRows = (tab?.inject as (() => { rows: unknown }) | undefined)?.().rows
+    expect(railRows).toBeDefined()
+    expect(railRows).toBe(tabRows)
   })
 
   it('removes the tab when its fiber disposes (HMR safety)', async () => {
@@ -413,5 +528,6 @@ describe('view-ring registration', () => {
     await fiber.dispose()
 
     expect(b.slots.entries('conversation.view').map(entry => entry.options.id)).not.toContain('watchlist')
+    expect(b.slots.entries('sidebar.pinned')).toEqual([])
   })
 })

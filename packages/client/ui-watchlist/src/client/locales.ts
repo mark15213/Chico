@@ -30,6 +30,7 @@ export const zh = {
   'page.noHistory': '暂无历史行情。',
   'page.followedSince': '关注于',
   'page.recordHint': '笔记与洞察还没有落地，这里之后会是你自己的记录。',
+  'rail.more': '另有 {count} 只',
   'unfollow': '移出自选',
   'unfollowFailed': '移出失败，请重试。',
 } satisfies Record<string, string>
@@ -67,6 +68,7 @@ export const en = {
   'page.noHistory': 'No price history available.',
   'page.followedSince': 'Followed since',
   'page.recordHint': 'Notes and insights are not built yet; your own record will live here.',
+  'rail.more': '{count} more',
   'unfollow': 'Unfollow',
   'unfollowFailed': 'Could not unfollow the name. Try again.',
 } satisfies Record<WatchlistLocaleKey, string>

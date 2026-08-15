@@ -12,6 +12,16 @@ Clicking a row's name opens that name inside the same tab: the figures, a candle
 
 The tab is useful with an empty record: an empty watchlist states how to fill it instead of rendering a blank panel. Loading, failure, and retry stay local to the mounted component, and a failed read never exposes transport detail.
 
+## Two surfaces, one feed
+
+The package registers twice: the tab, and a pinned list above the sidebar's session browser (`sidebar.pinned`). Both render the same rows, so following a name in the tab moves the sidebar with it.
+
+The rows are not a slot `store` handle. A handle carries one scope, and these two slots do not share one — the view ring is session-scoped, the sidebar is root-scoped — while the rows are neither: they are one book, the same in every session. So the plugin owns a plain observable and hands both registrations the same subscription. A refresh requested while one is in flight joins it, because both surfaces refresh on mount.
+
+The sidebar half rides `ctx.slots.inject`, so a composition without `ui-sidebar` gets the tab and nothing else.
+
+The pinned list is a display, not navigation: its rows do not open anything. The sidebar is root-scoped, and neither surface that could receive a name — the view ring, the details column — is reachable from there. It is capped at eight names and says how many it left out, because the pinned region takes its own height and must not squeeze the session browser.
+
 ## The ring holds a tab whose data is not session-scoped
 
 The `conversation.view` slot is session-scoped, and the watchlist is one book that is the same in every session. The tab lives here anyway because that is where a professional switches between reading a conversation and reading positions; the component takes nothing from the session snapshot, so every session shows the same rows.

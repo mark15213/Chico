@@ -169,6 +169,18 @@ export function SidebarRoot({
         </button>
       </Tooltip>
 
+      {/* A pinned region sits above the browser and takes its own height.
+          Wide only: the rail is one icon per control, with no room for
+          content, and an occupant would have nothing legible to draw. */}
+      {wide && (
+        <div className={css.pinnedArea}>
+          {renderSlot('sidebar.pinned', {
+            wide,
+            expandSidebar: () => { if (collapsed) toggleSidebar() },
+          })}
+        </div>
+      )}
+
       {/* The browsing region fills the column between the controls and the
           foot in both states; its rail icon column rides the same slot. */}
       <div className={css.regionArea}>

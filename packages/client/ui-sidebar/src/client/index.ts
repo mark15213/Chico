@@ -41,10 +41,12 @@ export function apply(ctx: ClientContext): void {
     () => ctx.slots.register({
       name: 'sidebar',
       locale: NS,
-      // The shell owns geometry; ui-workspace registers the whole browsing
-      // region (header, search, session list, workspace dialogs), ui-settings
-      // registers the foot trigger + settings panel.
+      // The shell owns geometry; a pinned region above the browser is
+      // optional and unclaimed by default, ui-workspace registers the whole
+      // browsing region (header, search, session list, workspace dialogs),
+      // ui-settings registers the foot trigger + settings panel.
       children: {
+        'sidebar.pinned': { kind: 'single', scope: 'root' },
         'sidebar.workspaces': { kind: 'single', scope: 'root' },
         'sidebar.settings': { kind: 'single', scope: 'root' },
         'sidebar.footer.action': { kind: 'list', scope: 'root' },

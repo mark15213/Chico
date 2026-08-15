@@ -4,17 +4,17 @@ import type {
   NameDossier,
   WatchlistFollowResult,
   WatchlistSearchResult,
-  WatchlistSnapshot,
 } from '@deepseek-ai/dsh-api-remotes/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { instrumentLabel, normalizeQuery, rowFigures } from './watchlist-model.ts'
+import { useWatchlist, type WatchlistSource } from './watchlist-store.ts'
 import { NamePage } from './NamePage.tsx'
 import css from './WatchlistView.module.css'
 
-/** Registration-side Remote face the view calls through. */
+/** Registration-side face the view calls through. */
 export interface WatchlistViewInjected {
-  /** Read the current rows with their quotes. */
-  list: () => Promise<WatchlistSnapshot>
+  /** The rows, shared with the pinned sidebar list. */
+  rows: WatchlistSource
   /** Find listings a typed query names, marked with whether they are followed. */
   search: (query: string, limit: number, signal?: AbortSignal) => Promise<WatchlistSearchResult>
   /** Read one name's record with its quote and session history. */
@@ -30,11 +30,6 @@ export type WatchlistViewProps =
   PropsRuntime<'conversation.view'>
   & PropsLocale<'watchlist'>
   & InjectFace<WatchlistViewInjected>
-
-type ListState =
-  | { readonly status: 'loading' }
-  | { readonly status: 'error' }
-  | { readonly status: 'ready'; readonly snapshot: WatchlistSnapshot }
 
 type LookupState =
   | { readonly status: 'idle' }
@@ -61,27 +56,22 @@ const LOOKUP_DEBOUNCE_MS = 250
  * lookup that puts a name on the list. The tab is useful with an empty record —
  * an empty watchlist states how to fill it rather than showing a blank panel.
  */
-export function WatchlistView({ list, search, dossier, follow, unfollow, t }: WatchlistViewProps): ReactNode {
+export function WatchlistView({
+  rows: source, search, dossier, follow, unfollow, t,
+}: WatchlistViewProps): ReactNode {
   const fieldId = useId()
+  const { status, rows } = useWatchlist(source)
+  const refresh = source.refresh
   const [opened, setOpened] = useState<InstrumentRef | null>(null)
-  const [request, setRequest] = useState(0)
-  const [state, setState] = useState<ListState>({ status: 'loading' })
   const [query, setQuery] = useState('')
   const [lookup, setLookup] = useState<LookupState>({ status: 'idle' })
   const [adding, setAdding] = useState<string | null>(null)
   const [addFailed, setAddFailed] = useState(false)
   const [rowFailure, setRowFailure] = useState<string | null>(null)
 
-  useEffect(() => {
-    let current = true
-    void Promise.resolve().then(() => list()).then(
-      (snapshot) => { if (current) setState({ status: 'ready', snapshot }) },
-      () => { if (current) setState({ status: 'error' }) },
-    )
-    return () => { current = false }
-  }, [list, request])
+  useEffect(() => { void refresh() }, [refresh])
 
-  const reload = useCallback(() => { setRequest(value => value + 1) }, [])
+  const reload = useCallback(() => { void refresh() }, [refresh])
 
   // One in-flight lookup at a time: a later keystroke aborts the request the
   // previous one started, so a slow early prefix cannot land over a later
@@ -132,12 +122,6 @@ export function WatchlistView({ list, search, dossier, follow, unfollow, t }: Wa
     void unfollow(instrument).then(reload, () => { setRowFailure(instrumentLabel(instrument)) })
   }
 
-  const retry = (): void => {
-    setState({ status: 'loading' })
-    reload()
-  }
-
-  const rows = state.status === 'ready' ? state.snapshot.rows : []
 
   // The page replaces the list inside the tab rather than opening beside it:
   // the details column still belongs to the tool inspector, and a name is read
@@ -158,13 +142,13 @@ export function WatchlistView({ list, search, dossier, follow, unfollow, t }: Wa
   }
 
   return (
-    <div className={css.view} aria-busy={state.status === 'loading'}>
+    <div className={css.view} aria-busy={status === 'loading'}>
       <header className={css.header}>
         <h2 className={css.title}>{t('title')}</h2>
-        {state.status === 'ready' ? (
+        {status === 'ready' ? (
           <span className={css.count}>{t('count', { count: rows.length })}</span>
         ) : null}
-        <button type="button" className={css.refresh} onClick={retry}>{t('refresh')}</button>
+        <button type="button" className={css.refresh} onClick={reload}>{t('refresh')}</button>
       </header>
 
       <div className={css.lookup}>
@@ -223,14 +207,14 @@ export function WatchlistView({ list, search, dossier, follow, unfollow, t }: Wa
         <p className={css.failure} role="alert">{`${rowFailure} · ${t('unfollowFailed')}`}</p>
       ) : null}
 
-      {state.status === 'loading' ? <p className={css.status}>{t('loading')}</p> : null}
-      {state.status === 'error' ? (
+      {status === 'loading' ? <p className={css.status}>{t('loading')}</p> : null}
+      {status === 'error' ? (
         <div className={css.failure}>
           <p role="alert">{t('error')}</p>
-          <button type="button" onClick={retry}>{t('retry')}</button>
+          <button type="button" onClick={reload}>{t('retry')}</button>
         </div>
       ) : null}
-      {state.status === 'ready' && rows.length === 0 ? (
+      {status === 'ready' && rows.length === 0 ? (
         <div className={css.empty}>
           <p>{t('empty')}</p>
           <p className={css.emptyHint}>{t('emptyHint')}</p>

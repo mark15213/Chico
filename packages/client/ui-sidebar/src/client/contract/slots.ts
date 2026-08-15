@@ -2,6 +2,7 @@
  * Sidebar slot contract: the registrant-side props composition for the
  * layout-owned `sidebar` slot, plus the holes this shell declares. The shell
  * owns column geometry (fold state machine, brand row, New Session);
+ * `sidebar.pinned` is an optional wide-only region above the browser,
  * everything between the section header and the list bottom is the
  * `sidebar.workspaces` registrant's (ui-workspace), and the foot is the
  * `sidebar.settings` registrant's (ui-settings), followed by optional footer
@@ -15,6 +16,17 @@ import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
+    /**
+     * A region above the browsing region, for content the reader keeps in
+     * view while working on something else — pinned in the sense that it does
+     * not scroll with the session list and does not change with the open
+     * session. It takes its natural height, so an occupant that could grow
+     * without bound must cap itself rather than squeeze the browser.
+     *
+     * Rendered only while the column is wide: the 56px rail has room for one
+     * icon per control and nothing that reads as content.
+     */
+    'sidebar.pinned': { kind: 'single'; scope: 'root'; owner: SidebarSectionOwnerProps }
     /**
      * The workspace/session browsing region: section header, search, the
      * grouped/flat session list, and every workspace dialog. Declared by this
@@ -85,5 +97,5 @@ export type SidebarRootInjected = {
  */
 export type SidebarRootComponentProps =
   PropsRuntime<'sidebar'>
-  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
+  & PropsRenderSlots<'sidebar.pinned' | 'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
   & SidebarRootInjected & PropsLocale<'sidebar'>

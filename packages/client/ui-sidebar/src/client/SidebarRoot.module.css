@@ -224,6 +224,16 @@
 /* Region seat: always mounted so the foot never moves. Its trailing margin
    cancels the wide shell inset so the nested scrollbar can sit at the sidebar
    edge; the browser restores that inset inside its own rows. */
+/* The pinned region takes its natural height above the browser and never
+   competes with it for space: the browser flexes, this does not. An occupant
+   that could grow without bound caps itself. */
+.pinnedArea {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .regionArea {
   flex: 1;
   min-height: 0;
