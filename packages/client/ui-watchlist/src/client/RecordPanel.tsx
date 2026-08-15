@@ -52,7 +52,7 @@ type Loaded = { readonly record: NameRecordView; readonly dossier: NameDossier |
  * @returns the column, or the empty state before a name is opened.
  */
 export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProps): ReactNode {
-  const instrument = useWorkbenchFocus(focus)
+  const { instrument } = useWorkbenchFocus(focus)
   const [state, setState] = useState<Loaded | 'loading' | 'error'>('loading')
   const [kind, setKind] = useState<(typeof WRITABLE)[number]>('thesis')
   const [body, setBody] = useState('')

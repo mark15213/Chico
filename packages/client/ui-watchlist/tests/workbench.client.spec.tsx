@@ -23,6 +23,7 @@ import { NamesFrame } from '../src/client/NamesFrame.tsx'
 import { RecordPanel } from '../src/client/RecordPanel.tsx'
 import { WatchlistFeed } from '../src/client/watchlist-store.ts'
 import { WorkbenchFocus } from '../src/client/workbench-store.ts'
+import { WorkbenchSessions } from '../src/client/workbench-sessions.ts'
 import * as workbench from '../src/client/index.ts'
 
 afterEach(cleanup)
@@ -145,12 +146,21 @@ function mountFrame(
     matches: [{ instrument: MOUTAI, name: '贵州茅台', followed: false }],
   }))
   const follow = over?.follow ?? vi.fn(() => Promise.resolve({}))
-  const revealRecord = vi.fn()
+  const open = vi.fn((instrument: typeof CATL) => { focus.open(instrument, []) })
+  const openConversation = vi.fn()
+  const startConversation = vi.fn()
+  const useSessions = (select: (state: unknown) => unknown) => select({
+    byId: { 's-1': { displayTitle: '本周储能订单节奏' }, 's-2': { displayTitle: 'Q2 财报速读' } },
+    current: 's-2',
+  })
   const props = {
-    rows: feed, search, follow, focus, revealRecord,
+    rows: feed, search, follow, focus, open, openConversation, startConversation, useSessions,
     wide: over?.wide ?? true, t,
   } as unknown as Parameters<typeof NamesFrame>[0]
-  return { view: render(<NamesFrame {...props} />), list, feed, focus, search, follow, revealRecord }
+  return {
+    view: render(<NamesFrame {...props} />),
+    list, feed, focus, search, follow, open, openConversation, startConversation,
+  }
 }
 
 describe('the names frame', () => {
@@ -176,22 +186,14 @@ describe('the names frame', () => {
     expect(view.queryByLabelText(/waiting to be settled/)).toBeNull()
   })
 
-  it('opens a name, which is what moves the other two columns', async () => {
-    const { view, focus } = mountFrame()
+  it('opens a name through the one call that moves every column', async () => {
+    // Setting the focus alone left the record column at zero width and the
+    // conversation on whatever session happened to be current.
+    const { view, open } = mountFrame()
 
     fireEvent.click(await view.findByText('宁德时代'))
 
-    expect(focus.snapshot()).toEqual(CATL)
-  })
-
-  it('reveals the record column, since a details panel starts closed', async () => {
-    // A selection that moved a column nobody can see is not navigation: the
-    // first build set the focus and left the column at zero width.
-    const { view, revealRecord } = mountFrame()
-
-    fireEvent.click(await view.findByText('宁德时代'))
-
-    expect(revealRecord).toHaveBeenCalledTimes(1)
+    expect(open).toHaveBeenCalledWith(CATL)
   })
 
   it('marks the open row, and moves the mark when another name opens', async () => {
@@ -206,7 +208,49 @@ describe('the names frame', () => {
       expect(view.getByText('贵州茅台').closest('button')?.getAttribute('aria-current')).toBe('true')
     })
     expect(view.getByText('宁德时代').closest('button')?.getAttribute('aria-current')).toBeNull()
-    expect(focus.snapshot()).toEqual(MOUTAI)
+    expect(focus.snapshot().instrument).toEqual(MOUTAI)
+  })
+
+  it('lists the conversations recorded against the open name, with live titles', async () => {
+    const { view, focus } = mountFrame()
+    await view.findByText('宁德时代')
+
+    focus.open(CATL, ['s-1', 's-2'] as never)
+
+    expect(await view.findByText('本周储能订单节奏')).toBeTruthy()
+    // The current one is marked, so the column says which conversation is open.
+    expect(view.getByText('Q2 财报速读').getAttribute('data-current')).toBe('true')
+  })
+
+  it('lists conversations only under the open name', async () => {
+    const { view, focus } = mountFrame({ rows: [row(), row({ instrument: MOUTAI, displayName: '贵州茅台' })] })
+    await view.findByText('宁德时代')
+
+    focus.open(MOUTAI, ['s-1'] as never)
+
+    await waitFor(() => { expect(view.getByText('本周储能订单节奏')).toBeTruthy() })
+    // One list, under the open row — not one per name.
+    expect(view.getAllByText('本周储能订单节奏')).toHaveLength(1)
+  })
+
+  it('offers a new conversation about the open name', async () => {
+    const { view, focus, startConversation } = mountFrame()
+    await view.findByText('宁德时代')
+    focus.open(CATL, [])
+
+    fireEvent.click(await view.findByText('+ New conversation'))
+
+    expect(startConversation).toHaveBeenCalledWith(CATL)
+  })
+
+  it('selects one of the listed conversations', async () => {
+    const { view, focus, openConversation } = mountFrame()
+    await view.findByText('宁德时代')
+    focus.open(CATL, ['s-1'] as never)
+
+    fireEvent.click(await view.findByText('本周储能订单节奏'))
+
+    expect(openConversation).toHaveBeenCalledWith('s-1')
   })
 
   it('says how to start when nothing is followed', async () => {
@@ -251,12 +295,12 @@ describe('the names frame lookup', () => {
   })
 
   it('opens an unfollowed match without following it first', async () => {
-    const { view, focus, follow } = mountFrame()
+    const { view, open, follow } = mountFrame()
     type(view, '600519')
 
     fireEvent.click(await view.findByLabelText('Open 贵州茅台'))
 
-    expect(focus.snapshot()).toEqual(MOUTAI)
+    expect(open).toHaveBeenCalledWith(MOUTAI)
     expect(follow).not.toHaveBeenCalled()
   })
 
@@ -437,11 +481,146 @@ describe('the shared selection', () => {
     const seen: unknown[] = []
     focus.subscribe(() => { seen.push(focus.snapshot()) })
 
-    focus.open(CATL)
-    focus.open(MOUTAI)
+    focus.open(CATL, [])
+    focus.open(MOUTAI, ['s-1'] as never)
 
     expect(seen).toHaveLength(2)
-    expect(focus.snapshot()).toEqual(MOUTAI)
+    expect(focus.snapshot()).toEqual({ instrument: MOUTAI, sessions: ['s-1'] })
+  })
+})
+
+describe('the centre column', () => {
+  /** A session list the test drives, plus the controller over it. */
+  function bench(bound: readonly string[] = []) {
+    let state = { byId: {} as Record<string, { blank: boolean } | undefined>, current: undefined as string | undefined }
+    const listeners = new Set<() => void>()
+    const publish = (next: typeof state) => {
+      state = next
+      for (const listener of listeners) listener()
+    }
+    const sessions = {
+      list: {
+        getSnapshot: () => state,
+        subscribe: (fn: () => void) => {
+          listeners.add(fn)
+          return () => listeners.delete(fn)
+        },
+      },
+      open: vi.fn(),
+      clear: vi.fn(),
+    }
+    const read = vi.fn(() => Promise.resolve({ sessions: bound }))
+    const bind = vi.fn((_i: unknown, id: string) => Promise.resolve([...bound, id]))
+    const focus = new WorkbenchFocus()
+    const controller = new WorkbenchSessions(
+      sessions as never, { read, bind } as never, focus,
+    )
+    const stop = controller.watch()
+    return { controller, sessions, read, bind, focus, publish, stop }
+  }
+
+  it('navigates to the name\u2019s most recent conversation', async () => {
+    const b = bench(['s-1', 's-2'])
+
+    await b.controller.open(CATL)
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-2')
+    expect(b.focus.snapshot()).toEqual({ instrument: CATL, sessions: ['s-1', 's-2'] })
+  })
+
+  it('publishes the name before the read, so the other columns move on the click', async () => {
+    const b = bench(['s-1'])
+    const seen: unknown[] = []
+    b.focus.subscribe(() => { seen.push(b.focus.snapshot().instrument) })
+
+    await b.controller.open(CATL)
+
+    // First publish carries the name with no conversations yet.
+    expect(seen[0]).toEqual(CATL)
+    expect(seen).toHaveLength(2)
+  })
+
+  it('clears into a blank conversation for a name with none', async () => {
+    const b = bench([])
+
+    await b.controller.open(CATL)
+
+    expect(b.sessions.clear).toHaveBeenCalled()
+    expect(b.sessions.open).not.toHaveBeenCalled()
+  })
+
+  it('binds the conversation once it stops being blank, not when it appears', async () => {
+    const b = bench([])
+    await b.controller.open(CATL)
+
+    // A blank session is the New Session view; every name would claim it.
+    b.publish({ byId: { 's-9': { blank: true } }, current: 's-9' })
+    expect(b.bind).not.toHaveBeenCalled()
+
+    b.publish({ byId: { 's-9': { blank: false } }, current: 's-9' })
+    await waitFor(() => { expect(b.bind).toHaveBeenCalledWith(CATL, 's-9') })
+  })
+
+  it('binds once, then stops claiming later conversations', async () => {
+    const b = bench([])
+    await b.controller.open(CATL)
+    b.publish({ byId: { 's-9': { blank: false } }, current: 's-9' })
+    await waitFor(() => { expect(b.bind).toHaveBeenCalledTimes(1) })
+
+    b.publish({ byId: { 's-9': { blank: false }, 's-10': { blank: false } }, current: 's-10' })
+
+    expect(b.bind).toHaveBeenCalledTimes(1)
+  })
+
+  it('claims nothing when the name already had a conversation to open', async () => {
+    const b = bench(['s-1'])
+    await b.controller.open(CATL)
+
+    b.publish({ byId: { 's-9': { blank: false } }, current: 's-9' })
+
+    expect(b.bind).not.toHaveBeenCalled()
+  })
+
+  it('shows an existing conversation without arming a bind', async () => {
+    const b = bench(['s-1'])
+
+    b.controller.show('s-1' as never)
+    b.publish({ byId: { 's-9': { blank: false } }, current: 's-9' })
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-1')
+    expect(b.bind).not.toHaveBeenCalled()
+  })
+
+  it('starts a new conversation about the name, and binds that one', async () => {
+    const b = bench(['s-1'])
+    await b.controller.open(CATL)
+
+    b.controller.start(CATL)
+    b.publish({ byId: { 's-9': { blank: false } }, current: 's-9' })
+
+    expect(b.sessions.clear).toHaveBeenCalled()
+    await waitFor(() => { expect(b.bind).toHaveBeenCalledWith(CATL, 's-9') })
+  })
+
+  it('keeps the conversation when the bind fails, and simply does not list it', async () => {
+    const b = bench([])
+    b.bind.mockRejectedValueOnce(new Error('offline'))
+    await b.controller.open(CATL)
+
+    b.publish({ byId: { 's-9': { blank: false } }, current: 's-9' })
+
+    await waitFor(() => { expect(b.bind).toHaveBeenCalled() })
+    expect(b.focus.snapshot().sessions).toEqual([])
+  })
+
+  it('opens the name even when its record cannot be read', async () => {
+    const b = bench([])
+    b.read.mockRejectedValueOnce(new Error('offline'))
+
+    await b.controller.open(CATL)
+
+    expect(b.focus.snapshot().instrument).toEqual(CATL)
+    expect(b.sessions.clear).toHaveBeenCalled()
   })
 })
 
@@ -483,6 +662,11 @@ describe('workbench registration', () => {
     } as never, () => null)
     ctx.provide('locale', new LocaleRuntime(ctx))
     ctx.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn(), toggleSidebar: vi.fn(), setMode: vi.fn() })
+    ctx.provide('sessions', {
+      list: { getSnapshot: () => ({ byId: {}, current: undefined }), subscribe: () => () => {} },
+      open: vi.fn(),
+      clear: vi.fn(),
+    })
     class RemoteService extends Service {
       constructor(serviceCtx: Context) { super(serviceCtx, 'remote') }
     }
@@ -494,8 +678,9 @@ describe('workbench registration', () => {
   }
 
   it('declares only the services the two columns and their Remotes use', () => {
-    expect(workbench.inject)
-      .toEqual(['slots', 'locale', 'layout', 'remote', 'remote.watchlist', 'remote.nameRecord'])
+    expect(workbench.inject).toEqual([
+      'slots', 'locale', 'layout', 'sessions', 'remote', 'remote.watchlist', 'remote.nameRecord',
+    ])
   })
 
   it('registers the names frame and the record panel under one frame id', async () => {

@@ -38,6 +38,12 @@ The first build set the selection and stopped. A details panel starts closed and
 
 The session gate went with it. The details column was gated on a live non-blank session, which is right for the harness's own detail — a call inside one conversation — and wrong for a name, which outlives every session and exists before the first one opens. The gate now applies to the default frame alone.
 
+### Opening a name navigates the conversation to that name's own
+
+The centre column belongs to `ui-conversation`, so the workbench does not render it — it *navigates* it. Opening a name reads the record, selects that name's most recent conversation, and falls back to a blank one when there is none. The open name expands in the left column to its own conversations, so an older one can be picked directly.
+
+**A conversation is bound to a name when it stops being blank, not when it appears.** A blank session is the New Session view; every name opened in turn would claim the same one. A session that has run a turn is one the user actually held about this name. A failed bind loses the association, not the conversation: the user keeps talking and the name simply does not list it.
+
 ### The workbench owns two columns and two observables
 
 The rows and the open name are neither session-scoped nor root-scoped: they are one book and one selection, the same in every session. A slot `store` handle carries one scope and these two slots do not share one, so the plugin owns both values and hands each column the same subscription. Opening a name in the left column moves the right one; following a name moves the list under both.
@@ -62,7 +68,7 @@ Search results open directly. The record does not depend on the follow flag — 
 
 Four shared packages changed: `ui-layout` (mode state and service), `ui-sidebar` (the frame list replacing the region slot), `ui-workspace` (its browser registers as a frame), and `ui-conversation` (its inspector keys to `sessions`). None of them knows about investing; each knows only that the frame has more than one occupant.
 
-The centre column is not scoped to the open name yet. The host records which conversations belong to a name, and nothing reads it back: opening a name moves two columns out of three. That is the largest gap between this and the design.
+The binding is one-way. A name lists its conversations; a conversation does not know its name, so one opened from the sessions frame shows nothing about which instrument it belongs to.
 
 The sidebar's pinned-list slot was removed. It was built two commits earlier for a narrower version of this idea, and the frame list absorbs its whole role — an extension point with no consumer is one the next reader has to wonder about.
 

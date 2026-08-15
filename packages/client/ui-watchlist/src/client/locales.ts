@@ -4,6 +4,7 @@
 export const zh = {
   'mode.names': '自选',
   'mark.unverified': '{count} 条判断待验证',
+  'conversation.new': '+ 新对话',
   'record.noName': '从左边选一只标的。',
   'record.failed': '暂时无法读取这只标的的记录。',
   'record.posture': '立场',
@@ -67,6 +68,7 @@ export type WatchlistLocaleKey = keyof typeof zh
 export const en = {
   'mode.names': 'Names',
   'mark.unverified': '{count} thesis waiting to be settled',
+  'conversation.new': '+ New conversation',
   'record.noName': 'Pick a name on the left.',
   'record.failed': 'This name\u2019s record is temporarily unavailable.',
   'record.posture': 'Stance',

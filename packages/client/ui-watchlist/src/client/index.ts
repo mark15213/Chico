@@ -13,7 +13,7 @@
  * values are neither. They are one book and one selection, the same in every
  * session.
  */
-import type { InstrumentRef, WatchlistSnapshot } from '@deepseek-ai/dsh-api-remotes/client'
+import type { InstrumentRef, SessionId, WatchlistSnapshot } from '@deepseek-ai/dsh-api-remotes/client'
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
@@ -25,14 +25,16 @@ import { NamesFrame, type NamesFrameInjected } from './NamesFrame.tsx'
 import { RecordPanel, type RecordPanelInjected } from './RecordPanel.tsx'
 import { WatchlistFeed } from './watchlist-store.ts'
 import { WorkbenchFocus } from './workbench-store.ts'
+import { WorkbenchSessions } from './workbench-sessions.ts'
 import { en, NS, zh, type WatchlistLocaleKey } from './locales.ts'
 
 export type { NamesFrameInjected, NamesFrameProps } from './NamesFrame.tsx'
 export type { RecordPanelInjected, RecordPanelProps } from './RecordPanel.tsx'
 export type { WatchlistSource, WatchlistState } from './watchlist-store.ts'
 export { useWatchlist, WatchlistFeed } from './watchlist-store.ts'
-export type { WorkbenchSelection } from './workbench-store.ts'
+export type { WorkbenchFocusState, WorkbenchSelection } from './workbench-store.ts'
 export { useWorkbenchFocus, WorkbenchFocus } from './workbench-store.ts'
+export { WorkbenchSessions } from './workbench-sessions.ts'
 export type { WatchlistLocaleKey } from './locales.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -50,7 +52,9 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 export const NAMES_MODE = 'names'
 
 /** Services required by the registrations and the generated Remote faces. */
-export const inject = ['slots', 'locale', 'layout', 'remote', 'remote.watchlist', 'remote.nameRecord']
+export const inject = [
+  'slots', 'locale', 'layout', 'sessions', 'remote', 'remote.watchlist', 'remote.nameRecord',
+]
 
 /**
  * Client plugin body: register the names frame and the record panel over one
@@ -95,8 +99,24 @@ export function apply(ctx: ClientContext): void {
     return result.value
   }
 
+  const bind = async (
+    instrument: InstrumentRef, sessionId: SessionId,
+  ): Promise<readonly SessionId[]> => {
+    const result = await ctx.remote.nameRecord.bindSession(instrument, sessionId)
+    if (!result.ok) throw new Error(`nameRecord.bindSession failed: ${result.error.code}: ${result.error.message}`)
+    return result.value
+  }
+
   const feed = new WatchlistFeed(list)
   const focus = new WorkbenchFocus()
+  const conversations = new WorkbenchSessions(ctx.sessions, { read, bind }, focus)
+  ctx.effect(() => conversations.watch(), 'ui-watchlist: bind conversations to the open name')
+
+  /** Show one name: every column moves, and the record panel is revealed. */
+  const openName = (instrument: InstrumentRef): void => {
+    ctx.layout.openDetails()
+    void conversations.open(instrument)
+  }
 
   ctx.slots.inject('sidebar.mode', () => ctx.slots.register({
     name: 'sidebar.mode',
@@ -109,10 +129,9 @@ export function apply(ctx: ClientContext): void {
       search,
       follow,
       focus,
-      // The record column starts closed, like every details panel. Opening a
-      // name has to open it: a selection that moves a column nobody can see
-      // is not navigation, which is exactly how the first build read.
-      revealRecord: () => { ctx.layout.openDetails() },
+      open: openName,
+      openConversation: conversations.show,
+      startConversation: conversations.start,
     }),
   }, NamesFrame))
 

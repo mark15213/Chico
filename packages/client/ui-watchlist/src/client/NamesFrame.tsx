@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
-import type { InstrumentRef, WatchlistSearchResult } from '@deepseek-ai/dsh-api-remotes/client'
+import type { InstrumentRef, SessionId, WatchlistSearchResult } from '@deepseek-ai/dsh-api-remotes/client'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { useWatchlist, type WatchlistSource } from './watchlist-store.ts'
 import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
@@ -14,13 +14,18 @@ export interface NamesFrameInjected {
   search: (query: string, limit: number, signal?: AbortSignal) => Promise<WatchlistSearchResult>
   /** Follow one instrument, resolving its name from the venue. */
   follow: (instrument: InstrumentRef) => Promise<unknown>
-  /** Which name the workbench is showing, and the way to move it. */
+  /** Which name the workbench is showing, and its conversations. */
   focus: WorkbenchSelection
   /**
-   * Reveal the record column. Opening a name has to open the panel it lands
-   * in: a selection that moves a column nobody can see is not navigation.
+   * Show one name: every column moves, including the record panel, which has
+   * to be revealed as well. A selection that moves a column nobody can see is
+   * not navigation.
    */
-  revealRecord: () => void
+  open: (instrument: InstrumentRef) => void
+  /** Select one of the open name's conversations in the centre column. */
+  openConversation: (id: SessionId) => void
+  /** Begin a new conversation about the open name. */
+  startConversation: (instrument: InstrumentRef) => void
 }
 
 /** Full props of the sidebar's names frame. */
@@ -39,6 +44,9 @@ const LOOKUP_DEBOUNCE_MS = 250
  * The workbench's left column: every followed name, in follow order, with the
  * price and the marker for a thesis still waiting. Selecting one moves the
  * other two columns, which is what makes this a workbench rather than a list.
+ * The open name expands to its own conversations — "what did I say about this
+ * one last week" is a real question, and its answer belongs beside the name
+ * rather than in a global list sorted by time.
  *
  * Order is the order the user built the list in. Sorting by anything the
  * market decides would reshuffle the column under the reader between glances.
@@ -46,15 +54,19 @@ const LOOKUP_DEBOUNCE_MS = 250
  * @returns the column, wide only — the rail has no room for a name and a price.
  */
 export function NamesFrame({
-  rows: source, search, follow, focus, revealRecord, wide, t,
+  rows: source, search, follow, focus, open, openConversation, startConversation,
+  useSessions, wide, t,
 }: NamesFrameProps): ReactNode {
   const fieldId = useId()
   const { status, rows } = useWatchlist(source)
-  const opened = useWorkbenchFocus(focus)
-  const open = (instrument: InstrumentRef): void => {
-    focus.open(instrument)
-    revealRecord()
-  }
+  const { instrument: opened, sessions } = useWorkbenchFocus(focus)
+  // Titles and the current selection come from the live session list, so a
+  // renamed conversation reads correctly without the record being re-read.
+  const titles = useSessions(list => sessions.map(id => ({
+    id,
+    title: list.byId[id]?.displayTitle ?? id,
+    current: list.current === id,
+  })))
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<WatchlistSearchResult | null>(null)
 
@@ -185,6 +197,31 @@ export function NamesFrame({
                       )}
                   </span>
                 </button>
+                {on ? (
+                  <ul className={css.conversations}>
+                    {titles.map(entry => (
+                      <li key={entry.id}>
+                        <button
+                          type="button"
+                          className={css.conversation}
+                          data-current={entry.current ? 'true' : undefined}
+                          onClick={() => { openConversation(entry.id) }}
+                        >
+                          {entry.title}
+                        </button>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        type="button"
+                        className={css.newConversation}
+                        onClick={() => { startConversation(row.instrument) }}
+                      >
+                        {t('conversation.new')}
+                      </button>
+                    </li>
+                  </ul>
+                ) : null}
               </li>
             )
           })}
