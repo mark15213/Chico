@@ -1,11 +1,11 @@
 /**
  * Public type vocabulary of the watchlist projection: the row one followed
- * name presents to a browser, and the outcome of following an instrument the
- * user named by code.
+ * name presents to a browser, the dossier behind one of those rows, the
+ * lookup that puts a name on the list, and the outcome of following one.
  * @module @deepseek-ai/dsh-watchlist/src/types
  */
 
-import type { InstrumentRef, Quote } from '@deepseek-ai/dsh-market-data'
+import type { InstrumentRef, PriceBar, Quote } from '@deepseek-ai/dsh-market-data'
 
 /**
  * One followed name as the watchlist presents it: the durable record joined
@@ -55,6 +55,28 @@ export interface WatchlistSearchResult {
 export interface WatchlistSnapshot {
   /** The current watchlist rows. */
   readonly rows: readonly WatchlistRow[]
+}
+
+/**
+ * One followed name read on its own: the row's facts plus the session history
+ * behind them. Every field a page draws arrives in one call, because a page
+ * assembled from three round trips shows three different instants.
+ */
+export interface NameDossier {
+  /** The instrument this dossier describes. */
+  readonly instrument: InstrumentRef
+  /** The name as the record holds it. */
+  readonly displayName: string
+  /** ISO-8601 instant of the first follow, which is the record's age. */
+  readonly firstFollowedAt: string
+  /** Whether the name is currently on the watchlist. */
+  readonly followed: boolean
+  /** Current quote, or `null` when the provider could not price it. */
+  readonly quote: Quote | null
+  /** Session bars in ascending date order; empty when history is unavailable. */
+  readonly bars: readonly PriceBar[]
+  /** Corporate-action basis the bars carry; `none` when there are no bars. */
+  readonly adjustment: 'none' | 'backward' | 'forward'
 }
 
 /**

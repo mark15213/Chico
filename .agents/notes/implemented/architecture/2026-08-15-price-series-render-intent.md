@@ -26,7 +26,7 @@ The view sets no `content` copy, so a UI that does not know the card falls back 
 
 ### The renderer lives with the other core card kinds
 
-`dsh-client-ui-tool` owns `priceSeriesModel`, the chart, and the keyed `market_history` toolview, exactly as it owns the `web`, `search`, `read`, `diff`, and `terminal` renderers.
+`dsh-client-ui-tool` owns the card extraction and the keyed `market_history` toolview, exactly as it owns the `web`, `search`, `read`, `diff`, and `terminal` rows. The drawing itself later moved to `dsh-client-ui-primitives` as `PriceSeriesBlock`, on the trigger recorded below: the watchlist's name page became the second surface to draw the same series, and a card kind with two callers belongs beside `WebBlock` rather than inside one of them.
 
 The first attempt put the chart in a Chico client package on the reasoning that investment rendering is product-specific. The build rejected it: **client bundle purity forbids cross-plugin value imports**, so a product package cannot import `ToolRow` and must collaborate through cordis services instead. The failure exposed the better rule — a card kind that lives in the shared render-intent union has its renderer in the shared client package, because the union is what makes it shared in the first place. Keying a toolview on a specific tool name is the same thing `web-row` already does with `web_search` and `web_fetch`.
 
@@ -48,7 +48,7 @@ The flag is honored on the transition to true, not at mount alone. A row mounts 
 
 **A neutral `customCard?: ReactNode` seat on `ToolRow`, filled by a product package.** Built first, then reverted: client bundle purity forbids the cross-plugin value import a product package would need to compose the row, and the seat only existed to serve that arrangement. A general escape hatch also weakens the invariant that a row's card material is derived from a known render intent.
 
-**Putting the chart in `dsh-client-ui-primitives` beside `WebBlock`.** Rejected as unnecessary rather than wrong: the chart has one call site, and `ui-tool` already hosts `GenericToolCard`. It moves to primitives when a second surface needs it.
+**Putting the chart in `dsh-client-ui-primitives` beside `WebBlock`.** Deferred at the time as unnecessary rather than wrong — the chart had one call site, and `ui-tool` already hosts `GenericToolCard` — with the move conditioned on a second surface needing it. The watchlist's name page is that surface, so the block and its geometry now live in primitives and `ui-tool` keeps only the render-intent extraction.
 
 **Opening every card kind by default instead of one.** Rejected: a turn that reads four files and greps twice would become six open cards, which is the reason the collapsed default exists. The flag is per row so each card kind states what it is to the reader.
 
@@ -70,4 +70,4 @@ A turn that charts several names shows several open charts at once, since each r
 
 ## Testing
 
-`packages/investment/tool-market-data/tests` covers the presentation-meta round trip and every fallback to the generic card: an errored call, absent metadata, a non-object, an array, malformed bars, and an unknown adjustment. `packages/client/ui-tool/tests/price-series.client.spec.tsx` covers model derivation, unit-box geometry, the running-call and unknown-card fallbacks, the empty and flat series, doji hairline rendering, the assistive label, keyed registration with fiber teardown proving removal, and the three expansion states: open at mount, open on settling after mount, and staying shut once the reader collapses it.
+`packages/investment/tool-market-data/tests` covers the presentation-meta round trip and every fallback to the generic card: an errored call, absent metadata, a non-object, an array, malformed bars, and an unknown adjustment. `packages/client/ui-tool/tests/price-series.client.spec.tsx` covers card extraction, the running-call and unknown-card fallbacks, the series with no range, keyed registration with fiber teardown proving removal, and the three expansion states: open at mount, open on settling after mount, and staying shut once the reader collapses it. `packages/client/ui-primitives/tests/price-series-block.client.spec.tsx` covers the geometry, the empty and flat series, doji hairline rendering, and the assistive label.

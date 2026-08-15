@@ -1,7 +1,8 @@
 /**
  * Watchlist projection over the real registry, storage, and market-data
  * composition: the join, the decision that an unpriceable row survives while a
- * selection failure does not, and the follow arc that resolves its own name.
+ * selection failure does not, the lookup that marks what is already followed,
+ * one name read on its own, and the follow arc that resolves its own name.
  */
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -266,6 +267,62 @@ describe('following by code', () => {
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(Number.isNaN(Date.parse(result.row.firstFollowedAt))).toBe(false)
+  })
+})
+
+describe('one name read on its own', () => {
+  it('joins the record with its quote and its history in one call', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    const dossier = await ctx.watchlist.dossier(CATL, 30)
+
+    expect(dossier.displayName).toBe('宁德时代')
+    expect(dossier.firstFollowedAt).toBe(T1)
+    expect(dossier.followed).toBe(true)
+    expect(dossier.quote?.currency).toBe('CNY')
+    expect(dossier.bars).toHaveLength(30)
+    expect(dossier.adjustment).toBe('none')
+  })
+
+  it('degrades the quote and the history separately rather than failing the page', async () => {
+    const ctx = await bench(partialProvider(new MarketDataError('halted', 'MARKET_DATA_UNKNOWN_INSTRUMENT')))
+    await ctx.followedNames.follow(MOUTAI, '贵州茅台', T1)
+
+    const dossier = await ctx.watchlist.dossier(MOUTAI, 30)
+
+    expect(dossier.quote).toBeNull()
+    expect(dossier.bars).toEqual([])
+    // The record is what the page is about; it survives both refusals.
+    expect(dossier.displayName).toBe('贵州茅台')
+  })
+
+  it('raises a selection failure instead of presenting an empty page', async () => {
+    const ctx = await bench('none')
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    await expect(ctx.watchlist.dossier(CATL, 30)).rejects.toMatchObject({
+      code: 'MARKET_DATA_PROVIDER_UNAVAILABLE',
+    })
+  })
+
+  it('refuses an instrument with no record, since a dossier is about a record', async () => {
+    const ctx = await bench()
+
+    await expect(ctx.watchlist.dossier(CATL, 30)).rejects.toMatchObject({
+      code: 'FOLLOWED_NAME_UNKNOWN',
+    })
+  })
+
+  it('still reads a name taken off the watchlist, and says it is not followed', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    await ctx.followedNames.unfollow(CATL, T1)
+
+    const dossier = await ctx.watchlist.dossier(CATL, 30)
+
+    expect(dossier.followed).toBe(false)
+    expect(dossier.firstFollowedAt).toBe(T1)
   })
 })
 

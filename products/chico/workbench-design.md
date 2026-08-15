@@ -104,6 +104,8 @@ The **sidebar** lists followed names in place of plain workspace rows, carrying 
 
 The details column is currently occupied by the tool inspector from `client/ui-conversation`. Whether the dossier competes for that seat, and how focus moves between a tool detail and a name detail, is the first concrete question the implementation has to answer, and it belongs in analysis before it becomes a decision.
 
+Until it is answered, the shipped dossier opens inside the watchlist tab and replaces the list, which leaves the column question open at the cost of not being able to read a name beside the rest of the book.
+
 Presentation follows the existing theme system rather than introducing a second visual language. Figures use aligned tabular numerals, state is encoded in form as well as color so it survives grayscale and color vision deficiency, and price direction follows local convention, red for up and green for down.
 
 ## Funds are a first-class object

@@ -26,7 +26,7 @@ Status: implemented
 
 ### 渲染器与其他核心卡片种类放在一起
 
-`dsh-client-ui-tool` 拥有 `priceSeriesModel`、图表和 `market_history` 的键控 toolview，与它拥有 `web`、`search`、`read`、`diff`、`terminal` 渲染器的方式完全一致。
+`dsh-client-ui-tool` 拥有卡片提取和 `market_history` 的键控 toolview，与它拥有 `web`、`search`、`read`、`diff`、`terminal` 行的方式完全一致。绘制本身后来按下文记录的触发条件迁移到了 `dsh-client-ui-primitives`，成为 `PriceSeriesBlock`：自选表的个股页面成为画同一段序列的第二个界面，而一个有两个调用方的卡片种类应当与 `WebBlock` 并列，而不是待在其中一个调用方内部。
 
 第一次尝试把图表放进 Chico 客户端包，理由是投资渲染属于产品专有。构建拒绝了它：**客户端 bundle 纯度禁止跨插件的值导入**，因此产品包无法导入 `ToolRow`，只能通过 cordis 服务协作。这次失败暴露了更好的规则——位于共享渲染意图联合中的卡片种类，其渲染器就在共享客户端包里，因为正是那个联合让它成为共享的。把 toolview 键控到特定工具名，与 `web-row` 对 `web_search` 和 `web_fetch` 所做的是同一件事。
 
@@ -48,7 +48,7 @@ Status: implemented
 
 **在 `ToolRow` 上设一个中立的 `customCard?: ReactNode` 席位，由产品包填充。** 先做了、随后回退：客户端 bundle 纯度禁止产品包组合该行所需的跨插件值导入，而这个席位存在的唯一目的就是服务那种安排。通用逃生口也削弱了"行的卡片素材由已知渲染意图推导"这一不变式。
 
-**把图表放进 `dsh-client-ui-primitives`，与 `WebBlock` 并列。** 否决的理由是没有必要而非错误：图表只有一个调用点，而 `ui-tool` 已经承载 `GenericToolCard`。等到第二个界面需要它时再迁移。
+**把图表放进 `dsh-client-ui-primitives`，与 `WebBlock` 并列。** 当时推迟的理由是没有必要而非错误——图表只有一个调用点，而 `ui-tool` 已经承载 `GenericToolCard`——并把迁移的条件定为"第二个界面需要它"。自选表的个股页面就是那个界面，因此该组件及其几何推导现在位于 primitives，`ui-tool` 只保留渲染意图的提取。
 
 **让每一种卡片都默认展开，而不是只有一种。** 否决：一个读了四个文件、grep 了两次的轮次会变成六张展开的卡片，而这正是折叠默认存在的理由。该标志按行设置，好让每种卡片各自声明它对读者是什么。
 
@@ -70,4 +70,4 @@ Status: implemented
 
 ## Testing
 
-`packages/investment/tool-market-data/tests` 覆盖 presentation-meta 往返以及所有回落到通用卡片的情形：调用出错、元数据缺失、非对象、数组、畸形 K 线和未知复权方式。`packages/client/ui-tool/tests/price-series.client.spec.tsx` 覆盖模型推导、单位盒几何、运行中调用与未知卡片的回落、空序列与平坦序列、doji 细线渲染、无障碍标签、键控注册与 fiber 拆卸证明移除，以及三种展开状态：挂载即展开、挂载后落地时展开、读者折叠后保持关闭。
+`packages/investment/tool-market-data/tests` 覆盖 presentation-meta 往返以及所有回落到通用卡片的情形：调用出错、元数据缺失、非对象、数组、畸形 K 线和未知复权方式。`packages/client/ui-tool/tests/price-series.client.spec.tsx` 覆盖卡片提取、运行中调用与未知卡片的回落、无可绘制区间的序列、键控注册与 fiber 拆卸证明移除，以及三种展开状态：挂载即展开、挂载后落地时展开、读者折叠后保持关闭。`packages/client/ui-primitives/tests/price-series-block.client.spec.tsx` 覆盖几何推导、空序列与平坦序列、doji 细线渲染和无障碍标签。

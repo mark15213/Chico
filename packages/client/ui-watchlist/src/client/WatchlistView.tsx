@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import type {
   InstrumentRef,
+  NameDossier,
   WatchlistFollowResult,
   WatchlistSearchResult,
   WatchlistSnapshot,
 } from '@deepseek-ai/dsh-api-remotes/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { instrumentLabel, normalizeQuery, rowFigures } from './watchlist-model.ts'
+import { NamePage } from './NamePage.tsx'
 import css from './WatchlistView.module.css'
 
 /** Registration-side Remote face the view calls through. */
@@ -15,6 +17,8 @@ export interface WatchlistViewInjected {
   list: () => Promise<WatchlistSnapshot>
   /** Find listings a typed query names, marked with whether they are followed. */
   search: (query: string, limit: number, signal?: AbortSignal) => Promise<WatchlistSearchResult>
+  /** Read one name's record with its quote and session history. */
+  dossier: (instrument: InstrumentRef, sessions: number) => Promise<NameDossier>
   /** Follow one instrument, resolving its name from the venue. */
   follow: (instrument: InstrumentRef) => Promise<WatchlistFollowResult>
   /** Take one instrument off the watchlist, keeping its record. */
@@ -57,8 +61,9 @@ const LOOKUP_DEBOUNCE_MS = 250
  * lookup that puts a name on the list. The tab is useful with an empty record —
  * an empty watchlist states how to fill it rather than showing a blank panel.
  */
-export function WatchlistView({ list, search, follow, unfollow, t }: WatchlistViewProps): ReactNode {
+export function WatchlistView({ list, search, dossier, follow, unfollow, t }: WatchlistViewProps): ReactNode {
   const fieldId = useId()
+  const [opened, setOpened] = useState<InstrumentRef | null>(null)
   const [request, setRequest] = useState(0)
   const [state, setState] = useState<ListState>({ status: 'loading' })
   const [query, setQuery] = useState('')
@@ -133,6 +138,24 @@ export function WatchlistView({ list, search, follow, unfollow, t }: WatchlistVi
   }
 
   const rows = state.status === 'ready' ? state.snapshot.rows : []
+
+  // The page replaces the list inside the tab rather than opening beside it:
+  // the details column still belongs to the tool inspector, and a name is read
+  // instead of the list, not next to it.
+  if (opened !== null) {
+    return (
+      <NamePage
+        instrument={opened}
+        dossier={dossier}
+        t={t}
+        onBack={() => { setOpened(null) }}
+        onUnfollow={(instrument) => {
+          setOpened(null)
+          remove(instrument)
+        }}
+      />
+    )
+  }
 
   return (
     <div className={css.view} aria-busy={state.status === 'loading'}>
@@ -219,10 +242,15 @@ export function WatchlistView({ list, search, follow, unfollow, t }: WatchlistVi
             const figures = rowFigures(row)
             return (
               <li className={css.row} key={figures.instrumentLabel} data-instrument={figures.instrumentLabel}>
-                <div className={css.identity}>
+                <button
+                  type="button"
+                  className={css.identity}
+                  aria-label={`${t('page.open')} ${row.displayName}`}
+                  onClick={() => { setOpened(row.instrument) }}
+                >
                   <strong className={css.name}>{row.displayName}</strong>
                   <span className={css.code}>{figures.instrumentLabel}</span>
-                </div>
+                </button>
                 <div className={css.figures}>
                   {figures.last === null ? (
                     <span className={css.noQuote} title={t('noQuoteHint')}>{t('noQuote')}</span>

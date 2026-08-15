@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-08-15-price-series-render-intent.md
-2026-08-15-price-series-render-intent.md: f46da37b36632b0774e2e707fa175ae225f6d001
-2026-08-15-price-series-render-intent.zh.md: 9878aa6ff63eb1fe7fbc86c9623f9e9fdddac0c4
+2026-08-15-price-series-render-intent.md: 04ceb92b19a7b2be9eb8021224f77215129d598a
+2026-08-15-price-series-render-intent.zh.md: 8f893f282136ace16633ba6400373c5aa387f1ca

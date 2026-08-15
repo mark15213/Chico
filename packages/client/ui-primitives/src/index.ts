@@ -37,6 +37,10 @@ export { SearchBlock, DEFAULT_SEARCH_MAX_LINES } from './SearchBlock.tsx'
 export type {
   SearchBlockProps, SearchMatchesBlockProps, SearchPathsBlockProps, SearchFileGroup, SearchBlockLineMatch,
 } from './SearchBlock.tsx'
+export { PriceSeriesBlock, priceSeriesModel } from './PriceSeriesBlock.tsx'
+export type {
+  PlottedBar, PriceSeriesAdjustment, PriceSeriesBar, PriceSeriesInput, PriceSeriesModel,
+} from './PriceSeriesBlock.tsx'
 export { WebBlock } from './WebBlock.tsx'
 export type { WebBlockProps, WebSearchBlockProps, WebFetchBlockProps, WebSourceView } from './WebBlock.tsx'
 export { CodeBlock } from './markdown/CodeBlock.tsx'

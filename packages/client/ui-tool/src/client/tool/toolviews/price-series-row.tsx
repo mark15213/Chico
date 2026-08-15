@@ -1,8 +1,8 @@
 // Price-series toolview registrant: the keyed toolview hole for the
 // `market_history` tool. The row composes the shared ToolRow (chrome, running
 // sweep, whole-row expand) and feeds it the completed series as ToolRow's
-// `priceSeries` card material, so it renders through PriceSeriesChart in the
-// row's expanded body. Until the call settles there is no price-series card (the
+// `priceSeries` card material, so it renders through ui-primitives'
+// PriceSeriesBlock in the row's expanded body. Until the call settles there is no price-series card (the
 // tool keeps a generic pending view), so a running row is the summary line alone.
 //
 // The chart opens without a click, unlike every other card row here. A read or a
@@ -10,16 +10,17 @@
 // price series is the answer to what was asked, and one hidden behind a row that
 // looks like every other row does not get looked at.
 //
-// The renderer lives here rather than in a product package because the card
-// kind lives in the shared `dsh-tools` render-intent union: client bundle
-// purity forbids a product plugin importing this row's chrome, and every other
-// core card kind is rendered here too.
+// The row lives here rather than in a product package because the card kind
+// lives in the shared `dsh-tools` render-intent union: client bundle purity
+// forbids a product plugin importing this row's chrome, and every other core
+// card kind is keyed here too. The drawing itself moved to ui-primitives once
+// the watchlist's name page needed the same chart.
 
 import type { Context } from '@deepseek-ai/cordis'
 import { IconDataOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ToolCallViewProps } from '../../contract/slots.ts'
-import { priceSeriesModel } from '../models/price-series-card-model.ts'
+import { priceSeriesCardModel } from '../models/price-series-card-model.ts'
 import { toolRowModel } from '../models/tool-call-model.ts'
 import { ToolRow } from '../components/ToolRow.tsx'
 import { CONVERSATION_NS as NS } from '../../locale.ts'
@@ -38,7 +39,7 @@ export const PRICE_SERIES_TOOL = 'market_history'
  */
 export function PriceSeriesRow({ toolName, block, inspect, t }: PriceSeriesRowProps) {
   const model = toolRowModel(toolName, block)
-  const series = priceSeriesModel(block)
+  const series = priceSeriesCardModel(block)
   return (
     <ToolRow
       t={t}

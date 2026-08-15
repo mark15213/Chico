@@ -12,9 +12,10 @@ import type { TypertClientRemote } from '@deepseek-ai/dsh-typert-protocol'
 export type { TypertClientRemote as ClientRemote } from '@deepseek-ai/dsh-typert-protocol'
 export type { PluginInventorySnapshot } from '@deepseek-ai/dsh-host-plugin-inventory/types'
 export type {
-  WatchlistFollowResult, WatchlistRow, WatchlistSearchMatch, WatchlistSearchResult, WatchlistSnapshot,
+  NameDossier, WatchlistFollowResult, WatchlistRow, WatchlistSearchMatch, WatchlistSearchResult,
+  WatchlistSnapshot,
 } from '@deepseek-ai/dsh-watchlist/types'
-export type { InstrumentRef, Market, Quote } from '@deepseek-ai/dsh-market-data/types'
+export type { InstrumentRef, Market, PriceBar, Quote } from '@deepseek-ai/dsh-market-data/types'
 export type {} from '@deepseek-ai/dsh-commands/remote'
 export type {} from '@deepseek-ai/dsh-goal/remote'
 export type {} from '@deepseek-ai/dsh-host-plugin-inventory/remote'

@@ -10,7 +10,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import type { Quote, WatchlistRow, WatchlistSnapshot } from '@deepseek-ai/dsh-api-remotes/client'
+import type { NameDossier, Quote, WatchlistRow, WatchlistSnapshot } from '@deepseek-ai/dsh-api-remotes/client'
 import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
 import { en, NS } from '../src/client/locales.ts'
 import {
@@ -58,6 +58,25 @@ function row(over?: Partial<WatchlistRow>): WatchlistRow {
 
 const MOUTAI = { market: 'SSE', symbol: '600519' } as const
 
+const bars = [
+  { date: '2026-08-12', open: 100, high: 110, low: 95, close: 105, volume: 10 },
+  { date: '2026-08-13', open: 105, high: 108, low: 100, close: 102, volume: 12 },
+  { date: '2026-08-14', open: 102, high: 120, low: 101, close: 118, volume: 15 },
+]
+
+function dossierOf(over?: Partial<NameDossier>): NameDossier {
+  return {
+    instrument: CATL,
+    displayName: '宁德时代',
+    firstFollowedAt: '2026-08-14T07:00:00.000Z',
+    followed: true,
+    quote: quote(),
+    bars,
+    adjustment: 'none',
+    ...over,
+  }
+}
+
 /** A view over a stubbed Remote face; every call resolves unless overridden. */
 function mount(over?: Partial<WatchlistViewInjected>, snapshot: WatchlistSnapshot = { rows: [row()] }) {
   const injected: WatchlistViewInjected = {
@@ -65,6 +84,7 @@ function mount(over?: Partial<WatchlistViewInjected>, snapshot: WatchlistSnapsho
     search: vi.fn(() => Promise.resolve({
       matches: [{ instrument: MOUTAI, name: '贵州茅台', followed: false }],
     })),
+    dossier: vi.fn(() => Promise.resolve(dossierOf())),
     follow: vi.fn(() => Promise.resolve({ ok: true as const, row: row() })),
     unfollow: vi.fn(() => Promise.resolve()),
     ...over,
@@ -276,6 +296,75 @@ describe('unfollowing from a row', () => {
 
     expect(await screen.findByText(/SZSE:300750/)).toBeTruthy()
     expect(screen.getByText(/Could not unfollow/)).toBeTruthy()
+  })
+})
+
+describe('opening a name', () => {
+  /** Click a row's identity, which is the way into the page. */
+  async function open(view: ReturnType<typeof render>) {
+    fireEvent.click(await view.findByLabelText('Open 宁德时代'))
+  }
+
+  it('reads the opened instrument with the range the page draws', async () => {
+    const { view, injected } = mount()
+    await open(view)
+
+    await waitFor(() => { expect(injected.dossier).toHaveBeenCalledWith(CATL, 60) })
+  })
+
+  it('shows the figures, the chart, and when the record started', async () => {
+    const { view } = mount()
+    await open(view)
+
+    expect(await view.findByText('212.30 CNY')).toBeTruthy()
+    expect(view.getByText('+1.10%')).toBeTruthy()
+    expect(view.getByRole('img').getAttribute('aria-label')).toContain('3 sessions')
+    expect(view.getByText('2026-08-14')).toBeTruthy()
+  })
+
+  it('says so when a name has no history rather than drawing an empty frame', async () => {
+    const dossier = vi.fn(() => Promise.resolve(dossierOf({ bars: [] })))
+    const { view } = mount({ dossier })
+    await open(view)
+
+    expect(await view.findByText('No price history available.')).toBeTruthy()
+    expect(view.queryByRole('img')).toBeNull()
+  })
+
+  it('keeps the page readable when the name cannot be priced', async () => {
+    const dossier = vi.fn(() => Promise.resolve(dossierOf({ quote: null, bars: [] })))
+    const { view } = mount({ dossier })
+    await open(view)
+
+    expect(await view.findByText('No quote')).toBeTruthy()
+    expect(view.getByText('Followed since')).toBeTruthy()
+  })
+
+  it('reports a failed read without losing the way back', async () => {
+    const dossier = vi.fn(() => Promise.reject(new Error('offline')))
+    const { view } = mount({ dossier })
+    await open(view)
+
+    expect(await view.findByText('This name is temporarily unavailable.')).toBeTruthy()
+    expect(view.getByText('← Watchlist')).toBeTruthy()
+  })
+
+  it('returns to the list, which is read again on the way back', async () => {
+    const { view, injected } = mount()
+    await open(view)
+    fireEvent.click(await view.findByText('← Watchlist'))
+
+    expect(await view.findByLabelText('Open 宁德时代')).toBeTruthy()
+    expect(injected.list).toHaveBeenCalled()
+  })
+
+  it('unfollows from the page and returns to the list', async () => {
+    const { view, injected } = mount()
+    await open(view)
+    fireEvent.click(await view.findByText('Unfollow'))
+
+    await waitFor(() => { expect(injected.unfollow).toHaveBeenCalledWith(CATL) })
+    expect(await view.findByLabelText('Open 宁德时代')).toBeTruthy()
   })
 })
 

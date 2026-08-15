@@ -23,6 +23,7 @@ import clsx from 'clsx'
 import {
   CodeBlock, DiffBlock, DisclosureRow, IconInspectOutline12, ReadBlock, SearchBlock, StateDot, TerminalBlock, WebBlock,
 } from '@deepseek-ai/dsh-client-ui-primitives'
+import { PriceSeriesBlock } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { WebBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
 import { CHAT_DIFF_MAX_LINES, type DiffCardModel } from '../models/diff-card-model.ts'
@@ -31,7 +32,6 @@ import { CHAT_SEARCH_MAX_LINES, type SearchCardModel } from '../models/search-ca
 import { terminalBlockLabels, type TerminalCardModel } from '../models/terminal-card-model.ts'
 import type { PriceSeriesModel } from '../models/price-series-card-model.ts'
 import type { ToolRowState, ToolRowVariant } from '../models/tool-call-model.ts'
-import { PriceSeriesChart } from '../toolviews/PriceSeriesChart.tsx'
 import css from './ToolRow.module.css'
 
 export interface ToolRowProps {
@@ -91,7 +91,7 @@ export interface ToolRowProps {
   web?: WebBlockProps | null | undefined
   /**
    * Price-series material for a call whose render intent is a price-series card
-   * (derived by `priceSeriesModel`); it replaces the text body with the candle
+   * (derived by `priceSeriesCardModel`); it replaces the text body with the candle
    * chart when present.
    */
   priceSeries?: PriceSeriesModel | null | undefined
@@ -291,7 +291,7 @@ export function ToolRow({
                   : webBody !== null
                     ? <WebBlock {...webBody} className={css.webBody} />
                     : priceSeriesBody !== null
-                      ? <PriceSeriesChart model={priceSeriesBody} />
+                      ? <PriceSeriesBlock model={priceSeriesBody} />
                       : (
                         <>
                           {variant === 'code' && body !== null && (

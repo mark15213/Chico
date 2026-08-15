@@ -1,7 +1,8 @@
 /**
  * Watchlist projection (`ctx.watchlist`): the browser-facing join of the
- * followed-names registry with market data — current quotes for the rows, and
- * instrument lookup for the path onto them — exposed over Typert Remote.
+ * followed-names registry with market data — quotes for the rows, session
+ * history for one name read on its own, and instrument lookup for the path
+ * onto the list — exposed over Typert Remote.
  *
  * This is a Consumer of two capability seams rather than a seam of its own.
  * The registry deliberately knows nothing about prices, and the market-data
@@ -16,10 +17,11 @@ import { TypertRemoteService, Remote } from '@deepseek-ai/dsh-typert-protocol'
 // Typert-generated ./typert and ./remote artifacts import Zod at runtime.
 import type {} from 'zod'
 import type { FollowedName } from '@deepseek-ai/dsh-followed-names'
-import { nameKey } from '@deepseek-ai/dsh-followed-names'
+import { FollowedNameError, nameKey } from '@deepseek-ai/dsh-followed-names'
 import type { InstrumentRef, Quote } from '@deepseek-ai/dsh-market-data'
 import { MarketDataError } from '@deepseek-ai/dsh-market-data'
 import type {
+  NameDossier,
   WatchlistFollowResult,
   WatchlistRow,
   WatchlistSearchResult,
@@ -113,6 +115,42 @@ export class WatchlistService extends TypertRemoteService {
   }
 
   /**
+   * One followed name read on its own, with the session history behind its
+   * figures. The quote and the history each degrade to absent rather than
+   * failing the page, on the same rule the rows use.
+   * @param instrument - the venue and code to read.
+   * @param sessions - how many sessions of history the caller will draw.
+   * @param signal - optional cancellation signal, forwarded to both reads.
+   * @returns the record joined with its quote and bars.
+   * @throws {@link FollowedNameError} when no record exists for the instrument.
+   * @throws {@link MarketDataError} when no usable provider can be selected, or
+   *   when `sessions` is above the seam's ceiling.
+   */
+  @Remote('dossier')
+  async dossier(instrument: InstrumentRef, sessions: number, signal?: AbortSignal): Promise<NameDossier> {
+    const record = this.ctx.followedNames.get(instrument)
+    if (record === undefined) {
+      throw new FollowedNameError(
+        `no followed-name record for ${nameKey(instrument)}`,
+        'FOLLOWED_NAME_UNKNOWN',
+      )
+    }
+    const [quote, history] = await Promise.all([
+      this.degrade(() => this.ctx.marketData.quote({ instrument }, signal)),
+      this.degrade(() => this.ctx.marketData.priceHistory({ instrument, sessions }, signal)),
+    ])
+    return {
+      instrument: record.instrument,
+      displayName: record.displayName,
+      firstFollowedAt: record.firstFollowedAt,
+      followed: record.followed,
+      quote,
+      bars: history?.bars ?? [],
+      adjustment: history?.adjustment ?? 'none',
+    }
+  }
+
+  /**
    * Follow an instrument named by venue and code, taking its display name from
    * the venue rather than from the caller. Re-following a name that was
    * unfollowed restores it with its original `firstFollowedAt`.
@@ -150,12 +188,22 @@ export class WatchlistService extends TypertRemoteService {
 
   /** One record joined with its quote, degrading the quote rather than the row. */
   private async row(record: FollowedName, signal?: AbortSignal): Promise<WatchlistRow> {
+    const quote = await this.degrade(() => this.ctx.marketData.quote({ instrument: record.instrument }, signal))
+    return { ...projection(record), quote }
+  }
+
+  /**
+   * Run one market-data read, resolving to null on a failure about this
+   * instrument and re-raising one about provider selection. A composition
+   * error would degrade every read identically, which would present a
+   * misconfigured deployment as a quiet data gap.
+   */
+  private async degrade<T>(read: () => Promise<T>): Promise<T | null> {
     try {
-      const quote = await this.ctx.marketData.quote({ instrument: record.instrument }, signal)
-      return { ...projection(record), quote }
+      return await read()
     } catch (error) {
       if (isSelectionFailure(error)) throw error
-      return { ...projection(record), quote: null }
+      return null
     }
   }
 }

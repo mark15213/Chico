@@ -465,6 +465,7 @@ export const LINK_MAP: Readonly<Record<string, string>> = {
   Quote: 'market-data.md',
   QuoteRequest: 'market-data.md',
   WatchlistFollowResult: 'watchlist.md',
+  NameDossier: 'watchlist.md',
   WatchlistRow: 'watchlist.md',
   WatchlistSearchMatch: 'watchlist.md',
   WatchlistSearchResult: 'watchlist.md',

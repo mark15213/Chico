@@ -2,50 +2,15 @@
  * Pure derivation of the price-series chart props from a frozen call slice.
  * The `card: 'price-series'` render intent a market-data tool declares at
  * result time arrives on the snapshot as `resultView`, and this is the one
- * place that turns it into what the chart draws.
+ * place that turns it into what the chart draws. The geometry itself, and the
+ * block that draws it, live in `ui-primitives` because the watchlist's name
+ * page draws the same series from a different source.
  * @module
  */
+import { priceSeriesModel, type PriceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ToolCallBlock } from './tool-call-model.ts'
 
-/** One session's drawn geometry, already normalized into the 0..1 unit box. */
-export interface PlottedBar {
-  /** Trading date, carried through for the hover label. */
-  date: string
-  /** Session open. */
-  open: number
-  /** Session close. */
-  close: number
-  /** Fraction of the price range at the session high, 0 at the series low. */
-  highUnit: number
-  /** Fraction of the price range at the session low. */
-  lowUnit: number
-  /** Fraction of the price range at the higher of open and close. */
-  bodyTopUnit: number
-  /** Fraction of the price range at the lower of open and close. */
-  bodyBottomUnit: number
-  /** True when the session closed at or above its open. */
-  rising: boolean
-}
-
-/** Everything the chart needs, derived once from the render intent. */
-export interface PriceSeriesModel {
-  /** What the series describes, for the card header. */
-  label: string
-  /** Corporate-action basis, always shown because a chart without it invites a wrong comparison. */
-  adjustment: 'none' | 'backward' | 'forward'
-  /** ISO-4217 code, when the tool supplied one. */
-  currency?: string
-  /** Bars in ascending date order with their drawn geometry. */
-  bars: PlottedBar[]
-  /** Lowest low across the series. */
-  low: number
-  /** Highest high across the series. */
-  high: number
-  /** Close of the last session. */
-  last: number
-  /** Percent change from the first session's open to the last session's close. */
-  changePercent: number
-}
+export type { PriceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
 
 /**
  * Derive the chart model for a tool call, or null when this call is not a
@@ -64,43 +29,15 @@ export interface PriceSeriesModel {
  * @param block - RunningToolCall or ToolResultNode off the snapshot caches.
  * @returns the chart model, or null for the generic path.
  */
-export function priceSeriesModel(block: ToolCallBlock): PriceSeriesModel | null {
+export function priceSeriesCardModel(block: ToolCallBlock): PriceSeriesModel | null {
   // Running calls have no result view; the price-series card is result-only.
   if (!('kind' in block)) return null
   const result = block.resultView
   if (result?.card !== 'price-series') return null
-  if (result.bars.length === 0) return null
-
-  const low = Math.min(...result.bars.map(bar => bar.low))
-  const high = Math.max(...result.bars.map(bar => bar.high))
-  const range = high - low
-  // A zero range has no scale: every unit would divide by zero.
-  if (range === 0) return null
-
-  const unit = (price: number): number => (price - low) / range
-  const [first] = result.bars
-  const final = result.bars[result.bars.length - 1]
-  // The length guard above already established both, but the index reads are
-  // what the compiler sees; a defensive null exit costs nothing here.
-  if (first === undefined || final === undefined) return null
-
-  return {
+  return priceSeriesModel({
     label: result.label,
+    bars: result.bars,
     adjustment: result.adjustment,
-    ...result.currency !== undefined ? { currency: result.currency } : {},
-    bars: result.bars.map(bar => ({
-      date: bar.date,
-      open: bar.open,
-      close: bar.close,
-      highUnit: unit(bar.high),
-      lowUnit: unit(bar.low),
-      bodyTopUnit: unit(Math.max(bar.open, bar.close)),
-      bodyBottomUnit: unit(Math.min(bar.open, bar.close)),
-      rising: bar.close >= bar.open,
-    })),
-    low,
-    high,
-    last: final.close,
-    changePercent: Math.round((final.close / first.open - 1) * 10_000) / 100,
-  }
+    currency: result.currency,
+  })
 }

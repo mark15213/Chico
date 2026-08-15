@@ -2116,6 +2116,13 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         throws: ['{@link MarketDataError} when no usable provider can be selected, when the limit is above the seam\'s ceiling, or when the selected provider\'s feed has no lookup endpoint.'],
       },
       {
+        signature: '@Remote(\'dossier\') async dossier(instrument: InstrumentRef, sessions: number, signal?: AbortSignal): Promise<NameDossier>',
+        description: 'One followed name read on its own, with the session history behind its figures. The quote and the history each degrade to absent rather than failing the page, on the same rule the rows use.',
+        parameters: [{ name: 'instrument', description: 'the venue and code to read.' }, { name: 'sessions', description: 'how many sessions of history the caller will draw.' }, { name: 'signal', description: 'optional cancellation signal, forwarded to both reads.' }],
+        returns: 'the record joined with its quote and bars.',
+        throws: ['{@link FollowedNameError} when no record exists for the instrument.', '{@link MarketDataError} when no usable provider can be selected, or when `sessions` is above the seam\'s ceiling.'],
+      },
+      {
         signature: '@Remote(\'follow\') async follow(instrument: InstrumentRef, signal?: AbortSignal): Promise<WatchlistFollowResult>',
         description: 'Follow an instrument named by venue and code, taking its display name from the venue rather than from the caller. Re-following a name that was unfollowed restores it with its original `firstFollowedAt`.',
         parameters: [{ name: 'instrument', description: 'the venue and code to follow.' }, { name: 'signal', description: 'optional cancellation signal for the resolving quote.' }],
@@ -3600,6 +3607,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ModelModalityMap',
     declaration: 'export interface ModelModalityMap {\n    text: \'text\';\n    image: \'image\';\n}',
+  },
+  {
+    name: 'NameDossier',
+    declaration: 'export interface NameDossier {\n    readonly instrument: InstrumentRef;\n    readonly displayName: string;\n    readonly firstFollowedAt: string;\n    readonly followed: boolean;\n    readonly quote: Quote | null;\n    readonly bars: readonly PriceBar[];\n    readonly adjustment: \'none\' | \'backward\' | \'forward\';\n}',
   },
   {
     name: 'ObjectJsonSchema',

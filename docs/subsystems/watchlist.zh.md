@@ -43,6 +43,14 @@ interface WatchlistRow {
 
 **选取**提供方的失败是例外，会让整次调用抛出：没有可用提供方、配置的提供方缺失或不可用、以及存在歧义，都是组合错误，而不是关于某个标的的事实。这些情况下每一行都会以完全相同的方式降级，因此一屏短横线会把一个配置错误的部署呈现为一次安静的数据缺口。
 
+## 一只标的单独读取，只用一次调用
+
+`dossier` 把记录、报价和日频历史一起返回。由三次往返拼出来的页面展示的是三个不同时刻，而拿一个数字和一张图作比较的专业用户，需要它们出自同一次观测。
+
+两次行情读取各自独立降级：报不出价的标的仍然有记录、可能还有历史；没有历史的标的仍然有数字。页面讲的是记录，而记录在任一次拒绝下都存活。
+
+它同样能读取已取消关注的记录，并如实标明。记录比标志活得久，因此从一条检索匹配进入的页面，无论该标的当前是否在列表中都成立。
+
 ## 检索是标的进入列表的路径
 
 `search` 接收用户输入的内容，返回它所指向的上市标的，并逐条标出是否已经关注。正是这个标志让该操作属于这里而不是行情接缝：一个把已在列表中的标的再次提供为"加入"的选择器，是在请求用户犯错，而只有注册表知道这件事。
@@ -124,6 +132,20 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 @Remote('search') async search(query: string, limit: number, signal?: AbortSignal): Promise<WatchlistSearchResult>
 
 /**
+ * One followed name read on its own, with the session history behind its
+ * figures. The quote and the history each degrade to absent rather than
+ * failing the page, on the same rule the rows use.
+ * @param instrument - the venue and code to read.
+ * @param sessions - how many sessions of history the caller will draw.
+ * @param signal - optional cancellation signal, forwarded to both reads.
+ * @returns the record joined with its quote and bars.
+ * @throws {@link FollowedNameError} when no record exists for the instrument.
+ * @throws {@link MarketDataError} when no usable provider can be selected, or
+ *   when `sessions` is above the seam's ceiling.
+ */
+@Remote('dossier') async dossier(instrument: InstrumentRef, sessions: number, signal?: AbortSignal): Promise<NameDossier>
+
+/**
  * Follow an instrument named by venue and code, taking its display name from
  * the venue rather than from the caller. Re-following a name that was
  * unfollowed restores it with its original `firstFollowedAt`.
@@ -147,5 +169,5 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 
 Types: [InstrumentRef](market-data.md)
 
-Source: [`packages/investment/watchlist/src/index.ts:63`](../../packages/investment/watchlist/src/index.ts)
+Source: [`packages/investment/watchlist/src/index.ts:65`](../../packages/investment/watchlist/src/index.ts)
 <!-- END GENERATED cordis-surface -->

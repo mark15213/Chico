@@ -16,6 +16,14 @@ A quote that fails degrades its own row to `quote: null` rather than failing the
 
 Provider *selection* failures are the exception and raise for the whole call: no usable provider, a configured provider that is missing or unavailable, and an ambiguous choice are composition errors. Every row would degrade identically, so a watchlist of dashes would hide the real cause behind what looks like missing prices.
 
+## One name is read on its own, in one call
+
+`dossier` returns the record, its quote, and its session history together. A page assembled from three round trips shows three different instants, and a professional comparing a figure against a chart needs them to be the same observation.
+
+Both market-data reads degrade independently: a name that cannot be priced still has a record and possibly a history, and one with no history still has figures. The page is about the record, which survives either refusal.
+
+It reads an unfollowed record too, and says so. A record outlives the flag, so a page reached from a lookup match works whether or not the name is currently on the list.
+
 ## Lookup is how a name reaches the list
 
 `search` takes what the user typed and returns the listings it names, each marked with whether it is already followed. That flag is what makes the operation belong here rather than on the market-data seam: a picker that offers to add a name already on the list asks the user to make a mistake, and only the registry knows.

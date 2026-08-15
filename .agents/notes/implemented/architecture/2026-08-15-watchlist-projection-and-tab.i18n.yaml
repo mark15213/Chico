@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-08-15-watchlist-projection-and-tab.md
-2026-08-15-watchlist-projection-and-tab.md: acde71c316defc0958cce313819e3391acaf48e4
-2026-08-15-watchlist-projection-and-tab.zh.md: 7d41160a8e1c475e628bdc0bb16eebf8ffd32aaf
+2026-08-15-watchlist-projection-and-tab.md: d14cb6ce2995adc9da26c149ad71ae1b6cb72903
+2026-08-15-watchlist-projection-and-tab.zh.md: bdabea9b2871bd8b0b29a568d004d1db82f284aa

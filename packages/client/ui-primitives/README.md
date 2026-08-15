@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-Pure React atoms (zero cordis): StateDot, DisclosureRow, ic_ds_* icons, Button/Pill/Menu/Modal/Input, the Toast transient banner, the OnboardingSurface first-run takeover (body-portaled mask + opaque stage that holds `#root` inert for exactly its own lifetime), the markdown family (MessageText/MarkdownText/JsonBlock), the read-only JsonTree inspector, the `useAnchoredMaxHeight` hook that clamps a bottom-anchored overlay to the viewport space above its anchor (re-measured on resize, scroll, and a caller-supplied dependency), TerminalBlock, DiffBlock, ReadBlock, SearchBlock, and WebBlock.
+Pure React atoms (zero cordis): StateDot, DisclosureRow, ic_ds_* icons, Button/Pill/Menu/Modal/Input, the Toast transient banner, the OnboardingSurface first-run takeover (body-portaled mask + opaque stage that holds `#root` inert for exactly its own lifetime), the markdown family (MessageText/MarkdownText/JsonBlock), the read-only JsonTree inspector, the `useAnchoredMaxHeight` hook that clamps a bottom-anchored overlay to the viewport space above its anchor (re-measured on resize, scroll, and a caller-supplied dependency), TerminalBlock, DiffBlock, ReadBlock, SearchBlock, WebBlock, and PriceSeriesBlock.
 
 ## Hover cards
 
@@ -35,6 +35,14 @@ Pure React atoms (zero cordis): StateDot, DisclosureRow, ic_ds_* icons, Button/P
 ## Web retrieval
 
 `WebBlock` renders a completed web retrieval, one component for both kinds of the `web` render intent (discriminated by `kind`). A `search` shows an optional provider answer (through `MarkdownText`) above an ordered citation list: each source is a safe external link labelled by its title, or its hostname, falling back to the raw URL when the URL does not parse or has no hostname (a `file:`/`data:` URL) so a label is never blank; its snippet and publication date render below it. Only http(s) URLs become anchors (`target`/`rel` set) — the http(s) subset of the allowlist `MarkdownText` applies to untrusted links (it also permits `mailto:`, excluded here); any other URL renders as plain text. The whole list renders in one fixed-height scroll container (`max-height: 320px`, `overflow-y: auto`), so a list taller than that scrolls vertically in place instead of growing the card; `<li value>` pins each source's citation number, contiguous from 1, rather than leaving it to the `<ol>`'s implicit count. When a search legitimately returns no answer and no sources, the card shows an explicit empty-state note rather than a blank `<ol>` (the chat row does not surface the raw result content). A `fetch` shows a compact summary: the linked final URL and its HTTP status. Both mark a capped retrieval. Rationale: [the web result card note](../../../.agents/notes/implemented/feature/2026-07-30-web-result-card-frontend.md) and [the source scroll note](../../../.agents/notes/implemented/feature/2026-08-03-web-search-source-scroll.md).
+
+## Price series
+
+`PriceSeriesBlock` draws one instrument's session bars as candles, and `priceSeriesModel` derives the geometry it takes. Both live here rather than beside one caller because two surfaces draw the same series: the `market_history` tool row in `ui-tool`, and the name page in `ui-watchlist`.
+
+The derivation normalizes every bar into a 0..1 unit box against the whole series range, so the block does no arithmetic beyond mapping that box onto the viewBox. It returns null for a series with no bars and for one whose every price is identical — neither has a range to plot, and a flat line drawn at an arbitrary height would state a shape the data does not have, so a caller that gets null shows numbers instead.
+
+Colors follow the local market convention the product serves — red for a rising session, green for a falling one — drawn from theme tokens so both themes resolve. `adjustment` is always spelled out beside the range, because a chart that does not say which corporate-action basis its prices carry invites exactly the comparison the market-data seam refuses to allow.
 
 ## Model Experience
 

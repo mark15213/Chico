@@ -34,6 +34,14 @@ The caller passes the `limit` it will draw. The surface rendering the list is wh
 
 An unfollowed record is reported as not followed, which makes the picker the way back to a name taken off the list — the only way, since nothing lists what was once followed.
 
+### A name opens inside the tab, not in the details column
+
+The design puts the name dossier in the details column, which `ui-conversation` owns as a single slot filled by the tool inspector. Taking it over would delete tool inspection; making the column subject-aware would change two shared shells before the dossier has content worth the argument.
+
+So the page replaces the list inside the tab. Nothing shared changes, a row finally opens onto something, and the column question stays open — which is the right shape for a question whose answer depends on content that does not exist yet.
+
+`dossier` returns the record, its quote, and its history in one call. A page assembled from three round trips shows three different instants, and a professional comparing a figure against a chart needs them to be the same observation.
+
 ### An unlisted code is a value, not a thrown error
 
 `follow` takes a venue and a code, reads the quote, and records the venue's own name. Reading first proves the listing exists and supplies the name a browser cannot know.
@@ -70,7 +78,7 @@ The watchlist reads once per mount or explicit refresh. There is no subscription
 
 The picker inherits whatever order the provider returns. The seam states no ranking contract, so two providers can answer one query differently and neither this package nor the tab can say which is better.
 
-A row is a figure and not a way into the name. The details-column dossier the [workbench design](../../../../products/chico/workbench-design.md) specifies is the next surface, and until it exists the tab reads rather than navigates.
+The name page carries figures and a chart and nothing recorded — no notes, no insights, no financials, no filings. It is the frame the record will hang in, and it reads as thin until something hangs there.
 
 ## Testing
 
