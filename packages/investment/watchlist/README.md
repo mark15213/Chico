@@ -32,6 +32,10 @@ The caller passes the `limit` it will draw rather than receiving a number this p
 
 An unfollowed record is reported as *not* followed. The picker is therefore also the way back to a name taken off the list: re-following restores the record with its original `firstFollowedAt`.
 
+## Where a conversation about a name runs
+
+`archive` reports the [followed-names](../followed-names/README.md) archive directory. A browser column starting a conversation about a name needs a directory for it, and the archive is the one this product already owns; deriving one in the browser would put Host filesystem layout in a bundle. It is deliberately not a Workspace: a name is the unit of work, and registering one per name would create a folder for every glance.
+
 ## Following resolves the name from the venue
 
 `follow` takes a venue and a code, reads the quote, and records the venue's own name for the instrument. The caller does not supply a display name, because a user who types `SZSE:300750` does not know it, and a browser that guessed one would write a wrong name into a durable record.

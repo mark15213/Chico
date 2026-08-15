@@ -465,6 +465,7 @@ export const LINK_MAP: Readonly<Record<string, string>> = {
   PriceHistoryRequest: 'market-data.md',
   Quote: 'market-data.md',
   QuoteRequest: 'market-data.md',
+  ArchiveLocation: 'watchlist.md',
   WatchlistFollowResult: 'watchlist.md',
   ChainEntry: 'name-record.md',
   ChainEntryId: 'name-record.md',

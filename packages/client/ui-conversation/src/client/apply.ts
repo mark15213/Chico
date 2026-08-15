@@ -198,6 +198,15 @@ export function apply(ctx: Context): void {
     },
   }), 'ui-conversation: input standard-kit provider')
 
+  // Which frames brought their own opening. Read from the ledger rather than
+  // from a list this package keeps, so a frame registered after load counts.
+  const heroFrames: ConversationInjected['heroFrames'] = {
+    keys: () => slots.entries('conversation.hero').flatMap(entry =>
+      entry.options.key === undefined ? [] : [entry.options.key]),
+    subscribe: fn => slots.subscribe('conversation.hero', fn),
+    version: () => slots.getVersion('conversation.hero'),
+  }
+
   // Resident current-session-optional shell. It owns the stable Hero/composer
   // frame while strict session slots fill only their session-bound regions.
   slots.register({
@@ -213,10 +222,12 @@ export function apply(ctx: Context): void {
       'conversation.composer.dock': { kind: 'list', scope: 'session' },
       'conversation.input.left': { kind: 'list', scope: 'session' },
       'conversation.input.right': { kind: 'list', scope: 'session' },
+      'conversation.hero': { kind: 'keyed', scope: 'session-maybe' },
       'conversation.hero.workspace': { kind: 'single', scope: 'root' },
       'conversation.hero.agentPreset': { kind: 'single', scope: 'root' },
     },
     inject: (sessionId: SessionId | undefined): ConversationInjected => ({
+      heroFrames,
       hooks: { composerBlock: sessionId === undefined ? ABSENT_BLOCK : composerBlocks.storeFor(sessionId) },
       selectWorkspace: async (workspaceId) => {
         const nextId = await workspaces.connectWorkspace(workspaceId)

@@ -185,7 +185,7 @@ export class TestSessions implements ISessions {
   /** Calls observed on the service-level face, newest last. */
   readonly calls: {
     method: 'open' | 'openSubagent' | 'setSubagentCatalogOpen' | 'refreshSubagents'
-      | 'clear' | 'search' | 'fork'
+      | 'clear' | 'search' | 'fork' | 'startAt'
     args: unknown[]
   }[] = []
 
@@ -449,6 +449,17 @@ export class TestSessions implements ISessions {
   }
 
   /** Clear the current selection (recorded; the production no-session flow). */
+  /**
+   * Record a workspace-free start and hand back a stable id. The double keeps
+   * no directory of its own: a test that cares asserts the recorded call.
+   * @param cwd - absolute directory the conversation would run in.
+   * @returns the recorded session id.
+   */
+  startAt(cwd: string): Promise<SessionId> {
+    this.calls.push({ method: 'startAt', args: [cwd] })
+    return Promise.resolve(`started-at:${cwd}` as SessionId)
+  }
+
   clear(): void {
     this.calls.push({ method: 'clear', args: [] })
     this.list.update((draft) => {

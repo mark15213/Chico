@@ -23,6 +23,7 @@ import { FollowedNameError, nameKey } from '@deepseek-ai/dsh-followed-names'
 import type { InstrumentRef, Quote } from '@deepseek-ai/dsh-market-data'
 import { MarketDataError } from '@deepseek-ai/dsh-market-data'
 import type {
+  ArchiveLocation,
   NameDossier,
   WatchlistFollowResult,
   WatchlistRow,
@@ -90,6 +91,15 @@ export class WatchlistService extends TypertRemoteService {
       .sort((left, right) => left.firstFollowedAt.localeCompare(right.firstFollowedAt))
     const rows = await Promise.all(records.map(record => this.row(record, signal)))
     return { rows }
+  }
+
+  /**
+   * Where a conversation about a name runs.
+   * @returns the archive directory the registry owns.
+   */
+  @Remote('archive')
+  archive(): ArchiveLocation {
+    return { path: this.ctx.followedNames.archivePath }
   }
 
   /**

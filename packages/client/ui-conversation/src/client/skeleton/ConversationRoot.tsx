@@ -2,7 +2,7 @@
 // chain, AND the composer bar (session-maybe slot) stay mounted across
 // no-session/session transitions — the bar renders inert via owner props.
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import clsx from 'clsx'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSlotProps, InputZone } from '../contract/slots.ts'
@@ -13,8 +13,8 @@ import css from './ConversationRoot.module.css'
 export type ConversationRootProps = ConversationSlotProps
 
 export function ConversationRoot({
-  sessionId, useSession, useSessions, useWorkspaces, useInput, useComposerBlock,
-  renderSlot, renderSlotChain, selectWorkspace, t,
+  mode, sessionId, useSession, useSessions, useWorkspaces, useInput, useComposerBlock,
+  renderSlot, renderSlotChain, heroFrames, selectWorkspace, t,
 }: ConversationRootProps) {
   const openState = useSession(s => s.openState)
   const composerPhase = useSession(s => s.composerPhase)
@@ -97,7 +97,17 @@ export function ConversationRoot({
           ? undefined
           : workspaceLabel(cwd)))
 
-  const heroWorkspaceRow = (
+  // A frame that brought its own opening replaces the Workspace hero for its
+  // own frame, and the prerequisite goes with it: picking a Workspace is what
+  // the Workspace hero waits for, and a frame whose unit of work is not a
+  // project has nothing to wait for.
+  useSyncExternalStore(heroFrames.subscribe, heroFrames.version)
+  const framedHero = heroFrames.keys().includes(mode)
+
+  // Built only for its own frame: the picker slot renders as this expression
+  // is evaluated, so a framed opening that merely dropped the node would
+  // still mount the Workspace picker beside it.
+  const heroWorkspaceRow = framedHero ? null : (
     <div className={css.heroWorkspaceRow}>
       <WorkspaceChip
         buttonRef={pickerAnchor}
@@ -128,7 +138,7 @@ export function ConversationRoot({
   // blank session whose workspace vanished (deleted from the sidebar). The
   // bar is ONE session-maybe slot rendered unconditionally — inert is a prop,
   // not a different tree, so the textarea DOM survives the transition.
-  const inert = sessionId === undefined || (hero && chipTitle === undefined)
+  const inert = sessionId === undefined || (!framedHero && hero && chipTitle === undefined)
   // A raised block is the same inert posture with the blocker's own reason:
   // one disabled textarea, never a second tree. The no-workspace state wins
   // when both hold — picking a workspace is the earlier prerequisite.
@@ -159,8 +169,9 @@ export function ConversationRoot({
   const composerBar = (
     <div className={clsx(css.composerStack, hero && css.composerHero)}>
       {hero && <HeroGlow className={css.heroGlow} />}
-      {hero && <HeroShell t={t} />}
-      {hero && heroWorkspaceRow}
+      {hero && (framedHero
+        ? renderSlot('conversation.hero', { sessionId }, { entryKey: mode })
+        : <><HeroShell t={t} />{heroWorkspaceRow}</>)}
       {zone !== undefined && renderSlot('conversation.input.dock', zone)}
       {inputBar}
     </div>

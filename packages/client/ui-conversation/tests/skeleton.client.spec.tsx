@@ -99,6 +99,10 @@ function mount(
     composerBlock?: { reason: string }
     /** Mutable view ledger used by registration-order regressions. */
     viewTabs?: ViewTab[]
+    /** Which frame the columns are showing. */
+    mode?: string
+    /** Frames that brought their own blank-conversation opening. */
+    heroFrames?: readonly string[]
   } = {},
 ) {
   const root = sid('root')
@@ -235,6 +239,12 @@ function mount(
       : (opts?.fallback ?? null)
   )) as ConversationRootProps['renderSlotChain']
   const props: ConversationRootProps = {
+    mode: options.mode ?? 'sessions',
+    heroFrames: {
+      keys: () => options.heroFrames ?? [],
+      subscribe: () => () => {},
+      version: () => 1,
+    },
     sessionId: SID,
     SessionProvider: ({ children }) => children(SID),
     useSession,
@@ -300,6 +310,36 @@ describe('ConversationRoot resident composer', () => {
     expect(box.placeholder).not.toBe('select a model first')
     const modelSeat = b.seatOwners.filter(call => call.key === 'conversation.input.model').at(-1)?.owner
     expect(modelSeat).toEqual({ locked: true })
+  })
+
+  it('gives a frame with its own opening a live composer and no workspace chrome', () => {
+    // The workspace prerequisite belongs to the workspace opening. A frame
+    // whose unit of work is not a project has nothing to pick first, so the
+    // reader types straight away.
+    const b = mount(conversationSnapshot({ composerPhase: 'blank' }), [], undefined, {
+      summaryBlank: true,
+      mode: 'names',
+      heroFrames: ['names'],
+    })
+    const box = b.view.getByRole('textbox') as HTMLTextAreaElement
+
+    expect(box.disabled).toBe(false)
+    expect(box.readOnly).toBe(false)
+    expect(box.getAttribute('aria-haspopup')).toBeNull()
+    expect(b.slotCalls).toContain('conversation.hero')
+    expect(b.slotCalls).not.toContain('conversation.hero.workspace')
+  })
+
+  it('keeps the workspace opening for a frame that registered none', () => {
+    const b = mount(conversationSnapshot({ composerPhase: 'blank' }), [], undefined, {
+      summaryBlank: true,
+      mode: 'sessions',
+      heroFrames: ['names'],
+    })
+
+    expect((b.view.getByRole('textbox') as HTMLTextAreaElement).readOnly).toBe(true)
+    expect(b.slotCalls).toContain('conversation.hero.workspace')
+    expect(b.slotCalls).not.toContain('conversation.hero')
   })
 
   it('keeps composer text in the machine, mirrors to the chat store, and submits through the sink', () => {

@@ -1,16 +1,28 @@
 /**
  * The centre column's half of the workbench: opening a name navigates the
  * conversation to that name's own, and a conversation started under an open
- * name is bound to it.
+ * name belongs to it from the moment it exists.
  *
- * Binding happens when the conversation stops being blank, not when it is
- * created. A blank session is the New Session view, which every name would
- * otherwise claim in turn; a session that has run a turn is one the user
- * actually held about this name.
+ * Conversations here belong to no workspace. The workspace flow is the right
+ * way in when the reader's unit of work is a project; under a name it would
+ * ask them to pick a project before they could say anything about a stock.
+ * They run at the archive directory instead, which is never registered as a
+ * workspace, so produced files land somewhere durable and no folder appears
+ * for a name someone merely glanced at.
+ *
+ * **A conversation is created for one name and bound at creation.** Nothing
+ * is shared and nothing is claimed later: an unbound conversation the reader
+ * is typing into cannot be adopted by whichever name they open next, which is
+ * how a conversation about one stock ends up filed under another.
+ *
+ * The reuse that keeps blank conversations from piling up is per name, and
+ * reads that name's own list: opening a name returns to its newest
+ * conversation, and starting a new one while its newest is still blank
+ * returns to that blank rather than adding a second.
  */
 import type { InstrumentRef, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
 
-/** The session-list facts this controller reads. */
+/** The session facts and moves this controller uses. */
 export interface SessionsFace {
   /** The list feed: rows, and which one is current. */
   list: {
@@ -22,8 +34,8 @@ export interface SessionsFace {
   }
   /** Select an existing conversation. */
   open: (id: SessionId) => void
-  /** Clear the selection into the New Session view. */
-  clear: () => void
+  /** Create a conversation at a directory, belonging to no workspace. */
+  startAt: (cwd: string) => Promise<SessionId>
 }
 
 /** What the controller needs from the host record. */
@@ -32,27 +44,28 @@ export interface RecordFace {
   read: (instrument: InstrumentRef) => Promise<{ sessions: readonly SessionId[] }>
   /** Bind one conversation to one name. */
   bind: (instrument: InstrumentRef, sessionId: SessionId) => Promise<readonly SessionId[]>
+  /** The directory a conversation about a name runs in. */
+  archive: () => Promise<{ path: string }>
 }
 
-/** Where the controller publishes what it learned. */
+/** Where the controller publishes what it learned, and reads it back. */
 export interface FocusFace {
   /** Show one name with its conversations. */
-  open: (instrument: InstrumentRef, sessions: readonly SessionId[]) => void
+  open: (instrument: InstrumentRef, displayName: string, sessions: readonly SessionId[]) => void
   /** Replace the open name's conversation list. */
   setSessions: (sessions: readonly SessionId[]) => void
+  /** The open name and its conversations. */
+  snapshot: () => { readonly sessions: readonly SessionId[] }
 }
 
 /**
- * Navigates the centre column with the workbench and binds what the user
- * starts there. One instance per plugin; `watch` runs for the plugin's life.
+ * Navigates the centre column with the workbench, and owns the conversations
+ * started there. One instance per plugin.
  */
 export class WorkbenchSessions {
-  /** The name a newly non-blank conversation should be bound to, if any. */
-  private awaiting: InstrumentRef | null = null
-
   /**
    * @param sessions - the navigation face.
-   * @param record - the host record's read and bind.
+   * @param record - the host record's read, bind, and archive directory.
    * @param focus - where the open name and its conversations are published.
    */
   constructor(
@@ -62,24 +75,24 @@ export class WorkbenchSessions {
   ) {}
 
   /**
-   * Show one name: publish it, then navigate the centre column to its most
-   * recent conversation, or to a blank one that binds as soon as it is used.
+   * Show one name: publish it, then navigate the centre column to its newest
+   * conversation, or open its first.
    * @param instrument - the name to open.
+   * @param displayName - that name as the clicked surface knows it.
    * @returns when the record has been read and the column navigated.
    */
-  open = async (instrument: InstrumentRef): Promise<void> => {
+  open = async (instrument: InstrumentRef, displayName: string): Promise<void> => {
     // Published before the read so the other two columns move on the click
     // rather than after a round trip.
-    this.focus.open(instrument, [])
+    this.focus.open(instrument, displayName, [])
     const bound = await this.record.read(instrument).then(view => view.sessions, () => [])
-    this.focus.open(instrument, bound)
-    const latest = bound.at(-1)
-    if (latest !== undefined) {
-      this.awaiting = null
-      this.sessions.open(latest)
+    this.focus.open(instrument, displayName, bound)
+    const newest = bound.at(-1)
+    if (newest !== undefined) {
+      this.sessions.open(newest)
       return
     }
-    this.start(instrument)
+    await this.create(instrument, bound)
   }
 
   /**
@@ -87,34 +100,37 @@ export class WorkbenchSessions {
    * @param id - the conversation to select.
    */
   show = (id: SessionId): void => {
-    this.awaiting = null
     this.sessions.open(id)
   }
 
   /**
-   * Begin a new conversation about one name. Nothing is bound yet: a blank
-   * session is the New Session view, and binding it would give the name a
-   * conversation the user never held.
-   * @param instrument - the name the next conversation is about.
+   * Begin a new conversation about the open name, at the archive directory
+   * and belonging to no workspace. A newest conversation nobody has spoken in
+   * is opened instead of adding a second empty one.
+   * @param instrument - the name the conversation is about.
+   * @returns when the conversation is open.
    */
-  start = (instrument: InstrumentRef): void => {
-    this.awaiting = instrument
-    this.sessions.clear()
+  start = async (instrument: InstrumentRef): Promise<void> => {
+    const bound = this.focus.snapshot().sessions
+    const newest = bound.at(-1)
+    if (newest !== undefined && this.sessions.list.getSnapshot().byId[newest]?.blank === true) {
+      this.sessions.open(newest)
+      return
+    }
+    await this.create(instrument, bound)
   }
 
   /**
-   * Bind a conversation to the awaited name once it stops being blank.
-   * @returns the unsubscribe function; call it when the plugin unloads.
+   * Create one conversation for one name and bind it before anything else can
+   * claim it.
+   * @param instrument - the name the conversation is about.
+   * @param bound - the name's conversations before this one.
    */
-  watch = (): (() => void) => this.sessions.list.subscribe(() => {
-    const instrument = this.awaiting
-    if (instrument === null) return
-    const { byId, current } = this.sessions.list.getSnapshot()
-    if (current === undefined || byId[current]?.blank !== false) return
-    this.awaiting = null
-    void this.record.bind(instrument, current).then(this.focus.setSessions, () => {
-      // A failed bind loses the association, not the conversation: the user
-      // keeps talking, and the name simply does not list this one.
-    })
-  })
+  private async create(instrument: InstrumentRef, bound: readonly SessionId[]): Promise<void> {
+    const { path } = await this.record.archive()
+    const id = await this.sessions.startAt(path)
+    this.sessions.open(id)
+    const listed = await this.record.bind(instrument, id).catch(() => bound)
+    this.focus.setSessions(listed)
+  }
 }

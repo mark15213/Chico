@@ -58,7 +58,7 @@ const bashResult = (seq: number, callId: string, over?: Partial<ToolResultNode>)
 /** Test-owned AppFrame role: declares and renders the resident conversation area. */
 type AppRootProps = PropsRenderSlots<'conversation' | 'details'>
 function AppRoot({ renderSlot }: AppRootProps) {
-  return <>{renderSlot('conversation', {})}</>
+  return <>{renderSlot('conversation', { mode: 'sessions' })}</>
 }
 
 const LAYOUT_CHILDREN = {

@@ -2180,6 +2180,12 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         throws: ['{@link MarketDataError} when no usable provider can be selected.'],
       },
       {
+        signature: '@Remote(\'archive\') archive(): ArchiveLocation',
+        description: 'Where a conversation about a name runs.',
+        parameters: [],
+        returns: 'the archive directory the registry owns.',
+      },
+      {
         signature: '@Remote(\'search\') async search(query: string, limit: number, signal?: AbortSignal): Promise<WatchlistSearchResult>',
         description: 'Find the listings a typed query names, each marked with whether it is already followed. This is the path onto the watchlist: a user knows a name far more often than a venue and a code.',
         parameters: [{ name: 'query', description: 'what the user typed: a code, a name, or part of either.' }, { name: 'limit', description: 'how many matches the caller will present. Passed rather than fixed here, because the surface drawing the list is what knows how many it can show; the seam refuses a limit above its own ceiling.' }, { name: 'signal', description: 'optional cancellation signal, so a keystroke supersedes the lookup the previous one started.' }],
@@ -2850,6 +2856,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ApprovalService',
     declaration: 'export class ApprovalService extends Service {\n    static Config: z<Config>;\n    constructor(ctx: Context, public config: Config);\n    setPolicy(agent: Agent, policy: ApprovalPolicy): void;\n    async request(req: ApprovalRequest): Promise<ApprovalOutcome>;\n    overrideOf(session: Session): ApprovalPolicy | undefined;\n}',
+  },
+  {
+    name: 'ArchiveLocation',
+    declaration: 'export interface ArchiveLocation {\n    readonly path: string;\n}',
   },
   {
     name: 'AskUserQuestionAnswer',

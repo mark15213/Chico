@@ -14,6 +14,14 @@ import type { InstrumentRef, SessionId } from '@deepseek-ai/dsh-api-remotes/clie
 export interface WorkbenchFocusState {
   /** The instrument the workbench is showing, or null before one is opened. */
   readonly instrument: InstrumentRef | null
+  /**
+   * That name as the surface the reader clicked knows it. It travels with the
+   * selection because the surfaces that show the name — the conversation
+   * opening among them — have no other way to it: the record holds no name,
+   * and a round trip for a heading would leave the column blank on every
+   * click.
+   */
+  readonly displayName: string | null
   /** Conversations bound to that name, in the order they were bound. */
   readonly sessions: readonly SessionId[]
 }
@@ -33,7 +41,7 @@ export interface WorkbenchSelection {
   snapshot: () => WorkbenchFocusState
 }
 
-const EMPTY: WorkbenchFocusState = { instrument: null, sessions: [] }
+const EMPTY: WorkbenchFocusState = { instrument: null, displayName: null, sessions: [] }
 
 /** The one selection behind every workbench column. */
 export class WorkbenchFocus implements WorkbenchSelection {
@@ -59,10 +67,13 @@ export class WorkbenchFocus implements WorkbenchSelection {
   /**
    * Show one name with the conversations recorded against it.
    * @param instrument - the instrument to show.
+   * @param displayName - that name as the clicked surface knows it.
    * @param sessions - its bound conversations, oldest first.
    */
-  open = (instrument: InstrumentRef, sessions: readonly SessionId[] = []): void => {
-    this.publish({ instrument, sessions })
+  open = (
+    instrument: InstrumentRef, displayName: string, sessions: readonly SessionId[] = [],
+  ): void => {
+    this.publish({ instrument, displayName, sessions })
   }
 
   /**
@@ -73,7 +84,7 @@ export class WorkbenchFocus implements WorkbenchSelection {
    */
   setSessions = (sessions: readonly SessionId[]): void => {
     if (this.state.instrument === null) return
-    this.publish({ instrument: this.state.instrument, sessions })
+    this.publish({ ...this.state, sessions })
   }
 
   private publish(state: WorkbenchFocusState): void {

@@ -131,6 +131,17 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation.composer': { kind: 'chain'; scope: 'session'; owner: ComposerChainProps }
     /**
+     * The blank-conversation opening, keyed by frame. An entry replaces the
+     * Workspace hero for its own frame and takes the prerequisite with it:
+     * the Workspace hero holds the composer inert until a Workspace is
+     * picked, and a frame whose unit of work is not a project has no such
+     * prerequisite, so its conversation can be typed into at once.
+     *
+     * Absent an entry for the current frame, the Workspace hero renders. The
+     * default frame deliberately registers none.
+     */
+    'conversation.hero': { kind: 'keyed'; scope: 'session-maybe'; owner: ConversationHeroOwnerProps }
+    /**
      * The hero-phase Workspace picker hole: rendered by ConversationRoot
      * while the session is blank (picking another workspace switches to that
      * workspace's blank session, draft carried). Root scope: the picker
@@ -412,6 +423,24 @@ export type ChatStore = ReturnType<typeof createChatStore>
 /** Business callbacks injected into the conversation slot. */
 export interface ConversationInjected {
   /**
+   * Which frames supply their own blank-conversation opening, projected from
+   * the `conversation.hero` ledger. The root reads it to decide whether this
+   * frame's opening is the Workspace hero or an entry's, which also decides
+   * whether the composer waits on a Workspace pick.
+   */
+  heroFrames: {
+    /** The frame keys with a registered opening. */
+    keys: () => readonly string[]
+    /**
+     * Watch the ledger.
+     * @param fn - called after every change.
+     * @returns the unsubscribe function.
+     */
+    subscribe: (fn: () => void) => () => void
+    /** Ledger version, for `useSyncExternalStore`. */
+    version: () => number
+  }
+  /**
    * Connect the selected Workspace and open its reusable/new blank session.
    * When a blank session is already current, carry its draft to the target.
    */
@@ -573,6 +602,7 @@ export type ConversationSlotProps =
     | 'conversation.input.overlay'
     | 'conversation.input.dock' | 'conversation.composer.dock'
     | 'conversation.input.left' | 'conversation.input.right'
+    | 'conversation.hero'
     | 'conversation.hero.workspace'
     | 'conversation.hero.agentPreset'
   >
@@ -724,6 +754,20 @@ export interface DetailsInjected {
 /** Full details-slot props: selection store, Tool output seat, injected close callback, and locale. */
 export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool'>
   & PropsStore<ChatStore> & DetailsInjected & PropsLocale<'conversation'>
+
+/**
+ * Owner share for a frame's own blank-conversation opening. The entry renders
+ * the line above the composer; the composer itself stays the root's, so an
+ * opening cannot take the input seat with it.
+ */
+export interface ConversationHeroOwnerProps {
+  /**
+   * The blank conversation this opening is above, or undefined when no
+   * session is current. An entry that needs to name what the conversation is
+   * about reads that from its own frame's state, not from here.
+   */
+  sessionId: SessionId | undefined
+}
 
 /** Owner share common to the hero / New-Session Workspace pickers. */
 export interface EmptyWorkspaceOwnerProps {

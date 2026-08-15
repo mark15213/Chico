@@ -490,6 +490,21 @@ export class SessionRuntime implements ISessions {
   }
 
   /**
+   * Start a conversation at a directory, belonging to no workspace.
+   *
+   * Deliberately no reuse of a blank conversation already at that directory,
+   * unlike the workspace path: a workspace owns its sessions, so the blank
+   * one it finds is its own, while several callers can share a directory and
+   * a blank conversation handed to a second caller would belong to both. The
+   * caller that groups these conversations decides what to reuse.
+   * @param cwd - absolute directory the conversation runs in.
+   * @returns the new session id.
+   */
+  async startAt(cwd: string): Promise<SessionId> {
+    return this.create({ cwd })
+  }
+
+  /**
    * Fork a session from a completed-turn prefix of the source (same
    * synchronous-addressability guarantee as {@link SessionRuntime.create}:
    * on resolution the child is in the list store and open() can target it).

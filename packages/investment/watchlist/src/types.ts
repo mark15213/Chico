@@ -57,6 +57,17 @@ export interface WatchlistSearchResult {
   readonly matches: readonly WatchlistSearchMatch[]
 }
 
+/**
+ * Where a conversation about a name runs. One directory holds Chico's own
+ * work, and it is deliberately never registered as a Workspace: a name is the
+ * unit of work here, and inventing a workspace to hold its conversations would
+ * put a folder on disk for every glance.
+ */
+export interface ArchiveLocation {
+  /** Absolute path of the archive directory. */
+  readonly path: string
+}
+
 /** Every followed name, in the registry's own order. */
 export interface WatchlistSnapshot {
   /** The current watchlist rows. */

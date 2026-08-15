@@ -1,11 +1,13 @@
 /**
- * The name workbench: the two columns Chico adds to the harness frame.
+ * The investing frame: what Chico adds to the harness frame.
  *
  * It registers one navigation frame in the sidebar (`sidebar.mode`, id
- * `names`) and one detail panel keyed to that frame (`details`). Switching to
- * the frame swaps the left column to the followed names and the right column
- * to the open name's record; the centre column stays the conversation, which
- * ui-conversation owns.
+ * `names`), one detail panel keyed to that frame (`details`), and that
+ * frame's own blank-conversation opening (`conversation.hero`). Switching to
+ * the frame swaps the left column to the followed names, the right column to
+ * the open name's record, and the centre column's opening to the name being
+ * discussed — which is what keeps a conversation about a stock out of the
+ * Workspace flow. The conversation body itself stays ui-conversation's.
  *
  * Both columns share two plugin-owned observables — the rows and the open
  * name. Neither can be a slot store handle: a handle carries one scope, the
@@ -21,6 +23,9 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // the 'details' row these registrations need.
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
+// The conversation plugin declares the frame-keyed opening this package fills.
+import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import { InvestingHero, type InvestingHeroInjected } from './InvestingHero.tsx'
 import { NamesFrame, type NamesFrameInjected } from './NamesFrame.tsx'
 import { RecordPanel, type RecordPanelInjected } from './RecordPanel.tsx'
 import { WatchlistFeed } from './watchlist-store.ts'
@@ -28,6 +33,8 @@ import { WorkbenchFocus } from './workbench-store.ts'
 import { WorkbenchSessions } from './workbench-sessions.ts'
 import { en, NS, zh, type WatchlistLocaleKey } from './locales.ts'
 
+export type { InvestingHeroInjected, InvestingHeroProps } from './InvestingHero.tsx'
+export { InvestingHero } from './InvestingHero.tsx'
 export type { NamesFrameInjected, NamesFrameProps } from './NamesFrame.tsx'
 export type { RecordPanelInjected, RecordPanelProps } from './RecordPanel.tsx'
 export type { WatchlistSource, WatchlistState } from './watchlist-store.ts'
@@ -107,15 +114,20 @@ export function apply(ctx: ClientContext): void {
     return result.value
   }
 
+  const archive = async (): Promise<{ path: string }> => {
+    const result = await ctx.remote.watchlist.archive()
+    if (!result.ok) throw new Error(`watchlist.archive failed: ${result.error.code}: ${result.error.message}`)
+    return result.value
+  }
+
   const feed = new WatchlistFeed(list)
   const focus = new WorkbenchFocus()
-  const conversations = new WorkbenchSessions(ctx.sessions, { read, bind }, focus)
-  ctx.effect(() => conversations.watch(), 'ui-watchlist: bind conversations to the open name')
+  const conversations = new WorkbenchSessions(ctx.sessions, { read, bind, archive }, focus)
 
   /** Show one name: every column moves, and the record panel is revealed. */
-  const openName = (instrument: InstrumentRef): void => {
+  const openName = (instrument: InstrumentRef, displayName: string): void => {
     ctx.layout.openDetails()
-    void conversations.open(instrument)
+    void conversations.open(instrument, displayName)
   }
 
   ctx.slots.inject('sidebar.mode', () => ctx.slots.register({
@@ -134,6 +146,13 @@ export function apply(ctx: ClientContext): void {
       startConversation: conversations.start,
     }),
   }, NamesFrame))
+
+  ctx.slots.inject('conversation.hero', () => ctx.slots.register({
+    name: 'conversation.hero',
+    key: NAMES_MODE,
+    locale: NS,
+    inject: (): InvestingHeroInjected => ({ focus }),
+  }, InvestingHero))
 
   ctx.slots.inject('details', () => ctx.slots.register({
     name: 'details',

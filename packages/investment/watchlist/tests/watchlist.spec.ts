@@ -376,6 +376,14 @@ describe('unfollowing', () => {
   })
 })
 
+describe('where a conversation about a name runs', () => {
+  it('reports the archive directory the registry owns', async () => {
+    const ctx = await bench()
+
+    expect(ctx.watchlist.archive()).toEqual({ path: ctx.followedNames.archivePath })
+  })
+})
+
 describe('service lifecycle', () => {
   it('withdraws ctx.watchlist when its fiber disposes (HMR safety)', async () => {
     const ctx = await composition()

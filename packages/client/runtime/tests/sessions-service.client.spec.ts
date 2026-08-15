@@ -520,6 +520,30 @@ describe('create', () => {
   })
 })
 
+describe('startAt', () => {
+  it('creates a conversation at the directory, attached to no Workspace', async () => {
+    const b = bench()
+    b.api.onCreate = () => Promise.resolve(ok({ sessionId: sid('fresh') }))
+
+    await expect(b.svc.startAt('/archive')).resolves.toBe('fresh')
+
+    expect(b.api.callsOf('session.create')).toEqual([{ cwd: '/archive' }])
+  })
+
+  it('creates one per call, never handing back a blank conversation at that directory', async () => {
+    const b = bench()
+    b.api.onCreate = () => Promise.resolve(ok({ sessionId: sid('first') }))
+    await b.svc.startAt('/archive')
+    b.api.onCreate = () => Promise.resolve(ok({ sessionId: sid('second') }))
+
+    // Several frames can share a directory, so a blank conversation found
+    // there belongs to whoever started it; handing it to a second caller is
+    // how one conversation ends up filed under two things.
+    await expect(b.svc.startAt('/archive')).resolves.toBe('second')
+    expect(b.api.callsOf('session.create')).toHaveLength(2)
+  })
+})
+
 describe('fork', () => {
   it.each([
     ['Roadmap', 'Roadmap (1)'],

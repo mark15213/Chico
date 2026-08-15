@@ -108,7 +108,15 @@ export interface SidebarOwnerProps {
 }
 
 /** Conversation owner share: business state and actions belong to the registrant. */
-export interface ConvOwnerProps {}
+export interface ConvOwnerProps {
+  /**
+   * Which frame the columns are showing. The centre column reads it for the
+   * same reason the other two do: a frame whose unit of work is not a project
+   * needs its own way in, and the occupant cannot ask the sidebar. The
+   * sidebar and the details column read the same value.
+   */
+  mode: string
+}
 
 /** Details owner share: empty — sessionId arrives as a framework-standard prop. */
 export interface DetailsOwnerProps {

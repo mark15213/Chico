@@ -2,8 +2,10 @@
 
 /** Simplified Chinese dictionary and key source of truth. */
 export const zh = {
-  'mode.names': '自选',
+  'mode.names': '投资',
   'mark.unverified': '{count} 条判断待验证',
+  'hero.noName': '从左边选一只标的，开始一段关于它的对话。',
+  'hero.prompt': '关于这只标的，你想问什么？',
   'conversation.new': '+ 新对话',
   'record.noName': '从左边选一只标的。',
   'record.failed': '暂时无法读取这只标的的记录。',
@@ -66,8 +68,10 @@ export type WatchlistLocaleKey = keyof typeof zh
 
 /** English dictionary checked against the Chinese key set. */
 export const en = {
-  'mode.names': 'Names',
+  'mode.names': 'Investing',
   'mark.unverified': '{count} thesis waiting to be settled',
+  'hero.noName': 'Pick a name on the left to start a conversation about it.',
+  'hero.prompt': 'What do you want to ask about this name?',
   'conversation.new': '+ New conversation',
   'record.noName': 'Pick a name on the left.',
   'record.failed': 'This name\u2019s record is temporarily unavailable.',

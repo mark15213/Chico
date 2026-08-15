@@ -1,0 +1,25 @@
+/* The opening above a blank investing conversation. It sits where the
+   harness's Workspace hero would, so it keeps that block's centred column and
+   stays quiet: the reader came here to type, and the only thing they need
+   confirmed is which name they are typing about. */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.prompt {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}

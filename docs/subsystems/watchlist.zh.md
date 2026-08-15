@@ -65,6 +65,10 @@ interface WatchlistRow {
 
 已取消关注的记录会被报告为**未**关注。因此选择器同时也是回到已移出标的的那条路：重新关注会连同原有的 `firstFollowedAt` 一起恢复记录。
 
+## 关于一只标的的对话跑在哪里
+
+`archive` 报告注册表的归档目录，好让浏览器栏位不必自己推导 Host 的文件系统路径，就能就一只标的开始一次对话。这个目录刻意不是一个[工作区](../architecture.md)：在本产品里标的才是工作单元，为每只标的注册一个工作区会让随手一瞥也在磁盘上留下一个目录。
+
 ## 关注时由交易场所解析名称
 
 `follow` 接收交易场所和代码，在记录任何东西之前先读取报价，这既证明了该上市标的存在，也提供了显示名。调用方不传名字：敲下 `SZSE:300750` 的用户并不知道它，而浏览器随便猜一个就会把错误的名字写进持久记录。
@@ -121,6 +125,12 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 @Remote('list') async list(signal?: AbortSignal): Promise<WatchlistSnapshot>
 
 /**
+ * Where a conversation about a name runs.
+ * @returns the archive directory the registry owns.
+ */
+@Remote('archive') archive(): ArchiveLocation
+
+/**
  * Find the listings a typed query names, each marked with whether it is
  * already followed. This is the path onto the watchlist: a user knows a name
  * far more often than a venue and a code.
@@ -175,5 +185,5 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 
 Types: [InstrumentRef](market-data.md)
 
-Source: [`packages/investment/watchlist/src/index.ts:67`](../../packages/investment/watchlist/src/index.ts)
+Source: [`packages/investment/watchlist/src/index.ts:68`](../../packages/investment/watchlist/src/index.ts)
 <!-- END GENERATED cordis-surface -->

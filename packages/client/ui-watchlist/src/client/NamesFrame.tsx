@@ -21,11 +21,11 @@ export interface NamesFrameInjected {
    * to be revealed as well. A selection that moves a column nobody can see is
    * not navigation.
    */
-  open: (instrument: InstrumentRef) => void
+  open: (instrument: InstrumentRef, displayName: string) => void
   /** Select one of the open name's conversations in the centre column. */
   openConversation: (id: SessionId) => void
   /** Begin a new conversation about the open name. */
-  startConversation: (instrument: InstrumentRef) => void
+  startConversation: (instrument: InstrumentRef) => Promise<void>
 }
 
 /** Full props of the sidebar's names frame. */
@@ -127,7 +127,7 @@ export function NamesFrame({
                   aria-label={`${t('page.open')} ${match.name}`}
                   onClick={() => {
                     setQuery('')
-                    open(match.instrument)
+                    open(match.instrument, match.name)
                   }}
                 >
                   <span className={css.name}>{match.name}</span>
@@ -172,7 +172,7 @@ export function NamesFrame({
                   className={css.row}
                   data-open={on ? 'true' : undefined}
                   aria-current={on ? 'true' : undefined}
-                  onClick={() => { open(row.instrument) }}
+                  onClick={() => { open(row.instrument, row.displayName) }}
                 >
                   <span
                     className={css.mark}
@@ -215,7 +215,7 @@ export function NamesFrame({
                       <button
                         type="button"
                         className={css.newConversation}
-                        onClick={() => { startConversation(row.instrument) }}
+                        onClick={() => { void startConversation(row.instrument) }}
                       >
                         {t('conversation.new')}
                       </button>

@@ -74,6 +74,24 @@ export interface ISessions {
   /** Clear the current selection into the no-session view state. */
   clear(): void
   /**
+   * Start a conversation at a directory, belonging to no workspace.
+   *
+   * The workspace flow is the harness's own way in, and it is the right one
+   * when the reader's unit of work is a project. A frame whose unit of work is
+   * something else — one instrument, say — groups its conversations itself and
+   * would have to invent a workspace to hold them. This is the way in for
+   * those: the directory is where produced files land, and the conversation
+   * belongs to whatever the frame says it belongs to.
+   *
+   * Each call creates one. Several frames can share a directory, so a blank
+   * conversation found there is not this caller's to reuse — the frame that
+   * groups them owns that decision.
+   * @param cwd - absolute directory the conversation runs in.
+   * @returns the new session id; already in the list store, so `open()` can
+   *   target it on resolution.
+   */
+  startAt(cwd: string): Promise<SessionId>
+  /**
    * Search the Host's visible message-content index. Results stay
    * request-local; the list snapshot remains the metadata authority.
    * @param query - non-blank literal phrase.

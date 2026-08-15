@@ -195,7 +195,7 @@ export function AppFrame({
             the shell's own pending rendering. The conversation
             is session-maybe; the strict details entry naturally renders
             empty while no session is current. */}
-        <CenterColumn>{renderSlot('conversation', {})}</CenterColumn>
+        <CenterColumn>{renderSlot('conversation', { mode: panels.mode })}</CenterColumn>
         <DetailsColumn>{renderSlot('details', { mode: panels.mode }, { entryKey: panels.mode })}</DetailsColumn>
       </>
       <div className={css.overlayLayer} data-shell-overlay>

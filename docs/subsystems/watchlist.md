@@ -65,6 +65,10 @@ The caller passes the `limit` it will draw rather than receiving a number this p
 
 An unfollowed record is reported as *not* followed. The picker is therefore also the way back to a name taken off the list: re-following restores the record with its original `firstFollowedAt`.
 
+## Where a conversation about a name runs
+
+`archive` reports the registry's archive directory, so a browser column can start a conversation about a name without deriving a Host filesystem path itself. The directory is deliberately not a [Workspace](../architecture.md): a name is the unit of work in this product, and registering one Workspace per name would put a folder on disk for every glance.
+
 ## Following resolves the name from the venue
 
 `follow` takes a venue and a code and reads the quote before recording anything, which both proves the listing exists and supplies the display name. A caller does not pass a name: a user typing `SZSE:300750` does not know it, and a browser that guessed would write a wrong name into a durable record.
@@ -121,6 +125,12 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 @Remote('list') async list(signal?: AbortSignal): Promise<WatchlistSnapshot>
 
 /**
+ * Where a conversation about a name runs.
+ * @returns the archive directory the registry owns.
+ */
+@Remote('archive') archive(): ArchiveLocation
+
+/**
  * Find the listings a typed query names, each marked with whether it is
  * already followed. This is the path onto the watchlist: a user knows a name
  * far more often than a venue and a code.
@@ -175,5 +185,5 @@ The watchlist service. Registered as `ctx.watchlist` (one instance per context) 
 
 Types: [InstrumentRef](market-data.md)
 
-Source: [`packages/investment/watchlist/src/index.ts:67`](../../packages/investment/watchlist/src/index.ts)
+Source: [`packages/investment/watchlist/src/index.ts:68`](../../packages/investment/watchlist/src/index.ts)
 <!-- END GENERATED cordis-surface -->
