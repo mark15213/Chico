@@ -1,0 +1,161 @@
+/* Watchlist tab in the conversation view ring. Figures use tabular numerals so
+   a column of prices aligns, and price direction follows the local market
+   convention the product serves — red for up, green for down — through theme
+   tokens so both themes resolve. Direction is also carried by the sign in the
+   text, so the rows survive grayscale and color vision deficiency. */
+
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.refresh {
+  margin-inline-start: auto;
+}
+
+.add {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}
+
+.select,
+.input {
+  font: inherit;
+  padding: 4px 6px;
+}
+
+.input {
+  width: 10ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.status,
+.emptyHint {
+  font-size: 12px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  margin: 0;
+}
+
+.failure {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ds-color-error, #c0392b);
+  margin: 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  min-width: 0;
+}
+
+.row:hover {
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code {
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.figures {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.last {
+  font-weight: 500;
+}
+
+.change[data-direction='up'] { color: var(--ds-color-error, #c0392b); }
+.change[data-direction='down'] { color: var(--ds-color-success, #2f6f5e); }
+.change[data-direction='flat'] { color: var(--ds-color-text-tertiary, #6b7686); }
+
+.session,
+.noQuote {
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}
+
+/* Always present rather than revealed on hover: a control that appears only
+   under a pointer is unreachable by touch and invisible to a reader scanning
+   for how to remove a name. */
+.unfollow {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}

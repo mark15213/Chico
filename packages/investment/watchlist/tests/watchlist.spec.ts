@@ -1,0 +1,257 @@
+/**
+ * Watchlist projection over the real registry, storage, and market-data
+ * composition: the join, the decision that an unpriceable row survives while a
+ * selection failure does not, and the follow arc that resolves its own name.
+ */
+import { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, describe, expect, it } from 'vitest'
+import { Context } from '@deepseek-ai/cordis'
+import Storage from '@deepseek-ai/dsh-storage'
+import { DomainFacility } from '@deepseek-ai/dsh-storage-domain'
+import { MemoryMediaPool, MemoryStorageBackend } from '../../../storage/storage-domain/tests/helpers/memory-backend.ts'
+import FollowedNamesService from '@deepseek-ai/dsh-followed-names'
+import MarketDataRuntime, { MarketDataError } from '@deepseek-ai/dsh-market-data'
+import type { MarketDataProvider, Quote } from '@deepseek-ai/dsh-market-data'
+// Source-plane import: the fixture raises MarketDataError, and the built
+// package would carry a second copy of the class that `instanceof` misses.
+import * as marketDataFixture from '../../market-data-fixture/src/index.ts'
+import WatchlistService from '../src/index.ts'
+
+const CATL = { market: 'SZSE', symbol: '300750' } as const
+const MOUTAI = { market: 'SSE', symbol: '600519' } as const
+const UNLISTED = { market: 'SZSE', symbol: '999999' } as const
+
+const T1 = '2026-08-14T07:00:00.000Z'
+
+let roots: string[] = []
+
+afterEach(() => {
+  for (const root of roots) rmSync(root, { recursive: true, force: true })
+  roots = []
+})
+
+/** A throwaway archive root outside the developer's real harness home. */
+function archiveRoot(): string {
+  const root = mkdtempSync(join(tmpdir(), 'dsh-watchlist-'))
+  roots.push(root)
+  return join(root, 'archive')
+}
+
+/**
+ * The registry and seam the projection reads, without the projection itself.
+ * `provider` replaces the fixture when a test needs a specific failure;
+ * `'none'` registers nothing, leaving selection with no candidate.
+ */
+async function composition(provider?: MarketDataProvider | 'none') {
+  const ctx = new Context()
+  await ctx.plugin(Storage)
+  ctx.storage.backend.register('memory', new MemoryStorageBackend(new MemoryMediaPool()))
+  const facility = new DomainFacility(ctx, { backend: 'memory', routes: {} })
+  ctx.storage.mount('domain', facility)
+  ctx.provide('storageDomain', facility)
+  await ctx.plugin(FollowedNamesService, { archivePath: archiveRoot() }).await()
+  await ctx.plugin(MarketDataRuntime, { maxHistorySessions: 500 }).await()
+  if (provider === undefined) await ctx.plugin(marketDataFixture, {}).await()
+  else if (provider !== 'none') ctx.marketData.registerProvider(provider)
+  return ctx
+}
+
+/** The full composition a consumer sees: `ctx.watchlist` over both seams. */
+async function bench(provider?: MarketDataProvider | 'none') {
+  const ctx = await composition(provider)
+  await ctx.plugin(WatchlistService).await()
+  return ctx
+}
+
+/** A provider that prices one instrument and refuses everything else. */
+function partialProvider(refusal: MarketDataError): MarketDataProvider {
+  return {
+    id: 'partial',
+    available: () => true,
+    quote: ({ instrument }) => instrument.symbol === CATL.symbol
+      ? Promise.resolve(quoteOf(instrument.symbol))
+      : Promise.reject(refusal),
+    priceHistory: () => Promise.reject(new MarketDataError('unused', 'MARKET_DATA_UNKNOWN_INSTRUMENT')),
+  }
+}
+
+/** A minimal quote; only the fields the join carries through matter here. */
+function quoteOf(symbol: string): Quote {
+  return {
+    instrument: { market: 'SZSE', symbol },
+    name: '宁德时代',
+    currency: 'CNY',
+    last: 212.3,
+    previousClose: 210,
+    changePercent: 1.1,
+    volume: 1_000,
+    asOf: T1,
+    session: 'closed',
+  }
+}
+
+describe('the watchlist join', () => {
+  it('lists a followed name beside its current quote', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    const { rows } = await ctx.watchlist.list()
+
+    expect(rows).toHaveLength(1)
+    expect(rows[0]?.instrument).toEqual(CATL)
+    expect(rows[0]?.displayName).toBe('宁德时代')
+    expect(rows[0]?.firstFollowedAt).toBe(T1)
+    expect(rows[0]?.quote?.last).toBeGreaterThan(0)
+    expect(rows[0]?.quote?.currency).toBe('CNY')
+  })
+
+  it('carries the recorded name, not the venue name, so a rename does not rewrite the record', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, 'CATL', T1)
+
+    const { rows } = await ctx.watchlist.list()
+
+    expect(rows[0]?.displayName).toBe('CATL')
+    expect(rows[0]?.quote?.name).toBe('宁德时代')
+  })
+
+  it('omits an unfollowed name without losing its record', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    await ctx.followedNames.follow(MOUTAI, '贵州茅台', T1)
+    await ctx.followedNames.unfollow(MOUTAI, T1)
+
+    const { rows } = await ctx.watchlist.list()
+
+    expect(rows.map(row => row.instrument.symbol)).toEqual([CATL.symbol])
+    expect(ctx.followedNames.get(MOUTAI)?.followed).toBe(false)
+  })
+
+  it('is empty, not absent, before anything is followed', async () => {
+    const ctx = await bench()
+
+    expect(await ctx.watchlist.list()).toEqual({ rows: [] })
+  })
+})
+
+describe('a row that cannot be priced', () => {
+  it('keeps the row with a null quote, because a suspended name is the one to watch', async () => {
+    const ctx = await bench(partialProvider(new MarketDataError('halted', 'MARKET_DATA_UNKNOWN_INSTRUMENT')))
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    await ctx.followedNames.follow(MOUTAI, '贵州茅台', T1)
+
+    const { rows } = await ctx.watchlist.list()
+
+    expect(rows).toHaveLength(2)
+    expect(rows.find(row => row.instrument.symbol === MOUTAI.symbol)?.quote).toBeNull()
+    expect(rows.find(row => row.instrument.symbol === CATL.symbol)?.quote).not.toBeNull()
+  })
+
+  it('degrades on any per-instrument failure, including one the seam did not raise', async () => {
+    const provider: MarketDataProvider = {
+      id: 'flaky',
+      available: () => true,
+      quote: () => Promise.reject(new Error('socket hang up')),
+      priceHistory: () => Promise.reject(new Error('unused')),
+    }
+    const ctx = await bench(provider)
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    expect((await ctx.watchlist.list()).rows[0]?.quote).toBeNull()
+  })
+
+  it('raises a selection failure instead, so a watchlist of dashes cannot hide it', async () => {
+    // No provider registered at all: every row would degrade identically.
+    const ctx = await bench('none')
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+
+    await expect(ctx.watchlist.list()).rejects.toMatchObject({
+      code: 'MARKET_DATA_PROVIDER_UNAVAILABLE',
+    })
+  })
+})
+
+describe('following by code', () => {
+  it('takes the display name from the venue rather than from the caller', async () => {
+    const ctx = await bench()
+
+    const result = await ctx.watchlist.follow(CATL)
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.row.displayName).toBe('宁德时代')
+    expect(ctx.followedNames.get(CATL)?.displayName).toBe('宁德时代')
+  })
+
+  it('reports an unlisted code as a value, since typing one is what a user does', async () => {
+    const ctx = await bench()
+
+    expect(await ctx.watchlist.follow(UNLISTED)).toEqual({ ok: false, reason: 'unknown-instrument' })
+    expect(ctx.followedNames.get(UNLISTED)).toBeUndefined()
+  })
+
+  it('raises a selection failure rather than reporting it as an unlisted code', async () => {
+    const ctx = await bench(partialProvider(
+      new MarketDataError('no entitlement', 'MARKET_DATA_PROVIDER_CONFIGURED_UNAVAILABLE'),
+    ))
+
+    await expect(ctx.watchlist.follow(MOUTAI)).rejects.toMatchObject({
+      code: 'MARKET_DATA_PROVIDER_CONFIGURED_UNAVAILABLE',
+    })
+  })
+
+  it('keeps the original follow instant when a name is re-followed', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    await ctx.watchlist.unfollow(CATL)
+
+    const result = await ctx.watchlist.follow(CATL)
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.row.firstFollowedAt).toBe(T1)
+  })
+
+  it('stamps a fresh instant for a name followed for the first time', async () => {
+    const ctx = await bench()
+
+    const result = await ctx.watchlist.follow(MOUTAI)
+
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(Number.isNaN(Date.parse(result.row.firstFollowedAt))).toBe(false)
+  })
+})
+
+describe('unfollowing', () => {
+  it('returns the remaining count so a caller reconciles without a second read', async () => {
+    const ctx = await bench()
+    await ctx.followedNames.follow(CATL, '宁德时代', T1)
+    await ctx.followedNames.follow(MOUTAI, '贵州茅台', T1)
+
+    expect(await ctx.watchlist.unfollow(MOUTAI)).toBe(1)
+    expect((await ctx.watchlist.list()).rows).toHaveLength(1)
+  })
+
+  it('refuses an instrument with no record rather than reporting a silent success', async () => {
+    const ctx = await bench()
+
+    await expect(ctx.watchlist.unfollow(UNLISTED)).rejects.toMatchObject({
+      code: 'FOLLOWED_NAME_UNKNOWN',
+    })
+  })
+})
+
+describe('service lifecycle', () => {
+  it('withdraws ctx.watchlist when its fiber disposes (HMR safety)', async () => {
+    const ctx = await composition()
+    const fiber = ctx.plugin(WatchlistService)
+    await fiber.await()
+
+    await fiber.dispose()
+
+    expect(ctx.get('watchlist')).toBeUndefined()
+  })
+})
