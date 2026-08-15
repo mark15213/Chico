@@ -8,7 +8,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createLayoutStore } from '@deepseek-ai/dsh-client-ui-layout/src/client/stores.ts'
 import {
-  DETAILS_DEFAULT, DETAILS_MAX, DETAILS_MIN,
+  DEFAULT_MODE, DETAILS_DEFAULT, DETAILS_MAX, DETAILS_MIN,
   SIDEBAR_DEFAULT, SIDEBAR_MAX, SIDEBAR_MIN,
 } from '@deepseek-ai/dsh-client-ui-layout/src/client/columns.ts'
 
@@ -19,7 +19,8 @@ beforeEach(() => { localStorage.clear() })
 describe('createLayoutStore', () => {
   it('initializes the sidebar at its default width, details closed, wide viewport assumed', () => {
     const { store } = createLayoutStore().create()
-    expect(store.getSnapshot()).toEqual({ sidebar: SIDEBAR_DEFAULT, details: 0, narrow: false, narrowExpanded: false })
+    expect(store.getSnapshot())
+      .toEqual({ sidebar: SIDEBAR_DEFAULT, details: 0, narrow: false, narrowExpanded: false, mode: DEFAULT_MODE })
   })
 
   it('each create() is an independent instance (factory is not a singleton)', () => {
@@ -55,7 +56,7 @@ describe('createLayoutStore', () => {
     actions.setSidebar(400)
     actions.setNarrow(true)
     actions.toggleSidebar()
-    expect(store.getSnapshot()).toEqual({ sidebar: 400, details: 0, narrow: true, narrowExpanded: true })
+    expect(store.getSnapshot()).toEqual({ sidebar: 400, details: 0, narrow: true, narrowExpanded: true, mode: DEFAULT_MODE })
     actions.toggleSidebar()
     expect(store.getSnapshot().narrowExpanded).toBe(false)
     expect(store.getSnapshot().sidebar).toBe(400)
@@ -98,6 +99,28 @@ describe('createLayoutStore', () => {
       details: 0,
       narrow: false,
       narrowExpanded: false,
+      mode: DEFAULT_MODE,
     })
+  })
+
+  it('switches frame and closes the details panel on the way', () => {
+    const { store, actions } = createLayoutStore().create()
+    actions.openDetails()
+
+    actions.setMode('names')
+
+    // The details occupant changes with the mode, so an open panel would swap
+    // contents under a reader who was looking at something else.
+    expect(store.getSnapshot()).toMatchObject({ mode: 'names', details: 0 })
+  })
+
+  it('leaves an open details panel alone when the frame does not change', () => {
+    const { store, actions } = createLayoutStore().create()
+    actions.openDetails()
+    const open = store.getSnapshot().details
+
+    actions.setMode(DEFAULT_MODE)
+
+    expect(store.getSnapshot().details).toBe(open)
   })
 })

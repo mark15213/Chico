@@ -1254,6 +1254,9 @@ importers:
       '@deepseek-ai/dsh-market-data-fixture':
         specifier: workspace:^
         version: link:../../investment/market-data-fixture
+      '@deepseek-ai/dsh-name-record':
+        specifier: workspace:^
+        version: link:../../investment/name-record
       '@deepseek-ai/dsh-tool-market-data':
         specifier: workspace:^
         version: link:../../investment/tool-market-data
@@ -3046,9 +3049,9 @@ importers:
       '@deepseek-ai/dsh-client-test-runtime':
         specifier: workspace:^
         version: link:../../test-support/client-runtime
-      '@deepseek-ai/dsh-client-ui-conversation':
+      '@deepseek-ai/dsh-client-ui-layout':
         specifier: workspace:^
-        version: link:../ui-conversation
+        version: link:../ui-layout
       '@deepseek-ai/dsh-client-ui-primitives':
         specifier: workspace:^
         version: link:../ui-primitives

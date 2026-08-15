@@ -27,9 +27,15 @@ function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; w
   let regionOwner: SidebarSectionOwnerProps | undefined
   let settingsOwner: SidebarSettingsOwnerProps | undefined
   let footerActionOwner: SidebarFooterActionOwnerProps | undefined
+  const modes = {
+    list: () => [{ id: 'sessions', label: 'Chats' }],
+    subscribe: () => () => {},
+    version: () => 0,
+  }
   let current = { collapsed, width }
   const root = () => (
     <SidebarRoot
+      mode="sessions" setMode={() => {}} modes={modes}
       collapsed={current.collapsed} width={current.width}
       useSessions={neverHook} useWorkspaces={neverHook}
       startSession={startSession} toggleSidebar={toggleSidebar} t={t}

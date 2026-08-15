@@ -177,6 +177,8 @@ export function AppFrame({
             (collapsed follows the resolved rail, so a derived auto-collapse
             renders the rail UI too). */}
         {renderSlot('sidebar', {
+          mode: panels.mode,
+          setMode: actions.setMode,
           collapsed: sidebarCollapsed,
           width: cols.sidebar,
         })}
@@ -188,7 +190,7 @@ export function AppFrame({
             is session-maybe; the strict details entry naturally renders
             empty while no session is current. */}
         <CenterColumn>{renderSlot('conversation', {})}</CenterColumn>
-        <DetailsColumn>{renderSlot('details', {})}</DetailsColumn>
+        <DetailsColumn>{renderSlot('details', { mode: panels.mode }, { entryKey: panels.mode })}</DetailsColumn>
       </>
       <div className={css.overlayLayer} data-shell-overlay>
         {renderSlot('shell.overlay', {})}

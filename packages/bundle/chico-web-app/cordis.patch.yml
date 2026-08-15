@@ -44,15 +44,22 @@
         history: true
         defaultHistorySessions: 60
 
-    # The browser-facing join of the two rows above, exposed as the `watchlist`
+    # The stance, the decision chain, and the sessions bound to one name. It
+    # is deliberately independent of the follow flag, so a name can be studied
+    # before it is followed.
+    - id: name-record
+      name: '@deepseek-ai/dsh-name-record'
+
+    # The browser-facing join of the rows above, exposed as the `watchlist`
     # Remote namespace. It takes no config: what a user follows is data, and
     # which provider prices it is already the market-data row's decision.
     - id: watchlist
       name: '@deepseek-ai/dsh-watchlist'
 
     # ── browser roster ──────────────────────────────────────────────────────
-    # The watchlist tab in the conversation view ring. This is the only browser
-    # row Chico adds: the tab is the surface the seam above exists to serve, and
-    # a composition without it would carry a watchlist nobody can see.
+    # The name workbench: one navigation frame in the sidebar and one detail
+    # panel keyed to it. This is the only browser row Chico adds, and it is the
+    # surface everything above exists to serve — a composition without it would
+    # carry a record nobody can see.
     - id: ui-watchlist
       name: '@deepseek-ai/dsh-client-ui-watchlist'

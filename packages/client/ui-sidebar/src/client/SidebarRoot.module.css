@@ -224,14 +224,32 @@
 /* Region seat: always mounted so the foot never moves. Its trailing margin
    cancels the wide shell inset so the nested scrollbar can sit at the sidebar
    edge; the browser restores that inset inside its own rows. */
-/* The pinned region takes its natural height above the browser and never
-   competes with it for space: the browser flexes, this does not. An occupant
-   that could grow without bound caps itself. */
-.pinnedArea {
+/* The frame switch takes its natural height above the region and never
+   competes with it for space: the region flexes, this does not. */
+.modeSwitch {
   flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
-  min-height: 0;
+  gap: 4px;
+  padding: 0 var(--dsh-sidebar-inline-padding, 8px) 8px;
+}
+
+.modeTab {
+  flex: 1;
+  padding: 5px 0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: none;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.modeTabOn {
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+  border-color: var(--ds-color-border, #e2e0dc);
+  color: var(--ds-color-text-primary, inherit);
+  font-weight: 600;
 }
 
 .regionArea {

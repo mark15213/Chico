@@ -35,6 +35,12 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 const NS = 'workspace'
 
 /**
+ * The frame id of the session browser. `sessions` is the layout's own default
+ * mode, so the harness composes to this frame with nothing else registered.
+ */
+const SESSIONS_MODE = 'sessions'
+
+/**
  * Required services (cordis fiber inject). The target slots are declared by
  * the ui-sidebar / ui-conversation applies, whose activation order relative
  * to this one is NOT constrained: dsh.client.inject edges are informational
@@ -52,6 +58,9 @@ export const inject = ['slots', 'sessions', 'workspaces', 'locale']
  */
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-workspace: dictionaries')
+  // Registration-time text (the frame switch label) reads through the bound
+  // translate as a thunk, so it follows the active locale.
+  const t = ctx.locale.bind(NS)
 
   const searchSessions: WorkspaceBrowserInjected['searchSessions'] = async (query, signal) => {
     const result = await ctx.sessions.search(query, signal)
@@ -107,9 +116,14 @@ export function apply(ctx: ClientContext): void {
   })
   // Each registration declares its directory-flow child in the same call;
   // slot injection follows both the owner and declaration HMR lifetimes.
-  ctx.slots.inject('sidebar.workspaces', () => ctx.slots.register(
+  // The session browser is one navigation frame among the sidebar's; a
+  // product registers its own beside it rather than replacing this one.
+  ctx.slots.inject('sidebar.mode', () => ctx.slots.register(
     {
-      name: 'sidebar.workspaces',
+      name: 'sidebar.mode',
+      id: SESSIONS_MODE,
+      order: 10,
+      label: () => t('mode.sessions'),
       children: { 'sidebar.workspaces.directoryFlow': { kind: 'single', scope: 'root' } },
       store: createWorkspaceViewStore(),
       inject: browserInjected,

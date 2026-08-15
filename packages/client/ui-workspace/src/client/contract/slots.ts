@@ -139,7 +139,7 @@ export type WorkspaceBrowserInjected = DirectoryPickingInjected & {
 
 /** Full browser props: shell owner share + viewing store + injected actions + the locale seat. */
 export type WorkspaceBrowserProps =
-  PropsRuntime<'sidebar.workspaces'>
+  PropsRuntime<'sidebar.mode'>
   & PropsRenderSlots<'sidebar.workspaces.directoryFlow'>
   & PropsStore<ReturnType<typeof createWorkspaceViewStore>>
   & Omit<WorkspaceBrowserInjected, 'hooks'>

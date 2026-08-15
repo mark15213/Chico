@@ -391,6 +391,7 @@ describe('DetailsPanel Output section (search)', () => {
     })
     return render(
       <DetailsPanel
+        mode="sessions"
         SessionProvider={SessionProviderStub}
         renderSlot={renderToolDetails(t)}
         sessionId={SID}

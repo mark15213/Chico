@@ -9,7 +9,7 @@
  */
 import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-runtime/client'
 import {
-  clampWidth, DETAILS_DEFAULT, DETAILS_MAX, DETAILS_MIN,
+  clampWidth, DEFAULT_MODE, DETAILS_DEFAULT, DETAILS_MAX, DETAILS_MIN,
   SIDEBAR_DEFAULT, SIDEBAR_MAX, SIDEBAR_MIN,
 } from './columns.ts'
 
@@ -20,7 +20,18 @@ import {
  * `narrowExpanded` is the manual override that re-expands the auto-collapsed
  * sidebar over the squeezed center without rewriting the width preference.
  */
-type LayoutState = { sidebar: number; details: number; narrow: boolean; narrowExpanded: boolean }
+type LayoutState = {
+  sidebar: number
+  details: number
+  narrow: boolean
+  narrowExpanded: boolean
+  /**
+   * Which frame the columns are showing. The sidebar and the details column
+   * both swap occupant with it, so it belongs to the frame rather than to
+   * either column; `sessions` is the harness's own frame.
+   */
+  mode: string
+}
 
 /**
  * Annotation twin of the actions literal below (the export needs a declared
@@ -31,6 +42,7 @@ type LayoutActions = {
   setDetails: (draft: LayoutState, px: number) => void
   toggleSidebar: (draft: LayoutState) => void
   setNarrow: (draft: LayoutState, narrow: boolean) => void
+  setMode: (draft: LayoutState, mode: string) => void
   openDetails: (draft: LayoutState) => void
   closeDetails: (draft: LayoutState) => void
 }
@@ -47,7 +59,9 @@ type LayoutActions = {
  */
 export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutActions>  {
   const handle = defineStore({
-    init: (): LayoutState => ({ sidebar: SIDEBAR_DEFAULT, details: 0, narrow: false, narrowExpanded: false }),
+    init: (): LayoutState => ({
+      sidebar: SIDEBAR_DEFAULT, details: 0, narrow: false, narrowExpanded: false, mode: DEFAULT_MODE,
+    }),
     actions: {
       setSidebar: (d, px: number) => { d.sidebar = clampWidth(px, SIDEBAR_MIN, SIDEBAR_MAX) },
       setDetails: (d, px: number) => { d.details = clampWidth(px, DETAILS_MIN, DETAILS_MAX) },
@@ -63,6 +77,14 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
         if (d.narrow === narrow) return
         d.narrow = narrow
         d.narrowExpanded = false
+      },
+      // Switching frames closes the details panel: its occupant changes with
+      // the mode, so leaving it open would swap a panel's contents under a
+      // reader who was looking at something else.
+      setMode: (d, mode: string) => {
+        if (d.mode === mode) return
+        d.mode = mode
+        d.details = 0
       },
       openDetails: (d) => { if (d.details === 0) d.details = DETAILS_DEFAULT },
       closeDetails: (d) => { d.details = 0 },

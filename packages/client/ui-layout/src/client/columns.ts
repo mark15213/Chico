@@ -16,6 +16,13 @@
 /** Resolved widths for one frame; center may drop below CENTER_MIN only at the final fallback. */
 export interface Columns { sidebar: number; center: number; details: number }
 
+/**
+ * The frame the columns show until something switches them. `sessions` is the
+ * harness's own: the session browser on the left, the tool inspector on the
+ * right. A product that adds a frame registers it and switches to it by id.
+ */
+export const DEFAULT_MODE = 'sessions'
+
 // Contract-frozen geometry: the three-column concession chain's fixed points.
 /** Center column floor; only the final fallback may go below it. */
 export const CENTER_MIN = 640

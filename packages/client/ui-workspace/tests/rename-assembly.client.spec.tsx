@@ -38,9 +38,9 @@ async function createRuntime(): Promise<SlotTestRuntime> {
 }
 
 /** Test-owned sidebar shell role: declares and renders the browsing region. */
-type FrameProps = PropsRenderSlots<'sidebar.workspaces'>
+type FrameProps = PropsRenderSlots<'sidebar.mode'>
 function SidebarFrame({ renderSlot }: FrameProps) {
-  return <>{renderSlot('sidebar.workspaces', { wide: true, expandSidebar: () => {} })}</>
+  return <>{renderSlot('sidebar.mode', { wide: true, expandSidebar: () => {} })}</>
 }
 
 describe('session rename through the assembled browser', () => {
@@ -61,7 +61,7 @@ describe('session rename through the assembled browser', () => {
       }] as never
     })
     await runtime.root.declare(
-      { 'sidebar.workspaces': { kind: 'single', scope: 'root' } } as never,
+      { 'sidebar.mode': { kind: 'single', scope: 'root' } } as never,
       SidebarFrame as never,
     )
     await runtime.mount({ inject: [...inject], apply })
@@ -108,7 +108,7 @@ describe('session rename through the assembled browser', () => {
       }] as never
     })
     await runtime.root.declare(
-      { 'sidebar.workspaces': { kind: 'single', scope: 'root' } } as never,
+      { 'sidebar.mode': { kind: 'single', scope: 'root' } } as never,
       SidebarFrame as never,
     )
     await runtime.mount({ inject: [...inject], apply })

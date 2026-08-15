@@ -4,7 +4,7 @@
  * asserted directly rather than through the DOM.
  */
 
-import type { Quote, WatchlistRow } from '@deepseek-ai/dsh-api-remotes/client'
+import type { InstrumentRef, Quote, WatchlistRow } from '@deepseek-ai/dsh-api-remotes/client'
 
 /**
  * Which way a row moved. `flat` is its own case rather than a rounding of up:
@@ -86,6 +86,17 @@ export function rowFigures(row: WatchlistRow): RowFigures {
     change: formatChange(row.quote.changePercent),
     direction: directionOf(row.quote.changePercent),
   }
+}
+
+/**
+ * Whether two references name the same listing. Identity is the pair, so a
+ * comparison that only matched symbols would confuse one code on two venues.
+ * @param left - one instrument.
+ * @param right - the other.
+ * @returns true when both halves match.
+ */
+export function sameInstrument(left: InstrumentRef, right: InstrumentRef): boolean {
+  return left.market === right.market && left.symbol === right.symbol
 }
 
 /**

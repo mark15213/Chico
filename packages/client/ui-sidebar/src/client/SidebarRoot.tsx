@@ -5,17 +5,17 @@
  * mid-slide. At settle the wide-only content unmounts and the four upper
  * controls enter the 56px rail from the same horizontal offset (one icon each,
  * same top-down order) on one fade that ends with the slide. The bottom-pinned
- * settings control only fades. The workspace/session browsing region between
- * the New Session button and the foot is the `sidebar.workspaces` registrant's,
- * and the foot holds `sidebar.settings` plus `sidebar.footer.action`; the shell
- * hands them the wide flag (plus an expand request callback for the browser).
+ * settings control only fades. The region between the frame switch and the
+ * foot belongs to the active `sidebar.mode` registrant, and the foot holds
+ * `sidebar.settings` plus `sidebar.footer.action`; the shell hands them the
+ * wide flag (plus an expand request callback for the region).
  *
  * The column also owns whether the scroll regions nested in it draw a
  * scrollbar at all: the shell tracks the pointer and rebinds ui-theme's
  * scrollbar indirection away while it is elsewhere, so a list the user is not
  * pointing at carries no bar.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import clsx from 'clsx'
 import {
   BrandWordmark, FishLogo,
@@ -42,13 +42,18 @@ const SCROLLBAR_LINGER_MS = 2000
  * @returns the sidebar element tree.
  */
 export function SidebarRoot({
+  mode,
+  setMode,
   collapsed,
   width,
   startSession,
   toggleSidebar,
+  modes,
   t,
   renderSlot,
 }: SidebarRootComponentProps) {
+  useSyncExternalStore(modes.subscribe, modes.version)
+  const frames = modes.list()
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -169,25 +174,33 @@ export function SidebarRoot({
         </button>
       </Tooltip>
 
-      {/* A pinned region sits above the browser and takes its own height.
-          Wide only: the rail is one icon per control, with no room for
-          content, and an occupant would have nothing legible to draw. */}
-      {wide && (
-        <div className={css.pinnedArea}>
-          {renderSlot('sidebar.pinned', {
-            wide,
-            expandSidebar: () => { if (collapsed) toggleSidebar() },
-          })}
+      {/* The frame switch, wide only: the 56px rail has one icon per control
+          and no room for a row of labels. A single registered frame needs no
+          switch — there is nothing to choose. */}
+      {wide && frames.length > 1 && (
+        <div className={css.modeSwitch} role="tablist" aria-label={t('mode.label')}>
+          {frames.map(frame => (
+            <button
+              key={frame.id}
+              type="button"
+              role="tab"
+              aria-selected={frame.id === mode}
+              className={clsx(css.modeTab, frame.id === mode && css.modeTabOn)}
+              onClick={() => { setMode(frame.id) }}
+            >
+              {frame.label}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* The browsing region fills the column between the controls and the
-          foot in both states; its rail icon column rides the same slot. */}
+      {/* The active frame's region fills the column between the controls and
+          the foot in both states; its rail icon column rides the same slot. */}
       <div className={css.regionArea}>
-        {renderSlot('sidebar.workspaces', {
+        {renderSlot('sidebar.mode', {
           wide,
           expandSidebar: () => { if (collapsed) toggleSidebar() },
-        })}
+        }, { only: mode })}
       </div>
 
       {/* Footer actions stack above Settings in both sidebar widths. */}

@@ -14,12 +14,23 @@ function fakePanels(): PanelActions {
     setDetails: vi.fn(),
     toggleSidebar: vi.fn(),
     setNarrow: vi.fn(),
+    setMode: vi.fn(),
     openDetails: vi.fn(),
     closeDetails: vi.fn(),
   }
 }
 
 describe('LayoutController', () => {
+  it('forwards the frame switch to the attached set', () => {
+    const service = new LayoutController()
+    const panels = fakePanels()
+    service.attachPanels(panels)
+
+    service.setMode('names')
+
+    expect(panels.setMode).toHaveBeenCalledWith('names')
+  })
+
   it('forwards the three panel actions to the attached set', () => {
     const service = new LayoutController()
     const panels = fakePanels()
@@ -41,6 +52,7 @@ describe('LayoutController', () => {
     expect(() => { service.toggleSidebar() }).toThrow(/panel actions not wired/)
     expect(() => { service.openDetails() }).toThrow(/panel actions not wired/)
     expect(() => { service.closeDetails() }).toThrow(/panel actions not wired/)
+    expect(() => { service.setMode('names') }).toThrow(/panel actions not wired/)
   })
 
   it('re-attach overwrites the stale action set (entry re-register)', () => {

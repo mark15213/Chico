@@ -1,0 +1,194 @@
+/* The workbench's left column: followed names in follow order, with the price
+   and the marker for a thesis still waiting. Denser than a reading surface —
+   this is scanned — and the same red-up, green-down convention as every other
+   figure in the product, through the same theme tokens. */
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  padding-inline-end: var(--dsh-sidebar-inline-padding, 8px);
+  overflow-y: auto;
+}
+
+.field {
+  display: flex;
+  min-width: 0;
+  flex: 0 0 auto;
+}
+
+.input {
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The picker sits above the list rather than over it, so a match can be read
+   against what is already followed without dismissing anything. */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--ds-color-border, #e2e0dc);
+}
+
+.match {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.matchOpen {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.matchOpen:hover {
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+}
+
+.add {
+  flex: 0 0 auto;
+  font-size: 11px;
+}
+
+.followedTag {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  padding: 5px 6px;
+  border: 0;
+  border-inline-start: 2px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+}
+
+.row[data-open] {
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 6%));
+  border-inline-start-color: var(--ds-color-primary, #3b5f7a);
+}
+
+/* The marker's shape carries the meaning; color only reinforces it, so the
+   column survives grayscale and colour vision deficiency. */
+.mark {
+  flex: 0 0 auto;
+  width: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ds-color-text-quaternary, #9aa1ac);
+}
+
+.mark[data-mark='unverified'] {
+  color: var(--ds-color-warning, #a86a1c);
+}
+
+.identity {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.code {
+  font-size: 10px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.figures {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+}
+
+.change[data-direction='up'] { color: var(--ds-color-error, #c0392b); }
+.change[data-direction='down'] { color: var(--ds-color-success, #2f6f5e); }
+.change[data-direction='flat'] { color: var(--ds-color-text-tertiary, #6b7686); }
+
+.noQuote,
+.note {
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  margin: 0;
+}
+
+.failure {
+  font-size: 11px;
+  color: var(--ds-color-error, #c0392b);
+  margin: 0;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.empty p {
+  margin: 0;
+}

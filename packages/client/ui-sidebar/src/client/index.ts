@@ -2,12 +2,13 @@
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
+import { resolveSlotLabel } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SidebarRootInjected } from './contract/slots.ts'
 import { SidebarRoot } from './SidebarRoot.tsx'
 import { en, zh, type SidebarKey } from './locales.ts'
 
 export type {
-  SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarRootInjected,
+  SidebarFooterActionOwnerProps, SidebarModeTab, SidebarRootComponentProps, SidebarRootInjected,
   SidebarSectionOwnerProps, SidebarSettingsOwnerProps,
 } from './contract/slots.ts'
 export type { SidebarKey } from './locales.ts'
@@ -31,7 +32,15 @@ export const inject = ['slots', 'layout', 'sessions', 'workspaces', 'locale']
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-sidebar: dictionaries')
 
+  const modes: SidebarRootInjected['modes'] = {
+    list: () => ctx.slots.entries('sidebar.mode').flatMap(entry => entry.options.id === undefined
+      ? []
+      : [{ id: entry.options.id, label: resolveSlotLabel(entry.options.label) ?? entry.options.id }]),
+    subscribe: fn => ctx.slots.subscribe('sidebar.mode', fn),
+    version: () => ctx.slots.getVersion('sidebar.mode'),
+  }
   const injectProps = (): SidebarRootInjected => ({
+    modes,
     // The shell's New Session button rides the runtime's shared action
     // (current Session Workspace, then recent Workspace).
     startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
@@ -41,13 +50,11 @@ export function apply(ctx: ClientContext): void {
     () => ctx.slots.register({
       name: 'sidebar',
       locale: NS,
-      // The shell owns geometry; a pinned region above the browser is
-      // optional and unclaimed by default, ui-workspace registers the whole
-      // browsing region (header, search, session list, workspace dialogs),
-      // ui-settings registers the foot trigger + settings panel.
+      // The shell owns geometry and the frame switch; ui-workspace registers
+      // the session browser as one frame, a product registers its own beside
+      // it, and ui-settings registers the foot trigger + settings panel.
       children: {
-        'sidebar.pinned': { kind: 'single', scope: 'root' },
-        'sidebar.workspaces': { kind: 'single', scope: 'root' },
+        'sidebar.mode': { kind: 'list', scope: 'root' },
         'sidebar.settings': { kind: 'single', scope: 'root' },
         'sidebar.footer.action': { kind: 'list', scope: 'root' },
       },

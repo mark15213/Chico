@@ -43,8 +43,9 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * the seats it declares disappear with it. To add something to the
      * sidebar, register into one of those inner seats instead.
      *
-     * The occupant receives the frame's live column state (collapsed, width)
-     * and is expected to render the compact control rail while collapsed.
+     * The occupant receives the frame's live column state (mode, collapsed,
+     * width) and is expected to render the compact control rail while
+     * collapsed, and the frame switch while wide.
      */
     'sidebar': { kind: 'single'; scope: 'root'; owner: SidebarOwnerProps }
     /**
@@ -69,7 +70,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * No owner props: the framework injects the session id and hooks for the
      * `session` scope, and `ctx.layout` owns whether the column is open.
      */
-    'details': { kind: 'single'; scope: 'session'; owner: DetailsOwnerProps }
+    'details': { kind: 'keyed'; scope: 'session'; owner: DetailsOwnerProps }
     /**
      * Frame-wide floating layer, above every column and outside their scroll
      * containers. Deliberately generic and unowned by any feature: a badge, a
@@ -92,6 +93,14 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 
 /** Sidebar owner share: live column state from the frame's concession solve. */
 export interface SidebarOwnerProps {
+  /**
+   * Which frame the columns are showing. The sidebar occupant renders the
+   * switch and picks which of its regions to draw; the details occupant reads
+   * the same value, so the two columns never disagree about what is in focus.
+   */
+  mode: string
+  /** Switch the frame. */
+  setMode: (mode: string) => void
   /** True when the sidebar is closed (the column renders the compact control rail). */
   collapsed: boolean
   /** Rendered column width in px (SIDEBAR_COLLAPSED when collapsed). */
@@ -102,7 +111,13 @@ export interface SidebarOwnerProps {
 export interface ConvOwnerProps {}
 
 /** Details owner share: empty — sessionId arrives as a framework-standard prop. */
-export interface DetailsOwnerProps {}
+export interface DetailsOwnerProps {
+  /**
+   * Which frame the columns are showing, so the details occupant draws the
+   * detail that belongs to it. The sidebar reads the same value.
+   */
+  mode: string
+}
 
 /** Required services (cordis fiber inject — the loader passes all module exports as an object plugin). */
 export const inject = ['slots', 'theme']
@@ -122,7 +137,7 @@ export function apply(ctx: ClientContext): void {
       children: {
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
-        'details': { kind: 'single', scope: 'session' },
+        'details': { kind: 'keyed', scope: 'session' },
         'shell.overlay': { kind: 'list', scope: 'root' },
       },
       // Exclusive store: the factory itself — the framework instantiates per

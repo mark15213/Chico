@@ -36,6 +36,13 @@ import { ConversationRoot } from './skeleton/ConversationRoot.tsx'
 import { ConversationSession, ConversationSessionHeader } from './skeleton/ConversationSession.tsx'
 import { DetailsPanel } from './skeleton/DetailsPanel.tsx'
 import { en, NS, zh, type ConversationKey } from './locales.ts'
+
+/**
+ * The frame this package's details panel belongs to. It is the layout's own
+ * default mode: with no product frame registered, the harness composes to the
+ * session browser on the left and this inspector on the right.
+ */
+const SESSIONS_MODE = 'sessions'
 import { registerConversationNodes } from './conversation-nodes/register.ts'
 import { registerChatNodeRenderers } from './chat/register-node-renderers.ts'
 import { CONVERSATION_SETTINGS_NAMESPACE, type ConversationSettings } from '../submission-settings.ts'
@@ -443,6 +450,10 @@ export function apply(ctx: Context): void {
 
   slots.register({
     name: 'details',
+    // The details column is keyed by the frame: this is the tool inspector,
+    // which belongs to the harness's own `sessions` frame. A product frame
+    // registers its own detail under its own key.
+    key: SESSIONS_MODE,
     locale: NS,
     children: {
       'conversation.details.tool': { kind: 'single', scope: 'session' },

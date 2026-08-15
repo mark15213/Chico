@@ -221,6 +221,7 @@ describe('DetailsPanel web Output section', () => {
     })
     return render(
       <DetailsPanel
+        mode="sessions"
         SessionProvider={SessionProviderStub}
         renderSlot={renderToolDetails(t)}
         sessionId={SID}

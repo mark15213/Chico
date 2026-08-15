@@ -6,9 +6,11 @@
 
 New Session 会启动运行时的页面局部前端 Session Intent。运行时优先使用作用域操作明确指定的 Workspace，否则使用当前 Session 所属 Workspace，再否则使用最近活跃 Workspace；一个 Workspace 都没有时则清空选择，进入空白 New Session 页面。Workspace 专属控件与共享选择器由 ui-workspace 持有。
 
-`sidebar.pinned` 是浏览器上方的一个可选区域，用于放置读者在做别的事情时仍要保持在视野里的内容——它不随会话列表滚动，也不随打开的会话变化。它占用自身的自然高度，绝不与浏览器争夺空间，因此可能无限增长的占用方需要自己设上限。它只在列宽展开时渲染：56px 导轨里每个控件只有一个图标的位置，放不下任何可读的内容。已发布的组合都没有认领它；Chico bundle 用关注标的列表填充它。
+`sidebar.mode` 是导航框架列表：每个框架一个条目，各自拥有从切换器到底部的整个区域。ui-workspace 把会话浏览器注册为 `sessions`；产品在它旁边注册自己的框架。外壳按 `order` 为每个注册画一个切换项，并且只渲染当前激活那个的区域——仅在列宽展开时，因为 56px 导轨里每个控件只有一个图标的位置，放不下一排标签。只注册了一个框架时不画切换器：没有可选的东西。
 
-`SidebarRootComponentProps` 组合布局 owner share、全局 `useSessions` 和 `useWorkspaces` 钩子、已声明的 `sidebar.pinned`、`sidebar.workspaces` 与 `sidebar.settings` 子 slot，以及注入的 `startSession` 与侧边栏切换回调。这里没有插件 store。
+当前框架属于**布局**，不属于本包。详情栏也随它更换占用方，因此一个只移动本列的切换器会让两栏描述不同的东西。
+
+`SidebarRootComponentProps` 组合布局 owner share（含 `mode` 与 `setMode`）、全局 `useSessions` 和 `useWorkspaces` 钩子、已声明的 `sidebar.mode` 与 `sidebar.settings` 子 slot，以及注入的 `startSession`、侧边栏切换与框架账本。这里没有插件 store。
 
 实时收起时，外壳会把展开内容固定在当前宽度，并用 150ms 将其淡出。随后，上方四个控件——外壳的侧栏切换与新建会话，以及通过 `sidebar.workspaces` 渲染的添加和搜索——共用一次 150ms 的淡入和 49px 左移，在布局的 300ms 栏滑动结束时一起进入 56px 轨道；每个 36px 控件盒都会沿同一条路径到达轨道左侧 10px 的内边距。固定在底部的 `sidebar.settings` 控件只共用淡入时序，不发生横向位移。页面初始即为收起状态时会静态渲染轨道；减少动态效果模式会禁用两段过渡。
 

@@ -72,9 +72,15 @@ describe('chico bundle patch', () => {
     expect(insertedRow('watchlist')?.config).toBeUndefined()
   })
 
-  it('adds the watchlist tab, the one browser row the seam exists to serve', () => {
-    // A composition carrying the projection without the tab would hold a
-    // watchlist nobody can see.
+  it('inserts the name record with no config of its own', () => {
+    // The stance and the chain are the user's; there is nothing to configure.
+    expect(insertedRow('name-record')?.name).toBe('@deepseek-ai/dsh-name-record')
+    expect(insertedRow('name-record')?.config).toBeUndefined()
+  })
+
+  it('adds the workbench, the one browser row everything above exists to serve', () => {
+    // A composition carrying the projections without it would hold a record
+    // nobody can see.
     expect(insertedRow('ui-watchlist')?.name).toBe('@deepseek-ai/dsh-client-ui-watchlist')
   })
 

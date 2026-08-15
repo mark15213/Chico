@@ -21,6 +21,13 @@ export type PanelActions = BoundActions<ReturnType<typeof createLayoutStore>>
  * only).
  */
 export interface ILayout {
+  /**
+   * Switch which frame the columns show. The sidebar and the details column
+   * both swap occupant with it, and the details panel closes on the way, so a
+   * reader never finds a panel showing something else's detail.
+   * @param mode - the frame id a registrant declared.
+   */
+  setMode(mode: string): void
   /** Toggle the sidebar panel (closed ⟷ contract default width). */
   toggleSidebar(): void
   /** Open the details panel (no-op when already open). */
@@ -42,6 +49,14 @@ export class LayoutController implements ILayout {
    */
   attachPanels(actions: PanelActions): void {
     this.#panels = actions
+  }
+
+  /**
+   * Switch which frame the columns show.
+   * @param mode - the frame id a registrant declared.
+   */
+  setMode(mode: string): void {
+    this.#require().setMode(mode)
   }
 
   /** Toggle the sidebar panel (closed ⟷ contract default width). */

@@ -31,6 +31,8 @@ afterEach(() => {
 function mountColumn(): { column: HTMLElement; quiet: () => boolean } {
   const view = render(
     <SidebarRoot
+      mode="sessions" setMode={() => {}}
+      modes={{ list: () => [], subscribe: () => () => {}, version: () => 0 }}
       collapsed={false} width={300}
       useSessions={neverHook} useWorkspaces={neverHook}
       startSession={vi.fn()} toggleSidebar={vi.fn()} t={t}

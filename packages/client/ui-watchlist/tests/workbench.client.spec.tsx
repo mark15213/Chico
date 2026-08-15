@@ -1,0 +1,501 @@
+// @vitest-environment jsdom
+/**
+ * The name workbench: the pure row derivations, the names frame with its
+ * lookup and selection, the record panel's chain and its writes, the two
+ * plugin-owned observables both columns read, and the registrations with
+ * fiber teardown proving removal (HMR safety).
+ */
+import { Context, Service } from '@deepseek-ai/cordis'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
+import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
+import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
+import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
+import type {
+  ChainEntry, ChainEntryId, NameDossier, NameRecordView, Quote, WatchlistRow, WatchlistSnapshot,
+} from '@deepseek-ai/dsh-api-remotes/client'
+import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import { en, NS } from '../src/client/locales.ts'
+import {
+  directionOf, formatChange, formatLast, instrumentLabel, normalizeQuery, rowFigures, sameInstrument,
+} from '../src/client/watchlist-model.ts'
+import { NamesFrame } from '../src/client/NamesFrame.tsx'
+import { RecordPanel } from '../src/client/RecordPanel.tsx'
+import { WatchlistFeed } from '../src/client/watchlist-store.ts'
+import { WorkbenchFocus } from '../src/client/workbench-store.ts'
+import * as workbench from '../src/client/index.ts'
+
+afterEach(cleanup)
+
+// English so the assertions read as the copy a user sees.
+const t = makeTranslate(en, commonZh)
+
+const CATL = { market: 'SZSE', symbol: '300750' } as const
+const MOUTAI = { market: 'SSE', symbol: '600519' } as const
+
+function quote(over?: Partial<Quote>): Quote {
+  return {
+    instrument: CATL,
+    name: '宁德时代',
+    currency: 'CNY',
+    last: 212.3,
+    previousClose: 210,
+    changePercent: 1.0952,
+    volume: 1_000,
+    asOf: '2026-08-14T07:00:00.000Z',
+    session: 'closed',
+    ...over,
+  }
+}
+
+function row(over?: Partial<WatchlistRow>): WatchlistRow {
+  return {
+    instrument: CATL,
+    displayName: '宁德时代',
+    firstFollowedAt: '2026-08-14T07:00:00.000Z',
+    openTheses: 0,
+    quote: quote(),
+    ...over,
+  }
+}
+
+const bars = [
+  { date: '2026-08-12', open: 100, high: 110, low: 95, close: 105, volume: 10 },
+  { date: '2026-08-13', open: 105, high: 108, low: 100, close: 102, volume: 12 },
+  { date: '2026-08-14', open: 102, high: 120, low: 101, close: 118, volume: 15 },
+]
+
+function dossierOf(over?: Partial<NameDossier>): NameDossier {
+  return {
+    instrument: CATL,
+    displayName: '宁德时代',
+    firstFollowedAt: '2026-08-14T07:00:00.000Z',
+    followed: true,
+    quote: quote(),
+    bars,
+    adjustment: 'none',
+    ...over,
+  }
+}
+
+function thesis(over?: Partial<Extract<ChainEntry, { kind: 'thesis' }>>): ChainEntry {
+  return {
+    id: 'entry-1' as ChainEntryId,
+    instrument: CATL,
+    recordedAt: '2026-06-15T02:00:00.000Z',
+    body: '毛利率见底',
+    source: { kind: 'manual' },
+    kind: 'thesis',
+    resolution: 'open',
+    ...over,
+  }
+}
+
+function recordOf(over?: Partial<NameRecordView>): NameRecordView {
+  return { stance: null, chain: [], sessions: [], ...over }
+}
+
+describe('row derivations', () => {
+  it('signs a change and pads it to a fixed width so a column of rows aligns', () => {
+    expect(formatChange(1.0952)).toBe('+1.10%')
+    expect(formatChange(-2)).toBe('−2.00%')
+    expect(formatChange(0)).toBe('0.00%')
+  })
+
+  it('treats an unchanged price as its own direction rather than as a rise', () => {
+    expect(directionOf(0.01)).toBe('up')
+    expect(directionOf(-0.01)).toBe('down')
+    expect(directionOf(0)).toBe('flat')
+  })
+
+  it('prices in the currency the venue quotes', () => {
+    expect(formatLast(quote({ last: 1486, currency: 'CNY' }))).toBe('1486.00 CNY')
+  })
+
+  it('labels an instrument by the identity the user follows by', () => {
+    expect(instrumentLabel(CATL)).toBe('SZSE:300750')
+  })
+
+  it('compares both halves, so one code on two venues stays two names', () => {
+    expect(sameInstrument(CATL, { market: 'SZSE', symbol: '300750' })).toBe(true)
+    expect(sameInstrument(CATL, { market: 'SSE', symbol: '300750' })).toBe(false)
+  })
+
+  it('carries a row with no quote as nulls rather than as zeroes', () => {
+    expect(rowFigures(row({ quote: null }))).toEqual({
+      instrumentLabel: 'SZSE:300750', last: null, change: null, direction: null,
+    })
+  })
+
+  it('takes the typing whitespace out of a query, and refuses an empty one', () => {
+    expect(normalizeQuery('  300750 ')).toBe('300750')
+    expect(normalizeQuery('   ')).toBeNull()
+  })
+})
+
+/** The names frame over the real feed and focus, with a stubbed Remote face. */
+function mountFrame(
+  snapshot: WatchlistSnapshot = { rows: [row()] },
+  over?: { search?: unknown; follow?: unknown; wide?: boolean },
+) {
+  const list = vi.fn(() => Promise.resolve(snapshot))
+  const feed = new WatchlistFeed(list)
+  const focus = new WorkbenchFocus()
+  const search = over?.search ?? vi.fn(() => Promise.resolve({
+    matches: [{ instrument: MOUTAI, name: '贵州茅台', followed: false }],
+  }))
+  const follow = over?.follow ?? vi.fn(() => Promise.resolve({}))
+  const props = {
+    rows: feed, search, follow, opened: focus.snapshot(), open: focus.open,
+    wide: over?.wide ?? true, t,
+  } as unknown as Parameters<typeof NamesFrame>[0]
+  return { view: render(<NamesFrame {...props} />), list, feed, focus, search, follow }
+}
+
+describe('the names frame', () => {
+  it('lists every followed name with its price and change', async () => {
+    const { view } = mountFrame()
+
+    expect(await view.findByText('宁德时代')).toBeTruthy()
+    expect(view.getByText('SZSE:300750')).toBeTruthy()
+    expect(view.getByText('+1.10%').getAttribute('data-direction')).toBe('up')
+  })
+
+  it('marks a name whose thesis is still waiting, which no general agent tracks', async () => {
+    const { view } = mountFrame({ rows: [row({ openTheses: 2 })] })
+
+    const mark = await view.findByLabelText('2 thesis waiting to be settled')
+    expect(mark.getAttribute('data-mark')).toBe('unverified')
+  })
+
+  it('leaves an unmarked name unmarked rather than drawing an empty badge', async () => {
+    const { view } = mountFrame()
+
+    await view.findByText('宁德时代')
+    expect(view.queryByLabelText(/waiting to be settled/)).toBeNull()
+  })
+
+  it('opens a name, which is what moves the other two columns', async () => {
+    const { view, focus } = mountFrame()
+
+    fireEvent.click(await view.findByText('宁德时代'))
+
+    expect(focus.snapshot()).toEqual(CATL)
+  })
+
+  it('says how to start when nothing is followed', async () => {
+    const { view } = mountFrame({ rows: [] })
+
+    expect(await view.findByText('The watchlist is empty.')).toBeTruthy()
+  })
+
+  it('renders nothing on the rail, where a name beside a price does not fit', () => {
+    const { view } = mountFrame(undefined, { wide: false })
+
+    expect(view.container.textContent).toBe('')
+  })
+
+  it('keeps the unpriceable name on the list', async () => {
+    const { view } = mountFrame({ rows: [row({ quote: null })] })
+
+    expect(await view.findByText('No quote')).toBeTruthy()
+  })
+})
+
+describe('the names frame lookup', () => {
+  function type(view: ReturnType<typeof render>, text: string) {
+    fireEvent.change(view.getByLabelText('Search instruments'), { target: { value: text } })
+  }
+
+  it('sends the trimmed query with the limit the picker draws', async () => {
+    const { view, search } = mountFrame()
+    type(view, '  茅台 ')
+
+    await waitFor(() => {
+      expect(search).toHaveBeenCalledWith('茅台', 8, expect.anything())
+    })
+  })
+
+  it('asks nothing for an empty field', async () => {
+    const { view, search } = mountFrame()
+    type(view, '   ')
+
+    await waitFor(() => { expect(view.queryByText('贵州茅台')).toBeNull() })
+    expect(search).not.toHaveBeenCalled()
+  })
+
+  it('opens an unfollowed match without following it first', async () => {
+    const { view, focus, follow } = mountFrame()
+    type(view, '600519')
+
+    fireEvent.click(await view.findByLabelText('Open 贵州茅台'))
+
+    expect(focus.snapshot()).toEqual(MOUTAI)
+    expect(follow).not.toHaveBeenCalled()
+  })
+
+  it('follows a match on request, and reloads the list', async () => {
+    const { view, follow, list } = mountFrame()
+    type(view, '600519')
+
+    fireEvent.click(await view.findByLabelText('Follow 贵州茅台'))
+
+    await waitFor(() => { expect(follow).toHaveBeenCalledWith(MOUTAI) })
+    await waitFor(() => { expect(list).toHaveBeenCalledTimes(2) })
+  })
+
+  it('marks a match already followed instead of offering to add it twice', async () => {
+    const search = vi.fn(() => Promise.resolve({
+      matches: [{ instrument: CATL, name: '宁德时代', followed: true }],
+    }))
+    const { view } = mountFrame(undefined, { search })
+    type(view, '300750')
+
+    expect(await view.findByText('On the watchlist')).toBeTruthy()
+    expect(view.queryByLabelText('Follow 宁德时代')).toBeNull()
+  })
+})
+
+/** The record panel over a focus already pointed at a name. */
+function mountPanel(record: NameRecordView = recordOf(), over?: {
+  dossier?: unknown
+  append?: unknown
+  focused?: boolean
+}) {
+  const focus = new WorkbenchFocus()
+  if (over?.focused !== false) focus.open(CATL)
+  const read = vi.fn(() => Promise.resolve(record))
+  const dossier = over?.dossier ?? vi.fn(() => Promise.resolve(dossierOf()))
+  const append = over?.append ?? vi.fn(() => Promise.resolve(thesis()))
+  const props = { focus, read, dossier, append, t } as unknown as Parameters<typeof RecordPanel>[0]
+  return { view: render(<RecordPanel {...props} />), focus, read, dossier, append }
+}
+
+describe('the record panel', () => {
+  it('asks for a name before it shows one', () => {
+    const { view } = mountPanel(undefined, { focused: false })
+
+    expect(view.getByText('Pick a name on the left.')).toBeTruthy()
+  })
+
+  it('shows the open name with its figures and chart', async () => {
+    const { view } = mountPanel()
+
+    expect(await view.findByText('SZSE:300750')).toBeTruthy()
+    expect(view.getByText('212.30 CNY')).toBeTruthy()
+    expect(view.getByRole('img').getAttribute('aria-label')).toContain('3 sessions')
+  })
+
+  it('reads the record and the figures for the open name', async () => {
+    const { view, read, dossier } = mountPanel()
+
+    await view.findByText('SZSE:300750')
+    expect(read).toHaveBeenCalledWith(CATL)
+    expect(dossier).toHaveBeenCalledWith(CATL, 60)
+  })
+
+  it('says what the empty chain is for rather than showing nothing', async () => {
+    const { view } = mountPanel()
+
+    expect(await view.findByText(/A thesis written here comes back to be settled/)).toBeTruthy()
+  })
+
+  it('lists an entry with its date, kind, and provenance', async () => {
+    const { view } = mountPanel(recordOf({ chain: [thesis()] }))
+
+    expect(await view.findByText('毛利率见底')).toBeTruthy()
+    expect(view.getByText('2026-06-15')).toBeTruthy()
+    expect(view.getByText('Written by hand')).toBeTruthy()
+  })
+
+  it('shows the calibration figure on a verification, which is the point of the chain', async () => {
+    const verification: ChainEntry = {
+      id: 'entry-2' as ChainEntryId,
+      instrument: CATL,
+      recordedAt: '2026-07-20T02:00:00.000Z',
+      body: 'Q2 毛利率环比 +1.7pct',
+      source: { kind: 'manual' },
+      kind: 'verification',
+      settles: 'entry-1' as ChainEntryId,
+      verdict: 'confirmed',
+      elapsedDays: 35,
+    }
+    const { view } = mountPanel(recordOf({ chain: [verification] }))
+
+    expect(await view.findByText('Settled after 35 days')).toBeTruthy()
+  })
+
+  it('links an extracted entry back to the turn that produced it', async () => {
+    const fromChat = thesis({ source: { kind: 'session', sessionId: 'sess-1' as never, turn: 4 } })
+    const { view } = mountPanel(recordOf({ chain: [fromChat] }))
+
+    expect(await view.findByText('From turn 4 of a conversation')).toBeTruthy()
+  })
+
+  it('offers to settle an open thesis, and only an open one', async () => {
+    const settled = thesis({ id: 'entry-9' as ChainEntryId, resolution: 'confirmed', body: '已结清' })
+    const { view } = mountPanel(recordOf({ chain: [thesis(), settled] }))
+
+    await view.findByText('毛利率见底')
+    expect(view.getAllByText('Mark confirmed')).toHaveLength(1)
+    expect(view.getByText('Confirmed')).toBeTruthy()
+  })
+
+  it('settles a thesis through a verification carrying the verdict', async () => {
+    const append = vi.fn(() => Promise.resolve(thesis()))
+    const { view } = mountPanel(recordOf({ chain: [thesis()] }), { append })
+
+    fireEvent.click(await view.findByText('Mark refuted'))
+
+    await waitFor(() => {
+      expect(append).toHaveBeenCalledWith(CATL, expect.objectContaining({
+        kind: 'verification', settles: 'entry-1', verdict: 'refuted',
+      }))
+    })
+  })
+
+  it('records a hand-written entry of the picked kind', async () => {
+    const append = vi.fn(() => Promise.resolve(thesis()))
+    const { view } = mountPanel(recordOf(), { append })
+    await view.findByText('SZSE:300750')
+
+    fireEvent.click(view.getByText('Decision'))
+    fireEvent.change(view.getByLabelText(/Record a thesis/), { target: { value: ' 减仓至 4% ' } })
+    fireEvent.click(view.getByText('Record'))
+
+    await waitFor(() => {
+      expect(append).toHaveBeenCalledWith(CATL, {
+        kind: 'decision', body: '减仓至 4%', source: { kind: 'manual' },
+      })
+    })
+  })
+
+  it('refuses to record an empty entry', async () => {
+    const append = vi.fn(() => Promise.resolve(thesis()))
+    const { view } = mountPanel(recordOf(), { append })
+    await view.findByText('SZSE:300750')
+
+    fireEvent.change(view.getByLabelText(/Record a thesis/), { target: { value: '   ' } })
+
+    expect(view.getByText('Record').hasAttribute('disabled')).toBe(true)
+    expect(append).not.toHaveBeenCalled()
+  })
+
+  it('keeps the record readable when the figures cannot be read', async () => {
+    const dossier = vi.fn(() => Promise.reject(new Error('offline')))
+    const { view } = mountPanel(recordOf({ chain: [thesis()] }), { dossier })
+
+    expect(await view.findByText('毛利率见底')).toBeTruthy()
+    expect(view.getByText('No quote')).toBeTruthy()
+  })
+
+  it('reports a failed record read', async () => {
+    const focus = new WorkbenchFocus()
+    focus.open(CATL)
+    const props = {
+      focus,
+      read: vi.fn(() => Promise.reject(new Error('offline'))),
+      dossier: vi.fn(() => Promise.resolve(dossierOf())),
+      append: vi.fn(),
+      t,
+    } as unknown as Parameters<typeof RecordPanel>[0]
+    const view = render(<RecordPanel {...props} />)
+
+    expect(await view.findByRole('alert')).toBeTruthy()
+  })
+})
+
+describe('the shared selection', () => {
+  it('moves both columns from one open call', () => {
+    const focus = new WorkbenchFocus()
+    const seen: unknown[] = []
+    focus.subscribe(() => { seen.push(focus.snapshot()) })
+
+    focus.open(CATL)
+    focus.open(MOUTAI)
+
+    expect(seen).toHaveLength(2)
+    expect(focus.snapshot()).toEqual(MOUTAI)
+  })
+})
+
+describe('the shared rows', () => {
+  it('joins a refresh already in flight rather than reading twice', async () => {
+    let settle: (value: WatchlistSnapshot) => void = () => {}
+    const list = vi.fn(() => new Promise<WatchlistSnapshot>((resolve) => { settle = resolve }))
+    const feed = new WatchlistFeed(list)
+
+    const first = feed.refresh()
+    const second = feed.refresh()
+    settle({ rows: [row()] })
+    await Promise.all([first, second])
+
+    expect(list).toHaveBeenCalledTimes(1)
+  })
+
+  it('empties the rows on a failed read rather than showing stale prices', async () => {
+    const feed = new WatchlistFeed(() => Promise.reject(new Error('offline')))
+
+    await feed.refresh()
+
+    expect(feed.snapshot()).toEqual({ status: 'error', rows: [] })
+  })
+})
+
+describe('workbench registration', () => {
+  /** The services the plugin declares, with both Remote namespaces stubbed. */
+  async function bench() {
+    const ctx = new Context()
+    await ctx.plugin(SlotRegistry).await()
+    const slots = ctx.get('slots') as SlotRegistry
+    slots.register({
+      name: 'root',
+      children: {
+        'sidebar.mode': { kind: 'list', scope: 'root' },
+        'details': { kind: 'keyed', scope: 'session' },
+      },
+    } as never, () => null)
+    ctx.provide('locale', new LocaleRuntime(ctx))
+    class RemoteService extends Service {
+      constructor(serviceCtx: Context) { super(serviceCtx, 'remote') }
+    }
+    new RemoteService(ctx)
+    const list = vi.fn().mockResolvedValue({ ok: true, value: { rows: [] } })
+    ctx.provide('remote.watchlist', { list })
+    ctx.provide('remote.nameRecord', { read: vi.fn() })
+    return { ctx, slots, list }
+  }
+
+  it('declares only the services the two columns and their Remotes use', () => {
+    expect(workbench.inject).toEqual(['slots', 'locale', 'remote', 'remote.watchlist', 'remote.nameRecord'])
+  })
+
+  it('registers the names frame and the record panel under one frame id', async () => {
+    const b = await bench()
+    const fiber = b.ctx.plugin({ inject: [...workbench.inject], apply: workbench.apply })
+    await fiber.await()
+
+    const frame = b.slots.entries('sidebar.mode').find(entry => entry.options.id === workbench.NAMES_MODE)
+    expect(frame?.component).toBe(NamesFrame)
+    expect(frame?.options).toMatchObject({ id: 'names', order: 20 })
+    const panel = b.slots.entries('details').find(entry => entry.options.key === workbench.NAMES_MODE)
+    expect(panel?.component).toBe(RecordPanel)
+    // Registration must not read anything: each column reads when it mounts.
+    expect(b.list).not.toHaveBeenCalled()
+  })
+
+  it('removes both registrations when its fiber disposes (HMR safety)', async () => {
+    const b = await bench()
+    const fiber = b.ctx.plugin({ inject: [...workbench.inject], apply: workbench.apply })
+    await fiber.await()
+
+    await fiber.dispose()
+
+    expect(b.slots.entries('sidebar.mode')).toEqual([])
+    expect(b.slots.entries('details')).toEqual([])
+  })
+
+  it('owns the watchlist locale namespace', () => {
+    expect(NS).toBe('watchlist')
+  })
+})
