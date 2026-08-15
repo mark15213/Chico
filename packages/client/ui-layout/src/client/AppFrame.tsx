@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { PropsRenderSlots, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
-import { computeColumns, SIDEBAR_AUTO_COLLAPSE, SIDEBAR_DEFAULT } from './columns.ts'
+import { computeColumns, DEFAULT_MODE, SIDEBAR_AUTO_COLLAPSE, SIDEBAR_DEFAULT } from './columns.ts'
 import type { createLayoutStore } from './stores.ts'
 import css from './AppFrame.module.css'
 
@@ -98,14 +98,19 @@ export function AppFrame({
   const frameRef = useRef<HTMLDivElement | null>(null)
   const [viewport, setViewport] = useState(() => window.innerWidth)
 
+  // The default frame's detail is a call inside one conversation, so it is
+  // gated on a live one and closes when the reader switches session. Another
+  // frame's detail is about whatever that frame put in focus — a name, say —
+  // which outlives any session and exists before the first one opens.
+  const sessionFramed = panels.mode === DEFAULT_MODE
   const lastSession = useRef(detailsSession)
   useLayoutEffect(() => {
-    if (detailsSession === undefined) return
+    if (!sessionFramed || detailsSession === undefined) return
     if (lastSession.current !== undefined && lastSession.current !== detailsSession) {
       actions.closeDetails()
     }
     lastSession.current = detailsSession
-  }, [actions, detailsSession])
+  }, [actions, detailsSession, sessionFramed])
 
   // Track the frame's own box (not the window): rAF-throttled ResizeObserver.
   useEffect(() => {
@@ -139,7 +144,8 @@ export function AppFrame({
   const sidebarPreference = sidebarCollapsed
     ? 0
     : panels.sidebar === 0 ? SIDEBAR_DEFAULT : panels.sidebar
-  const cols = computeColumns(viewport, sidebarPreference, detailsSession === undefined ? 0 : panels.details)
+  const detailsWidth = sessionFramed && detailsSession === undefined ? 0 : panels.details
+  const cols = computeColumns(viewport, sidebarPreference, detailsWidth)
   const colsRef = useRef(cols)
   colsRef.current = cols
 

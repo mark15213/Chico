@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import type { InstrumentRef, WatchlistSearchResult } from '@deepseek-ai/dsh-api-remotes/client'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { useWatchlist, type WatchlistSource } from './watchlist-store.ts'
+import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
 import { instrumentLabel, normalizeQuery, rowFigures, sameInstrument } from './watchlist-model.ts'
 import css from './NamesFrame.module.css'
 
@@ -13,10 +14,13 @@ export interface NamesFrameInjected {
   search: (query: string, limit: number, signal?: AbortSignal) => Promise<WatchlistSearchResult>
   /** Follow one instrument, resolving its name from the venue. */
   follow: (instrument: InstrumentRef) => Promise<unknown>
-  /** The instrument the workbench is showing, or null before one is opened. */
-  opened: InstrumentRef | null
-  /** Open one instrument in the workbench; the other two columns follow. */
-  open: (instrument: InstrumentRef) => void
+  /** Which name the workbench is showing, and the way to move it. */
+  focus: WorkbenchSelection
+  /**
+   * Reveal the record column. Opening a name has to open the panel it lands
+   * in: a selection that moves a column nobody can see is not navigation.
+   */
+  revealRecord: () => void
 }
 
 /** Full props of the sidebar's names frame. */
@@ -42,10 +46,15 @@ const LOOKUP_DEBOUNCE_MS = 250
  * @returns the column, wide only — the rail has no room for a name and a price.
  */
 export function NamesFrame({
-  rows: source, search, follow, opened, open, wide, t,
+  rows: source, search, follow, focus, revealRecord, wide, t,
 }: NamesFrameProps): ReactNode {
   const fieldId = useId()
   const { status, rows } = useWatchlist(source)
+  const opened = useWorkbenchFocus(focus)
+  const open = (instrument: InstrumentRef): void => {
+    focus.open(instrument)
+    revealRecord()
+  }
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<WatchlistSearchResult | null>(null)
 

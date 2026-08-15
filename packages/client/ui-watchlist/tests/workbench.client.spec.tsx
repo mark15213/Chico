@@ -145,11 +145,12 @@ function mountFrame(
     matches: [{ instrument: MOUTAI, name: '贵州茅台', followed: false }],
   }))
   const follow = over?.follow ?? vi.fn(() => Promise.resolve({}))
+  const revealRecord = vi.fn()
   const props = {
-    rows: feed, search, follow, opened: focus.snapshot(), open: focus.open,
+    rows: feed, search, follow, focus, revealRecord,
     wide: over?.wide ?? true, t,
   } as unknown as Parameters<typeof NamesFrame>[0]
-  return { view: render(<NamesFrame {...props} />), list, feed, focus, search, follow }
+  return { view: render(<NamesFrame {...props} />), list, feed, focus, search, follow, revealRecord }
 }
 
 describe('the names frame', () => {
@@ -181,6 +182,31 @@ describe('the names frame', () => {
     fireEvent.click(await view.findByText('宁德时代'))
 
     expect(focus.snapshot()).toEqual(CATL)
+  })
+
+  it('reveals the record column, since a details panel starts closed', async () => {
+    // A selection that moved a column nobody can see is not navigation: the
+    // first build set the focus and left the column at zero width.
+    const { view, revealRecord } = mountFrame()
+
+    fireEvent.click(await view.findByText('宁德时代'))
+
+    expect(revealRecord).toHaveBeenCalledTimes(1)
+  })
+
+  it('marks the open row, and moves the mark when another name opens', async () => {
+    const { view, focus } = mountFrame({ rows: [row(), row({ instrument: MOUTAI, displayName: '贵州茅台' })] })
+    await view.findByText('宁德时代')
+
+    fireEvent.click(view.getByText('贵州茅台'))
+
+    // The selection is read through the shared focus, so the mark follows it
+    // rather than freezing at whatever the registration captured.
+    await waitFor(() => {
+      expect(view.getByText('贵州茅台').closest('button')?.getAttribute('aria-current')).toBe('true')
+    })
+    expect(view.getByText('宁德时代').closest('button')?.getAttribute('aria-current')).toBeNull()
+    expect(focus.snapshot()).toEqual(MOUTAI)
   })
 
   it('says how to start when nothing is followed', async () => {
@@ -456,6 +482,7 @@ describe('workbench registration', () => {
       },
     } as never, () => null)
     ctx.provide('locale', new LocaleRuntime(ctx))
+    ctx.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn(), toggleSidebar: vi.fn(), setMode: vi.fn() })
     class RemoteService extends Service {
       constructor(serviceCtx: Context) { super(serviceCtx, 'remote') }
     }
@@ -467,7 +494,8 @@ describe('workbench registration', () => {
   }
 
   it('declares only the services the two columns and their Remotes use', () => {
-    expect(workbench.inject).toEqual(['slots', 'locale', 'remote', 'remote.watchlist', 'remote.nameRecord'])
+    expect(workbench.inject)
+      .toEqual(['slots', 'locale', 'layout', 'remote', 'remote.watchlist', 'remote.nameRecord'])
   })
 
   it('registers the names frame and the record panel under one frame id', async () => {

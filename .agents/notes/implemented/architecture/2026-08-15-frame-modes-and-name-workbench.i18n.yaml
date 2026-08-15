@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-08-15-frame-modes-and-name-workbench.md
-2026-08-15-frame-modes-and-name-workbench.md: 73b61a845c50f7388efc45baf0cea1f5c7044c7b
-2026-08-15-frame-modes-and-name-workbench.zh.md: ad51b2388df85a96f14a13ef78d85c2e88b2db1b
+2026-08-15-frame-modes-and-name-workbench.md: bf47ce757e20a112e89fcf1752f7af18a24f0333
+2026-08-15-frame-modes-and-name-workbench.zh.md: 60059fef1e0fa794a9243535d18fd0947959bcb9

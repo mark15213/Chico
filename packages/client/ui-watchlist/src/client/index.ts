@@ -17,8 +17,8 @@ import type { InstrumentRef, WatchlistSnapshot } from '@deepseek-ai/dsh-api-remo
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-// Type-only: the 'details' and 'sidebar.mode' SlotMap rows (declared by the
-// slots' owning packages) must be in the program for the register calls to type.
+// The layout service opens the record column; its SlotMap merge also declares
+// the 'details' row these registrations need.
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import { NamesFrame, type NamesFrameInjected } from './NamesFrame.tsx'
@@ -50,7 +50,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 export const NAMES_MODE = 'names'
 
 /** Services required by the registrations and the generated Remote faces. */
-export const inject = ['slots', 'locale', 'remote', 'remote.watchlist', 'remote.nameRecord']
+export const inject = ['slots', 'locale', 'layout', 'remote', 'remote.watchlist', 'remote.nameRecord']
 
 /**
  * Client plugin body: register the names frame and the record panel over one
@@ -108,8 +108,11 @@ export function apply(ctx: ClientContext): void {
       rows: feed,
       search,
       follow,
-      opened: focus.snapshot(),
-      open: focus.open,
+      focus,
+      // The record column starts closed, like every details panel. Opening a
+      // name has to open it: a selection that moves a column nobody can see
+      // is not navigation, which is exactly how the first build read.
+      revealRecord: () => { ctx.layout.openDetails() },
     }),
   }, NamesFrame))
 

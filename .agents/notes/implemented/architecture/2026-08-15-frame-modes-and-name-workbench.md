@@ -32,6 +32,12 @@ The shell draws one switch entry per registration and renders only the active on
 
 This is what finally answers the open question the workbench design left: *does the dossier share the details column with the tool inspector, or does one of them move?* Neither. They are not in the same frame, so they never compete for the seat. A question that looked like a conflict was a missing distinction.
 
+### Opening a name opens the column it lands in
+
+The first build set the selection and stopped. A details panel starts closed and its column renders at zero width, so clicking a name moved a column nobody could see — indistinguishable, from the reader's seat, from a dead control. The names frame now asks the layout to reveal the record column as it opens a name: a selection that does not surface its own result is not navigation.
+
+The session gate went with it. The details column was gated on a live non-blank session, which is right for the harness's own detail — a call inside one conversation — and wrong for a name, which outlives every session and exists before the first one opens. The gate now applies to the default frame alone.
+
 ### The workbench owns two columns and two observables
 
 The rows and the open name are neither session-scoped nor root-scoped: they are one book and one selection, the same in every session. A slot `store` handle carries one scope and these two slots do not share one, so the plugin owns both values and hands each column the same subscription. Opening a name in the left column moves the right one; following a name moves the list under both.

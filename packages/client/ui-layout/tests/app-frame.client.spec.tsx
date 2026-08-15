@@ -284,6 +284,33 @@ describe('AppFrame', () => {
   })
 })
 
+describe('AppFrame — the details gate belongs to the default frame', () => {
+  it('keeps the details column closed without a live session in the default frame', () => {
+    selectedSession.current = undefined
+    const { frame, instance, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.openDetails() })
+    act(() => { rerenderFrame() })
+
+    // The harness's own detail is a call inside one conversation, so with no
+    // conversation there is nothing it could show.
+    expect(tracks(frame).at(-1)).toBe(0)
+  })
+
+  it('opens the details column in another frame with no session at all', () => {
+    selectedSession.current = undefined
+    const { frame, instance, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.setMode('names') })
+    act(() => { instance.actions.openDetails() })
+    act(() => { rerenderFrame() })
+
+    // Another frame's detail is about whatever that frame put in focus — a
+    // name outlives any session and exists before the first one opens.
+    expect(tracks(frame).at(-1)).toBeGreaterThan(0)
+  })
+})
+
 describe('AppFrame — narrow-viewport auto-collapse', () => {
   it('mounts collapsed below the breakpoint with no sidebar handle', () => {
     frameWidth = 980
