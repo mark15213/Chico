@@ -2,9 +2,13 @@
 // `market_history` tool. The row composes the shared ToolRow (chrome, running
 // sweep, whole-row expand) and feeds it the completed series as ToolRow's
 // `priceSeries` card material, so it renders through PriceSeriesChart in the
-// collapsed-by-default expanded body — the same unified interaction every other
-// card row has. Until the call settles there is no price-series card (the tool
-// keeps a generic pending view), so a running row is the summary line alone.
+// row's expanded body. Until the call settles there is no price-series card (the
+// tool keeps a generic pending view), so a running row is the summary line alone.
+//
+// The chart opens without a click, unlike every other card row here. A read or a
+// grep card is the work behind an answer and the reader skims past it, but a
+// price series is the answer to what was asked, and one hidden behind a row that
+// looks like every other row does not get looked at.
 //
 // The renderer lives here rather than in a product package because the card
 // kind lives in the shared `dsh-tools` render-intent union: client bundle
@@ -28,7 +32,7 @@ export const PRICE_SERIES_TOOL = 'market_history'
 
 /**
  * Price-series row: icon + History · {summary} in the shared ToolRow chrome,
- * with the completed series as the row's collapsed-by-default card body.
+ * with the completed series as the row's card body, opened as soon as it exists.
  * @param props - the toolview owner share and locale seat.
  * @returns the composed row.
  */
@@ -47,6 +51,7 @@ export function PriceSeriesRow({ toolName, block, inspect, t }: PriceSeriesRowPr
       output={model.output}
       errorSummary={model.errorSummary}
       priceSeries={series}
+      startExpanded={series !== null}
       state={model.state}
       inspect={inspect}
     />

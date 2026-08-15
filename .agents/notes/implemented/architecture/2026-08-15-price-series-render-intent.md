@@ -32,6 +32,14 @@ The first attempt put the chart in a Chico client package on the reasoning that 
 
 The consequence is that the chart ships with the browser surface rather than with the Chico bundle: any composition carrying `dsh-client-ui-tool` renders a price-series card when one arrives, and a composition without the market-data tools simply never sees one.
 
+### The chart opens without a click
+
+Every other card row starts collapsed so a run of tool calls stays scannable, and the price-series row shipped that way first. A real run showed the default is wrong for this card: the row read `History SZSE:300750` like any other, the model restated the series in prose underneath it, and the chart went unseen — the one thing the seam exists to deliver was the one thing not shown.
+
+The rule that separates the two is what the card is to the reader. A read or a grep card is the work behind an answer and gets skimmed past; a price series is the answer. `ToolRow` therefore takes `startExpanded`, which the row sets, rather than `ui-tool` naming price series in shared chrome.
+
+The flag is honored on the transition to true, not at mount alone. A row mounts while its call is still running and carries no card yet, so a mount-only decision would leave every live chart shut and open only on reload. A collapse the reader chooses afterwards stands, because the flag flips once.
+
 ## Alternatives considered
 
 **A general `chart` card carrying arbitrary series of points.** Rejected: OHLCV has semantics a generic point series cannot express — four prices per session, session-relative coloring, an adjustment basis. There is exactly one consumer today, and a general card with no consumer would be a speculative abstraction the packages policy forbids.
@@ -42,6 +50,12 @@ The consequence is that the chart ships with the browser surface rather than wit
 
 **Putting the chart in `dsh-client-ui-primitives` beside `WebBlock`.** Rejected as unnecessary rather than wrong: the chart has one call site, and `ui-tool` already hosts `GenericToolCard`. It moves to primitives when a second surface needs it.
 
+**Opening every card kind by default instead of one.** Rejected: a turn that reads four files and greps twice would become six open cards, which is the reason the collapsed default exists. The flag is per row so each card kind states what it is to the reader.
+
+**A `ToolRow` branch that opens when `priceSeries` is present.** Rejected: it puts one card kind's editorial judgement in chrome shared by every row, and the next card that wants it would add a second branch. One boolean the row sets keeps the decision with the row that owns the card.
+
+**Rendering the chart in the assistant message rather than on a tool row.** Deferred, not rejected: it would put the series where the reader already looks and drop the row question entirely, but it needs a way for a tool result to contribute to message content, which no render intent has today. Worth revisiting when a second tool wants the same placement.
+
 **Drawing a flat line for a series whose prices are all identical.** Rejected: it states a shape the data does not have. The model returns null and the row falls back to the generic card, which is honest about having nothing to plot.
 
 ## Consequences
@@ -50,8 +64,10 @@ The union has a member no default composition renders. That is intended and is t
 
 Volume travels in the render intent and the chart discards it. The field is carried because the tool has it and a later volume lane should not need a contract change; today it is unused.
 
+A turn that charts several names shows several open charts at once, since each row decides for itself. That is the intended reading order for a comparison and the cost of the flag being per row; a turn that charts many names will want a different surface than a transcript.
+
 `dsh-client-ui-tool` now knows one investment tool name. That is the same coupling `web-row` already carries for the web tools, and it is what keying a toolview costs; the alternative the purity gate rules out would have cost a duplicated row chrome instead.
 
 ## Testing
 
-`packages/investment/tool-market-data/tests` covers the presentation-meta round trip and every fallback to the generic card: an errored call, absent metadata, a non-object, an array, malformed bars, and an unknown adjustment. `packages/client/ui-tool/tests/price-series.client.spec.tsx` covers model derivation, unit-box geometry, the running-call and unknown-card fallbacks, the empty and flat series, doji hairline rendering, the assistive label, and keyed registration with fiber teardown proving removal.
+`packages/investment/tool-market-data/tests` covers the presentation-meta round trip and every fallback to the generic card: an errored call, absent metadata, a non-object, an array, malformed bars, and an unknown adjustment. `packages/client/ui-tool/tests/price-series.client.spec.tsx` covers model derivation, unit-box geometry, the running-call and unknown-card fallbacks, the empty and flat series, doji hairline rendering, the assistive label, keyed registration with fiber teardown proving removal, and the three expansion states: open at mount, open on settling after mount, and staying shut once the reader collapses it.

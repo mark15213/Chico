@@ -6,14 +6,20 @@
  */
 import { Context } from '@deepseek-ai/cordis'
 import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ToolCallBlock } from '@deepseek-ai/dsh-client-runtime/client'
+import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
+import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import { zh } from '@deepseek-ai/dsh-client-ui-conversation/src/client/locales.ts'
 import { priceSeriesModel } from '../src/client/tool/models/price-series-card-model.ts'
 import { PriceSeriesChart } from '../src/client/tool/toolviews/PriceSeriesChart.tsx'
-import { PRICE_SERIES_TOOL, priceSeriesToolview } from '../src/client/tool/toolviews/price-series-row.tsx'
+import { PRICE_SERIES_TOOL, PriceSeriesRow, priceSeriesToolview } from '../src/client/tool/toolviews/price-series-row.tsx'
 
 afterEach(cleanup)
+
+// Mirrors the real lookup chain (conversation namespace, then common).
+const t = makeTranslate(zh, commonZh)
 
 const bars = [
   { date: '2026-08-12', open: 100, high: 110, low: 95, close: 105, volume: 10 },
@@ -128,6 +134,55 @@ describe('PriceSeriesChart', () => {
     // Two wicks plus the doji's body hairline; only the second bar gets a rect.
     expect(container.querySelectorAll('line')).toHaveLength(3)
     expect(container.querySelectorAll('rect')).toHaveLength(1)
+  })
+})
+
+describe('PriceSeriesRow expansion', () => {
+  const CARD = { card: 'price-series', label: 'SZSE:300750', bars, adjustment: 'none' as const }
+
+  const ARGS = '{"market":"SZSE","symbol":"300750","sessions":3}'
+
+  /** A running call: no result view yet, so no series to plot. */
+  function pending(): ToolCallBlock {
+    return {
+      callId: 'c1', name: PRICE_SERIES_TOOL, argsRaw: ARGS,
+      turn: 1, step: 1, time: 1_000, callView: null, subCalls: [],
+    }
+  }
+
+  /** The same call settled, carrying the price-series card the row plots. */
+  function done(): ToolCallBlock {
+    return {
+      kind: 'tool-result', seq: 10, time: 2_000, callId: 'c1',
+      call: { name: PRICE_SERIES_TOOL, argsRaw: ARGS }, callTime: 1_000,
+      content: [], isError: false, callView: null, resultView: CARD, subCalls: [],
+    } as never
+  }
+
+  const rowProps = (block: ToolCallBlock): Parameters<typeof PriceSeriesRow>[0] =>
+    ({ callId: 'c1', toolName: PRICE_SERIES_TOOL, block, openFile: () => {}, t } as never)
+
+  it('opens the chart with no click, because the series is the answer, not the work behind one', () => {
+    const view = render(<PriceSeriesRow {...rowProps(done())} />)
+
+    expect(view.getByRole('img').getAttribute('aria-label')).toContain('3 sessions')
+  })
+
+  it('opens a call that settles after the row mounted, which is every live call', () => {
+    // The row appears while the tool runs and is re-rendered in place when the
+    // result lands: deciding at mount alone would leave every live chart shut.
+    const view = render(<PriceSeriesRow {...rowProps(pending())} />)
+    expect(view.queryByRole('img')).toBeNull()
+
+    view.rerender(<PriceSeriesRow {...rowProps(done())} />)
+    expect(view.getByRole('img')).toBeTruthy()
+  })
+
+  it('keeps a collapse the reader chose', () => {
+    const view = render(<PriceSeriesRow {...rowProps(done())} />)
+    fireEvent.click(view.container.querySelector('[data-expandable]')!)
+
+    expect(view.queryByRole('img')).toBeNull()
   })
 })
 

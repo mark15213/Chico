@@ -10,14 +10,15 @@
 // primitive (TerminalBlock, DiffBlock, ReadBlock, SearchBlock, WebBlock) for a
 // call that declared that render intent — lives in a max-height scroll
 // container so a long payload scrolls internally instead of taking over the
-// message flow. Every card kind starts collapsed, so a run of tool calls stays
-// scannable; the details panel is the single-call full-height reading surface.
+// message flow. A card starts collapsed unless its row asks for `startExpanded`,
+// so a run of tool calls stays scannable; the details panel is the single-call
+// full-height reading surface.
 // Expand state is component-local view state. File-tool summaries are path
 // links that open through the host (stopPropagation keeps the two gestures
 // independent); an error row's collapsed summary is the failure's first line in
 // the error color.
 
-import { useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 import clsx from 'clsx'
 import {
   CodeBlock, DiffBlock, DisclosureRow, IconInspectOutline12, ReadBlock, SearchBlock, StateDot, TerminalBlock, WebBlock,
@@ -94,6 +95,18 @@ export interface ToolRowProps {
    * chart when present.
    */
   priceSeries?: PriceSeriesModel | null | undefined
+  /**
+   * Open this row's card without a click. A row sets it when its card IS the
+   * answer rather than the process behind one — a price series is the reply to
+   * "how has it traded", while a read or a grep is work the reader skims past.
+   * The row still collapses on click, and a later collapse sticks.
+   *
+   * Rows settle after they mount, so the flag is honored on the transition to
+   * true as well as at mount: a call that was running when the row appeared
+   * carries no card yet, and deciding only at mount would leave every live
+   * answer collapsed while a reload opened it.
+   */
+  startExpanded?: boolean | undefined
   state: ToolRowState
   /**
    * Filesystem path from tool args; when set with onOpenFile, the summary
@@ -150,12 +163,19 @@ export function ToolRow({
   search,
   web,
   priceSeries,
+  startExpanded,
   state,
   filePath,
   onOpenFile,
   inspect,
 }: ToolRowProps) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(startExpanded === true)
+  // The card usually arrives after mount (the row was running), so the mount
+  // value alone would leave a live answer collapsed. Opening on the flip to
+  // true happens once; a collapse the reader chooses afterwards stands.
+  useEffect(() => {
+    if (startExpanded === true) setExpanded(true)
+  }, [startExpanded])
   const terminalBody = terminal ?? null
   const diffBody = diff ?? null
   const readBody = read ?? null
