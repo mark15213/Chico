@@ -9,6 +9,13 @@ import { Context } from '@deepseek-ai/cordis'
 import { load } from 'js-yaml'
 import { describe, expect, it } from 'vitest'
 import InvariantRegistry from '@deepseek-ai/dsh-invariants'
+import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
+import {
+  apply as applyFixture, Config as FixtureConfig, inject as fixtureInject,
+} from '@deepseek-ai/dsh-market-data-fixture'
+import {
+  apply as applyTools, Config as ToolConfig, inject as toolInject,
+} from '@deepseek-ai/dsh-tool-market-data'
 import { apply, name } from '../src/index.ts'
 import * as ChicoInvariant from '../src/invariant.ts'
 
@@ -67,6 +74,40 @@ describe('chico bundle patch', () => {
     for (const row of inserted) {
       expect(Object.keys(manifest.dependencies)).toContain(row.name)
     }
+  })
+})
+
+describe('chico bundle composition', () => {
+  it('boots its own configured rows into a live seam and both tools', async () => {
+    const ctx = new Context()
+    const tools = new Set<string>()
+    ctx.provide('tools', {
+      register: (definition: { name: string }) => {
+        tools.add(definition.name)
+        return () => tools.delete(definition.name)
+      },
+    } as never)
+    ctx.provide('systemPrompt', { section: () => {} } as never)
+
+    // The configs come from the shipped patch, so this asserts the values the
+    // bundle actually ships rather than a restatement of them.
+    await ctx.plugin(MarketDataRuntime, insertedRow('market-data')?.config as never).await()
+    await ctx.plugin(
+      { name: 'fixture', inject: [...fixtureInject], apply: applyFixture, Config: FixtureConfig },
+      insertedRow('market-data-fixture')?.config ?? {},
+    ).await()
+    await ctx.plugin(
+      { name: 'tools', inject: [...toolInject], apply: applyTools, Config: ToolConfig },
+      insertedRow('tool-market-data')?.config ?? {},
+    ).await()
+
+    expect([...tools].sort()).toEqual(['market_history', 'market_quote'])
+    // The seam resolves to the fixture provider with no id configured.
+    const quote = await ctx.marketData.quote({ instrument: { market: 'SZSE', symbol: '300750' } })
+    expect(quote.name).toBe('宁德时代')
+    // The configured ceiling is the one a request above it is refused against.
+    await expect(ctx.marketData.priceHistory({ instrument: { market: 'SZSE', symbol: '300750' }, sessions: 501 }))
+      .rejects.toThrow(expect.objectContaining({ code: 'MARKET_DATA_HISTORY_RANGE_REFUSED' }))
   })
 })
 
