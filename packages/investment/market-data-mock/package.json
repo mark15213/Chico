@@ -1,6 +1,6 @@
 {
-  "name": "@deepseek-ai/dsh-chico-web-app",
-  "description": "The Chico investment-surface bundle: a patch layer over dsh-web-app that inserts the market-data seam, its provider and tools, the name record and watchlist projections, and the name workbench",
+  "name": "@deepseek-ai/dsh-market-data-mock",
+  "description": "Mock market-data provider for the DeepSeek Harness — the compiled Chico mock dataset (ten instruments, 500 daily sessions) served with no credential and no network; every price is synthetic",
   "version": "0.1.0-rc.5",
   "publishConfig": {
     "access": "public"
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
-    "directory": "packages/bundle/chico-web-app"
+    "directory": "packages/investment/market-data-mock"
   },
   "type": "module",
   "main": "lib/index.js",
@@ -22,38 +22,26 @@
       "types": "./lib/types/invariant.d.ts",
       "default": "./lib/invariant.js"
     },
-    "./cordis.patch.yml": "./cordis.patch.yml",
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "files": [
     "lib/index.js",
     "lib/invariant.js",
-    "cordis.patch.yml",
     "lib/types/**/*.d.ts"
   ],
   "license": "MIT",
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    }
-  },
   "peerDependencies": {
     "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-market-data": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/dsh-client-ui-watchlist": "workspace:^",
-    "@deepseek-ai/dsh-followed-names": "workspace:^",
-    "@deepseek-ai/dsh-market-data": "workspace:^",
-    "@deepseek-ai/dsh-market-data-mock": "workspace:^",
-    "@deepseek-ai/dsh-name-record": "workspace:^",
-    "@deepseek-ai/dsh-tool-market-data": "workspace:^",
-    "@deepseek-ai/dsh-watchlist": "workspace:^",
-    "@deepseek-ai/dsh-web-app": "workspace:^"
+    "@deepseek-ai/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-market-data": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

@@ -1278,6 +1278,26 @@ export interface Config {
 
 来源：[`packages/investment/market-data-fixture/src/index.ts:126`](../packages/investment/market-data-fixture/src/index.ts)
 
+<a id="deepseek-aidsh-market-data-mock"></a>
+
+## `@deepseek-ai/dsh-market-data-mock`
+
+依赖：`marketData`
+
+```ts config-catalog
+/** Plugin config. */
+export interface Config {
+  /**
+   * Refuse every read instead of serving synthetic prices. A deployment that
+   * mounts this provider by accident then fails loudly rather than presenting
+   * invented closes as the venue's own.
+   */
+  disabled?: boolean
+}
+```
+
+来源：[`packages/investment/market-data-mock/src/index.ts:112`](../packages/investment/market-data-mock/src/index.ts)
+
 <a id="deepseek-aidsh-market-data-tushare"></a>
 
 ## `@deepseek-ai/dsh-market-data-tushare`

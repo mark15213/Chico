@@ -29,23 +29,23 @@
       config:
         maxHistorySessions: 500
 
-    # The venue feed. Tushare serves end-of-day data for the mainland venues,
-    # so every price here is a session close and the workbench says so.
+    # The feed. **Every price this composition shows is synthetic**: the mock
+    # provider answers from a dataset compiled into the package, with no
+    # credential and no network.
     #
-    # The account token is a credential reference, never a value in a shipped
-    # file: it resolves through the credentials seam the base layer mounts, so
-    # `TUSHARE_TOKEN` in the environment, in `$DSH_HOME/.env`, or in the managed
-    # store all reach it. Without one the provider reports itself unusable and
-    # the seam refuses loudly, which is the wanted failure — a workbench that
-    # quietly served synthetic prices as real would be the worse outcome.
+    # This is a development and demonstration composition. A live feed makes the
+    # workbench unusable whenever the venue API is slow, rate-limited, or
+    # unreachable — one failed request emptied the watchlist and left the
+    # conversation without a quote — and none of that is the surface being
+    # built. The dataset's magnitudes, volatilities, and 52-week ranges are
+    # calibrated against real August-2026 observations, so the surface is
+    # exercised against realistic shapes without depending on a venue being up.
     #
-    # `adjustment` stays `none` because restatement reads a second Tushare
-    # interface gated behind a higher point threshold than the bars; an account
-    # that has it sets `backward` here and gets history on today's basis.
-    - id: market-data-tushare
-      name: '@deepseek-ai/dsh-market-data-tushare'
-      config:
-        adjustment: none
+    # A deployment whose readers might act on the numbers replaces this row with
+    # a real provider — `@deepseek-ai/dsh-market-data-tushare` is still in the
+    # workspace and takes a `TUSHARE_TOKEN` credential reference.
+    - id: market-data-mock
+      name: '@deepseek-ai/dsh-market-data-mock'
 
     # The model-facing tools. Both are enabled; the default 60-session range is
     # what a chart card wants, and the seam's own ceiling bounds anything larger.

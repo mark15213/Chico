@@ -45,6 +45,7 @@
       // declarations. Without this the analyzer cannot place the type.
       "@deepseek-ai/dsh-market-data": ["./packages/investment/market-data/src/index.ts"],
       "@deepseek-ai/dsh-market-data-fixture": ["./packages/investment/market-data-fixture/src"],
+      "@deepseek-ai/dsh-market-data-mock": ["./packages/investment/market-data-mock/src"],
       "@deepseek-ai/dsh-market-data-tushare": ["./packages/investment/market-data-tushare/src"],
       "@deepseek-ai/dsh-tool-market-data": ["./packages/investment/tool-market-data/src"],
       "@deepseek-ai/dsh-followed-names": ["./packages/investment/followed-names/src"],

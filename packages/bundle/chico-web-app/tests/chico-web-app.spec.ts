@@ -11,8 +11,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
 import {
-  apply as applyTushare, Config as TushareConfig, inject as tushareInject,
-} from '@deepseek-ai/dsh-market-data-tushare'
+  apply as applyMock, Config as MockConfig, inject as mockInject,
+} from '@deepseek-ai/dsh-market-data-mock'
 import {
   apply as applyTools, Config as ToolConfig, inject as toolInject,
 } from '@deepseek-ai/dsh-tool-market-data'
@@ -47,26 +47,25 @@ describe('chico bundle patch', () => {
     expect(insertedRow('followed-names')?.config).toBeUndefined()
   })
 
-  it('inserts the whole market-data seam: definition, venue feed, and tools', () => {
+  it('inserts the whole market-data seam: definition, feed, and tools', () => {
     expect(insertedRow('market-data')?.name).toBe('@deepseek-ai/dsh-market-data')
-    expect(insertedRow('market-data-tushare')?.name).toBe('@deepseek-ai/dsh-market-data-tushare')
+    expect(insertedRow('market-data-mock')?.name).toBe('@deepseek-ai/dsh-market-data-mock')
     expect(insertedRow('tool-market-data')?.name).toBe('@deepseek-ai/dsh-tool-market-data')
   })
 
-  it('ships no synthetic provider, so no price here is invented', () => {
-    // The fixture backs package tests and keyless replay; a workbench that
-    // mounted it would present made-up closes as the venue's own.
-    expect(inserted.map(row => row.name)).not.toContain('@deepseek-ai/dsh-market-data-fixture')
+  it('ships the mock feed, so this composition is for building the surface, not for pricing', () => {
+    // A live venue feed made the workbench unusable whenever the API was slow
+    // or unreachable, and none of that is the surface being built. The mock
+    // dataset is compiled into its package, so the surface runs offline.
+    expect(insertedRow('market-data-mock')?.name).toBe('@deepseek-ai/dsh-market-data-mock')
+    // No live feed alongside it: two usable providers make selection ambiguous
+    // and the seam refuses every read.
+    expect(inserted.map(row => row.name)).not.toContain('@deepseek-ai/dsh-market-data-tushare')
   })
 
-  it('leaves the venue feed as-traded, the basis every account can reach', () => {
-    // Restatement reads an interface behind a higher Tushare point threshold;
-    // shipping it on would break every account that has only the bars.
-    expect(insertedRow('market-data-tushare')?.config).toEqual({ adjustment: 'none' })
-  })
-
-  it('carries no token in the shipped file, only the reference that resolves one', () => {
-    expect(JSON.stringify(insertedRow('market-data-tushare')?.config)).not.toMatch(/token/i)
+  it('needs no credential row, because the feed reads no network', () => {
+    expect(insertedRow('market-data-mock')?.config).toBeUndefined()
+    expect(JSON.stringify(inserted)).not.toMatch(/token/i)
   })
 
   it('pins no provider, so selection resolves to the single usable one', () => {
@@ -124,7 +123,7 @@ describe('chico bundle composition', () => {
    * credential plane. The configs are read from the shipped file rather than
    * restated, so this asserts what the bundle actually carries.
    */
-  async function boot(token: string | undefined) {
+  async function boot() {
     const ctx = new Context()
     const tools = new Set<string>()
     ctx.provide('tools', {
@@ -134,14 +133,11 @@ describe('chico bundle composition', () => {
       },
     } as never)
     ctx.provide('systemPrompt', { section: () => {} } as never)
-    ctx.provide('credentials', {
-      resolve: () => Promise.resolve(token === undefined ? undefined : { value: token, source: 'test' }),
-    } as never)
 
     await ctx.plugin(MarketDataRuntime, insertedRow('market-data')?.config as never).await()
     await ctx.plugin(
-      { name: 'tushare', inject: [...tushareInject], apply: applyTushare, Config: TushareConfig },
-      insertedRow('market-data-tushare')?.config ?? {},
+      { name: 'mock', inject: [...mockInject], apply: applyMock, Config: MockConfig },
+      insertedRow('market-data-mock')?.config ?? {},
     ).await()
     await ctx.plugin(
       { name: 'tools', inject: [...toolInject], apply: applyTools, Config: ToolConfig },
@@ -154,40 +150,38 @@ describe('chico bundle composition', () => {
 
   afterEach(() => { vi.unstubAllGlobals() })
 
-  it('boots its own configured rows into a live seam and both tools', async () => {
-    vi.stubGlobal('fetch', (_url: string, init: { body: string }) => {
-      const call = JSON.parse(init.body) as { api_name: string }
-      const body = call.api_name === 'stock_basic'
-        ? { code: 0, data: { fields: ['ts_code', 'name'], items: [['300750.SZ', '宁德时代']] } }
-        : {
-          code: 0,
-          data: {
-            fields: ['trade_date', 'open', 'high', 'low', 'close', 'pre_close', 'pct_chg', 'vol'],
-            items: [['20260814', 210, 214, 209, 212.3, 210, 1.1, 301_000]],
-          },
-        }
-      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(body) })
-    })
-    const { ctx, tools } = await boot('tok')
+  it('boots its own configured rows into a live seam and both tools, with no network at all', async () => {
+    // No fetch stub: a call that reached the network would throw here, which is
+    // the point of this composition.
+    const { ctx, tools } = await boot()
 
     expect([...tools].sort()).toEqual(['market_history', 'market_quote'])
     // The seam resolves to the one registered feed with no id configured.
     const quote = await ctx.marketData.quote({ instrument: CATL })
     expect(quote.name).toBe('宁德时代')
-    // End-of-day data, which is what the shipped feed serves.
+    // The dataset is end-of-day by construction.
     expect(quote.session).toBe('closed')
     // The configured ceiling is the one a request above it is refused against.
     await expect(ctx.marketData.priceHistory({ instrument: CATL, sessions: 501 }))
       .rejects.toThrow(expect.objectContaining({ code: 'MARKET_DATA_HISTORY_RANGE_REFUSED' }))
   })
 
-  it('refuses loudly rather than inventing prices when no token is configured', async () => {
-    const { ctx } = await boot(undefined)
+  it('serves the compiled window a chart card asks for', async () => {
+    const { ctx } = await boot()
+    const history = await ctx.marketData.priceHistory({ instrument: CATL, sessions: 60 })
 
-    // Every row would degrade identically, so the watchlist re-raises this one
-    // instead of drawing a column of dashes over a composition that cannot run.
-    await expect(ctx.marketData.quote({ instrument: CATL }))
-      .rejects.toThrow(expect.objectContaining({ code: 'MARKET_DATA_PROVIDER_UNAVAILABLE' }))
+    expect(history.bars).toHaveLength(60)
+    expect(history.adjustment).toBe('none')
+    // Ascending, and ending on the dataset's anchor session.
+    expect(history.bars.at(-1)?.date).toBe('2026-08-14')
+    expect((history.bars[0]?.date ?? '') < (history.bars.at(-1)?.date ?? '')).toBe(true)
+  })
+
+  it('refuses an instrument the dataset does not carry, rather than inventing one', async () => {
+    const { ctx } = await boot()
+
+    await expect(ctx.marketData.quote({ instrument: { market: 'NASDAQ', symbol: 'NVDA' } }))
+      .rejects.toThrow(expect.objectContaining({ code: 'MARKET_DATA_UNKNOWN_INSTRUMENT' }))
   })
 })
 

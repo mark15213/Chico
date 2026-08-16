@@ -1251,9 +1251,9 @@ importers:
       '@deepseek-ai/dsh-market-data':
         specifier: workspace:^
         version: link:../../investment/market-data
-      '@deepseek-ai/dsh-market-data-tushare':
+      '@deepseek-ai/dsh-market-data-mock':
         specifier: workspace:^
-        version: link:../../investment/market-data-tushare
+        version: link:../../investment/market-data-mock
       '@deepseek-ai/dsh-name-record':
         specifier: workspace:^
         version: link:../../investment/name-record
@@ -3033,6 +3033,10 @@ importers:
         version: 18.3.31
 
   packages/client/ui-watchlist:
+    dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:^
@@ -3064,6 +3068,9 @@ importers:
       '@deepseek-ai/dsh-client-ui-slots':
         specifier: workspace:^
         version: link:../ui-slots
+      '@deepseek-ai/dsh-client-ui-tool':
+        specifier: workspace:^
+        version: link:../ui-tool
       '@deepseek-ai/dsh-invariants':
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
@@ -5240,6 +5247,22 @@ importers:
         version: link:../../runtime-diagnostics/invariants
 
   packages/investment/market-data-fixture:
+    dependencies:
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+      '@deepseek-ai/dsh-market-data':
+        specifier: workspace:^
+        version: link:../market-data
+
+  packages/investment/market-data-mock:
     dependencies:
       '@deepseek-ai/schemastery':
         specifier: link:../../../vendor/schemastery

@@ -9,20 +9,22 @@ Chico 投资界面 bundle：叠加在 [`dsh-web-app`](../web-app/README.md) 之�
 | 行 | 包 | 原因 |
 |---|---|---|
 | `market-data` | `dsh-market-data` | 报价和 K 线所经过的能力接缝 |
-| `market-data-tushare` | `dsh-market-data-tushare` | 交易场所数据源：内地交易所的收盘后数据 |
+| `market-data-mock` | `dsh-market-data-mock` | 数据源：编译进包内的数据集，不需要凭证也不访问网络 |
 | `tool-market-data` | `dsh-tool-market-data` | `market_quote` 和 `market_history` |
 
 浏览器名册不需要新增行。price-series 卡片属于共享的渲染意图联合，因此 `dsh-client-ui-tool` 已经把已完成的 history 调用渲染为蜡烛图——任何拥有 web 表层的组合都会随工具一起获得图表。
 
 `market-data` 不固定 `provider`。因此选择会解析到唯一可用的那个；拥有第二个数据源的部署应在后续 patch 层增加自己的提供方行并固定 id，而不是修改这一行。
 
-### 配置数据源
+### 数据源
 
-本组合需要一个 Tushare 账号 token，它以凭据引用 `TUSHARE_TOKEN` 的形式存在，绝不以取值形式出现在随包文件里。base bundle 的凭据接缝读取的任何一层都可以提供它：环境变量、`$DSH_HOME/.env`、项目 `.env`，或托管存储。没有 token 时提供方报告自己不可用，接缝以 `MARKET_DATA_PROVIDER_UNAVAILABLE` 拒绝每一次读取——这是响亮的失败而不是一列空值，因为一个无法为任何标的定价的组合是配置错误，不是数据缺失。
+> **本组合展示的每一个价格都是合成的。** [mock provider](../../investment/market-data-mock/README.md) 从编译进包内的数据集作答，不需要凭证也不访问网络。
 
-**本组合展示的每一个价格都是一个收盘价。** Tushare 提供收盘后数据，因此报价携带 `session: 'closed'`，`asOf` 是交易场所自身的收盘时刻。该行随包配置为 `adjustment: none`，即不复权：复权要读取 Tushare 另一个积分门槛更高的接口，拥有该权限的账号把这一行改为 `backward`，即可得到以今天为基准的历史。
+这是一个用于构建和演示工作台的组合。真实行情源恰恰会在场所 API 变慢、限流或不可达时让界面不可用——一次失败的请求就会清空自选列表、让对话拿不到报价——而这些都不是正在构建的界面本身。数据集的量级、波动率和 52 周区间是对着 2026 年 8 月的真实观测校准的，因此图表能画出真实的形状，而不依赖某个场所是否在线。
 
-`dsh-market-data-fixture` 刻意**不在**本组合中。它服务于包测试和无密钥重放；挂载它的工作台会把编造的收盘价当作交易场所自身的数据呈现。
+报价携带 `session: 'closed'`，K 线携带 `adjustment: none`：数据集是收盘后数据且不含公司行动，所以两者按构造就是准确的，而不是约定俗成。
+
+**读者可能据此行动的部署要替换这一行。** `@deepseek-ai/dsh-market-data-tushare` 仍在工作区里，接受 `TUSHARE_TOKEN` 凭据引用；替换这一行就是全部改动，因为 `market-data` 不锁定 `provider`，选择会解析到唯一可用的那个。注意：当前界面没有任何地方在显示处标明一个价格是合成的。
 
 ## 这一层刻意不做什么
 
