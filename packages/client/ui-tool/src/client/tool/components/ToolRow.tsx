@@ -23,14 +23,12 @@ import clsx from 'clsx'
 import {
   CodeBlock, DiffBlock, DisclosureRow, IconInspectOutline12, ReadBlock, SearchBlock, StateDot, TerminalBlock, WebBlock,
 } from '@deepseek-ai/dsh-client-ui-primitives'
-import { PriceSeriesBlock } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { WebBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
 import { CHAT_DIFF_MAX_LINES, type DiffCardModel } from '../models/diff-card-model.ts'
 import { CHAT_READ_MAX_LINES, type ReadCardModel } from '../models/read-card-model.ts'
 import { CHAT_SEARCH_MAX_LINES, type SearchCardModel } from '../models/search-card-model.ts'
 import { terminalBlockLabels, type TerminalCardModel } from '../models/terminal-card-model.ts'
-import type { PriceSeriesModel } from '../models/price-series-card-model.ts'
 import type { ToolRowState, ToolRowVariant } from '../models/tool-call-model.ts'
 import css from './ToolRow.module.css'
 
@@ -90,11 +88,13 @@ export interface ToolRowProps {
    */
   web?: WebBlockProps | null | undefined
   /**
-   * Price-series material for a call whose render intent is a price-series card
-   * (derived by `priceSeriesCardModel`); it replaces the text body with the candle
-   * chart when present.
+   * Already-rendered chart for a call whose render intent is a price-series
+   * card; it replaces the text body when present. A node rather than the chart
+   * model because which chart draws the series is the price-series row's
+   * decision — a composition may put its own chart on the row's
+   * `tool.call.priceSeries` seat, and the row chrome stays out of it.
    */
-  priceSeries?: PriceSeriesModel | null | undefined
+  priceSeries?: ReactNode | null | undefined
   /**
    * Open this row's card without a click. A row sets it when its card IS the
    * answer rather than the process behind one — a price series is the reply to
@@ -291,7 +291,7 @@ export function ToolRow({
                   : webBody !== null
                     ? <WebBlock {...webBody} className={css.webBody} />
                     : priceSeriesBody !== null
-                      ? <PriceSeriesBlock model={priceSeriesBody} />
+                      ? priceSeriesBody
                       : (
                         <>
                           {variant === 'code' && body !== null && (

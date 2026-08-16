@@ -16,17 +16,41 @@
 // card kind is keyed here too. The drawing itself moved to ui-primitives once
 // the watchlist's name page needed the same chart.
 
+import { useSyncExternalStore } from 'react'
 import type { Context } from '@deepseek-ai/cordis'
-import { IconDataOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
+import { IconDataOutline16, PriceSeriesBlock } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { PropsLocale, PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ToolCallViewProps } from '../../contract/slots.ts'
 import { priceSeriesCardModel } from '../models/price-series-card-model.ts'
 import { toolRowModel } from '../models/tool-call-model.ts'
 import { ToolRow } from '../components/ToolRow.tsx'
 import { CONVERSATION_NS as NS } from '../../locale.ts'
 
-/** Full row props: the toolview runtime share plus the standard locale seat. */
-type PriceSeriesRowProps = ToolCallViewProps & PropsLocale<'conversation'>
+/**
+ * Whether anything occupies the row's chart seat. Read from the slot ledger
+ * rather than from a flag this package keeps, so a chart registered after load
+ * counts — the same arrangement `conversation.hero` uses for framed openings.
+ */
+export interface ChartSeat {
+  /** True when a composition put its own chart on the seat. */
+  occupied: () => boolean
+  /** Subscribe to seat changes. */
+  subscribe: (fn: () => void) => () => void
+  /** Registry version, for `useSyncExternalStore`. */
+  version: () => number
+}
+
+/** What the row's registration injects beyond the standard shares. */
+export interface PriceSeriesRowInjected {
+  /** The chart seat's occupancy, live. */
+  chartSeat: ChartSeat
+}
+
+/** Full row props: the toolview runtime share, the chart seat, and the locale seat. */
+type PriceSeriesRowProps = ToolCallViewProps
+  & PropsRenderSlots<'tool.call.priceSeries'>
+  & PriceSeriesRowInjected
+  & PropsLocale<'conversation'>
 
 /** The tool whose completed calls carry a price-series render intent. */
 export const PRICE_SERIES_TOOL = 'market_history'
@@ -37,9 +61,18 @@ export const PRICE_SERIES_TOOL = 'market_history'
  * @param props - the toolview owner share and locale seat.
  * @returns the composed row.
  */
-export function PriceSeriesRow({ toolName, block, inspect, t }: PriceSeriesRowProps) {
+export function PriceSeriesRow({ toolName, block, inspect, t, chartSeat, renderSlot }: PriceSeriesRowProps) {
   const model = toolRowModel(toolName, block)
   const series = priceSeriesCardModel(block)
+  useSyncExternalStore(chartSeat.subscribe, chartSeat.version)
+  // An occupied seat draws the whole chart; an empty one keeps the shipped
+  // candles. Deciding here rather than inside ToolRow keeps the row chrome
+  // ignorant of what a price series is.
+  const chart = series === null
+    ? null
+    : chartSeat.occupied()
+      ? renderSlot('tool.call.priceSeries', { model: series.model, bars: series.bars })
+      : <PriceSeriesBlock model={series.model} />
   return (
     <ToolRow
       t={t}
@@ -51,7 +84,7 @@ export function PriceSeriesRow({ toolName, block, inspect, t }: PriceSeriesRowPr
       body={null}
       output={model.output}
       errorSummary={model.errorSummary}
-      priceSeries={series}
+      priceSeries={chart}
       startExpanded={series !== null}
       state={model.state}
       inspect={inspect}
@@ -71,8 +104,19 @@ export const priceSeriesToolview = {
    * @param ctx - registrant context (disposal rides ctx.effect inside slots.register).
    */
   apply(ctx: Context): void {
+    const chartSeat: ChartSeat = {
+      occupied: () => ctx.slots.entries('tool.call.priceSeries').length > 0,
+      subscribe: fn => ctx.slots.subscribe('tool.call.priceSeries', fn),
+      version: () => ctx.slots.getVersion('tool.call.priceSeries'),
+    }
     ctx.slots.inject('tool.call.toolview', () => ctx.slots.register(
-      { name: 'tool.call.toolview', key: PRICE_SERIES_TOOL, locale: NS },
+      {
+        name: 'tool.call.toolview',
+        key: PRICE_SERIES_TOOL,
+        locale: NS,
+        children: { 'tool.call.priceSeries': { kind: 'single', scope: 'session' } },
+        inject: (): PriceSeriesRowInjected => ({ chartSeat }),
+      },
       PriceSeriesRow,
     ))
   },

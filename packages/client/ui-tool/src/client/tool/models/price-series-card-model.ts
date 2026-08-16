@@ -7,10 +7,24 @@
  * page draws the same series from a different source.
  * @module
  */
-import { priceSeriesModel, type PriceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
+import { priceSeriesModel, type PriceSeriesBar, type PriceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ToolCallBlock } from './tool-call-model.ts'
 
 export type { PriceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
+
+/**
+ * A charted call: the derived geometry plus the bars it was derived from. The
+ * bars travel alongside because the derived model normalizes prices into the
+ * unit box and drops everything a candle does not need — a chart on the
+ * `tool.call.priceSeries` seat that draws volume or an indicator reads them
+ * here rather than asking for the series again.
+ */
+export interface PriceSeriesCard {
+  /** Derived chart geometry. */
+  model: PriceSeriesModel
+  /** The bars exactly as the tool reported them, ascending. */
+  bars: readonly PriceSeriesBar[]
+}
 
 /**
  * Derive the chart model for a tool call, or null when this call is not a
@@ -27,17 +41,18 @@ export type { PriceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
  *   range to plot, and drawing a flat line at an arbitrary height would state a
  *   shape the data does not have.
  * @param block - RunningToolCall or ToolResultNode off the snapshot caches.
- * @returns the chart model, or null for the generic path.
+ * @returns the chart model with its source bars, or null for the generic path.
  */
-export function priceSeriesCardModel(block: ToolCallBlock): PriceSeriesModel | null {
+export function priceSeriesCardModel(block: ToolCallBlock): PriceSeriesCard | null {
   // Running calls have no result view; the price-series card is result-only.
   if (!('kind' in block)) return null
   const result = block.resultView
   if (result?.card !== 'price-series') return null
-  return priceSeriesModel({
+  const model = priceSeriesModel({
     label: result.label,
     bars: result.bars,
     adjustment: result.adjustment,
     currency: result.currency,
   })
+  return model === null ? null : { model, bars: result.bars }
 }

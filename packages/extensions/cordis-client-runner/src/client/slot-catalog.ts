@@ -1693,6 +1693,39 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     source: 'packages/client/ui-workspace/src/client/contract/slots.ts:58',
   },
   {
+    key: 'tool.call.priceSeries',
+    kind: 'single',
+    scope: 'session',
+    summary: 'The chart that draws a completed price series, inside the price-series row\'s expanded body.',
+    doc: 'The chart that draws a completed price series, inside the price-series\nrow\'s expanded body. Unclaimed, the row draws `PriceSeriesBlock`, so a\ncomposition that registers nothing keeps the shipped chart.\n\nThe seat exists because a chart is the one card whose right form depends\non the surface: a conversation that mentions a stock in passing wants the\ncompact candles, while an investment workbench wants axes, indicators and\na readout. Both are the same series, so this replaces the drawing alone\nand leaves the row chrome — icon, summary, expansion — where it is. An\noccupant that wants the shipped chart back for some of its own states\nrenders `PriceSeriesBlock` itself; it lives in ui-primitives, which every\nproduct package may import.',
+    registerOptions: [],
+    ownerProps: [
+      '/** What the price-series row hands whatever chart occupies its chart seat. */\nexport interface PriceSeriesChartOwnerProps {\n  /** The derived series: geometry, range, and the adjustment basis it carries. */\n  model: PriceSeriesModel\n  /** The bars as the tool reported them, carrying the fields the derived model drops (notably `volume`). */\n  bars: readonly PriceSeriesBar[]\n}',
+    ],
+    ownerPropsReferences: [
+      'PriceSeriesModel',
+    ],
+    standardProps: [
+      'useSessions: SnapshotSelectorHook<SessionListState>',
+      'useWorkspaces: SnapshotSelectorHook<import(\'./workspaces/service.ts\').WorkspaceListState>',
+      'useSession: SnapshotSelectorHook<ConversationSnapshot>',
+      'sessionId: SessionId',
+      'useProjection: UseProjection',
+      'useInput: SnapshotSelectorHook<InputState>',
+      'inputActions: InputActions',
+    ],
+    keyDomain: '',
+    hookContext: '',
+    slotInject: '',
+    declaredBy: 'an entry in \'tool.call.toolview\' (client-ui-tool), so it exists while that entry is mounted',
+    occupants: [
+      'client-ui-watchlist WorkbenchChart',
+    ],
+    replaceRisk: 'shadows-shipped-ui',
+    example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'tool.call.priceSeries\', () => ctx.slots.register(\n      { name: \'tool.call.priceSeries\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
+    source: 'packages/client/ui-tool/src/client/contract/slots.ts:39',
+  },
+  {
     key: 'tool.call.toolview',
     kind: 'keyed',
     scope: 'session',
@@ -1745,7 +1778,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     ],
     replaceRisk: 'shadows-shipped-ui',
     example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'tool.call.toolview\', () => ctx.slots.register(\n      { name: \'tool.call.toolview\', key: \'<one key the owner dispatches>\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
-    source: 'packages/client/ui-tool/src/client/contract/slots.ts:23',
+    source: 'packages/client/ui-tool/src/client/contract/slots.ts:24',
   },
   {
     key: 'tool.view.cordis',

@@ -34,6 +34,19 @@ This package currently owns the generic fallback and the built-in shell/pwsh, re
 
 Card-specific limits and fallback rules remain in the owning [terminal](../../../.agents/notes/implemented/feature/2026-07-28-web-terminal-card.md), [diff](../../../.agents/notes/implemented/feature/2026-07-30-web-diff-card.md), [read](../../../.agents/notes/implemented/feature/2026-07-30-web-read-card-frontend.md), [search](../../../.agents/notes/implemented/feature/2026-07-30-web-search-card.md), and [web](../../../.agents/notes/implemented/feature/2026-07-30-web-result-card-frontend.md) notes.
 
+## The price-series chart seat
+
+The price-series row declares one child slot, `tool.call.priceSeries`, and a composition may put its own chart there:
+
+```ts ignore-check
+ctx.slots.inject('tool.call.priceSeries', () =>
+  ctx.slots.register({ name: 'tool.call.priceSeries' }, InvestmentChart))
+```
+
+The occupant receives `PriceSeriesChartOwnerProps`: the derived `model` and the `bars` the tool reported, because the geometry normalizes prices into a unit box and drops what a candle does not need — volume above all. Unclaimed, the row draws `PriceSeriesBlock`, so a composition that registers nothing keeps the shipped chart.
+
+The seat replaces the drawing alone and leaves the row chrome — icon, summary, expansion — in place. It exists because the chart is the one card whose right form depends on the surface: a conversation that mentions a stock in passing wants compact candles, while an investment workbench wants axes, indicators, and a readout. Taking the seat is composition-wide, so an occupant that should apply to only some conversations decides that itself; `dsh-client-ui-watchlist` does exactly that, drawing the shipped candles for any conversation not bound to a name.
+
 ## Model Experience
 
 None, as this package renders already logged Tool calls and results without altering model requests, Tool execution, or session events.

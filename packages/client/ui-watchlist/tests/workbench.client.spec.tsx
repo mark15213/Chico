@@ -29,6 +29,16 @@ import * as workbench from '../src/client/index.ts'
 
 afterEach(cleanup)
 
+// jsdom implements no ResizeObserver, and the record panel's chart measures its
+// container through one. The stub never fires: the chart draws at its assumed
+// width until an observation arrives, which is the state under test here.
+class ResizeObserverStub {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+
 // English so the assertions read as the copy a user sees.
 const t = makeTranslate(en, commonZh)
 

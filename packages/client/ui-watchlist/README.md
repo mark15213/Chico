@@ -14,6 +14,21 @@ Conversations here belong to **no Workspace**. They run at the [followed-names](
 
 The right column is what the market says about the open name and everything the user has said about it: the figures, a sixty-session chart, the stance, and the decision chain. Entries are written by hand — a thesis, a decision, or an event — and an open thesis carries the two controls that settle it. That settlement is the product's own surface: a general agent neither keeps a claim nor comes back to score it.
 
+## The workbench chart, and where it applies
+
+The chart draws candles and MA5/10/20/60 over a price axis, with a switchable lower pane — volume, MACD (12/26/9), or KDJ (9/3/3) — and a crosshair whose readout names the open, high, low, close, the pane's own values, and every average at the session under the pointer. Parameters follow what mainland trading software ships with, because a workbench that re-tuned them would make every reading incomparable with the platforms its users already read. Arrow keys move the crosshair one session at a time, and the headline price is an `<output>`, so the value is announced rather than changed silently.
+
+It is drawn at **measured pixel width**, never a stretched viewBox: candle proportions, label sizes, and stroke widths hold at every container width. Indicators are computed over the whole series and only then sliced to the visible window — computing them over the slice would restart each warm-up at the left edge, so the same session would show a different MA60 depending on how far the reader had zoomed. The price range is widened to contain the visible averages, because an MA60 running outside the box would leave the plot.
+
+The chart appears in two places, and reaches the second through [ui-tool](../ui-tool/README.md)'s `tool.call.priceSeries` seat:
+
+| Where | What draws |
+|---|---|
+| The record panel | Always this chart — that column exists only under an open name. |
+| A `market_history` call in a conversation | This chart when the conversation is **bound to a name**; the shipped `PriceSeriesBlock` otherwise. |
+
+Binding, not the active frame, is the test. A conversation is bound at creation and never reassigned, so the chart a conversation draws does not change when the reader switches frames — and mounting Chico does not change how a price series looks in a conversation about a codebase.
+
 ## Two columns, two plugin-owned observables
 
 The rows and the open name are neither session-scoped nor root-scoped: they are one book and one selection, the same in every session. A slot `store` handle carries one scope and the two slots do not share one — the sidebar is root-scoped, the details column session-scoped — so the plugin owns both values and hands each column the same subscription. Following a name in one column moves the other, and a refresh requested while one is in flight joins it.
@@ -39,3 +54,6 @@ None; this package neither assembles nor sends a provider request.
 - **An event carries no attribution** — the design splits a move into market, sector, and name-specific parts. That needs data no seam supplies, so an event is prose.
 - **One read per mount** — no column subscribes to quote changes, so an open workbench is as stale as its last read.
 - **A conversation does not know its name** — the binding is one-way, so a conversation opened from the sessions frame shows nothing about which instrument it belongs to.
+- **The chart neither zooms nor pans** — the window is one of five preset ranges. Wheel zoom and drag-to-pan need a viewport model the preset list does not have.
+- **A conversation bound to a name the reader has not opened draws the shipped candles** — occupancy is decided against the open name's conversation list, so scrolling back through a bound conversation from the sessions frame, without opening its name first, shows the compact chart.
+- **The lower pane offers three indicators and no overlays** — no Bollinger bands, no volume-weighted average, and no way to add one from configuration.

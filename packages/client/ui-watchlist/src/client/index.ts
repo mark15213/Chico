@@ -25,11 +25,14 @@ import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 // The conversation plugin declares the frame-keyed opening this package fills.
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+// The price-series row declares the chart seat this package fills.
+import type {} from '@deepseek-ai/dsh-client-ui-tool/client'
+import { WorkbenchChart } from './chart/WorkbenchChart.tsx'
 import { InvestingHero, type InvestingHeroInjected } from './InvestingHero.tsx'
 import { NamesFrame, type NamesFrameInjected } from './NamesFrame.tsx'
 import { RecordPanel, type RecordPanelInjected } from './RecordPanel.tsx'
 import { WatchlistFeed } from './watchlist-store.ts'
-import { WorkbenchFocus } from './workbench-store.ts'
+import { WorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
 import { WorkbenchSessions } from './workbench-sessions.ts'
 import { en, NS, zh, type WatchlistLocaleKey } from './locales.ts'
 
@@ -41,6 +44,10 @@ export type { WatchlistSource, WatchlistState } from './watchlist-store.ts'
 export { useWatchlist, WatchlistFeed } from './watchlist-store.ts'
 export type { WorkbenchFocusState, WorkbenchSelection } from './workbench-store.ts'
 export { useWorkbenchFocus, WorkbenchFocus } from './workbench-store.ts'
+export type { ProChartProps } from './chart/ProChart.tsx'
+export { ProChart } from './chart/ProChart.tsx'
+export type { WorkbenchChartProps } from './chart/WorkbenchChart.tsx'
+export { WorkbenchChart } from './chart/WorkbenchChart.tsx'
 export { WorkbenchSessions } from './workbench-sessions.ts'
 export type { WatchlistLocaleKey } from './locales.ts'
 
@@ -160,4 +167,13 @@ export function apply(ctx: ClientContext): void {
     locale: NS,
     inject: (): RecordPanelInjected => ({ focus, read, dossier, append }),
   }, RecordPanel))
+
+  // The workbench chart on the price-series row's chart seat. Taking the seat
+  // is composition-wide, but the occupant decides per conversation, so a
+  // conversation about a codebase in this same app keeps the shipped candles.
+  ctx.slots.inject('tool.call.priceSeries', () => ctx.slots.register({
+    name: 'tool.call.priceSeries',
+    locale: NS,
+    inject: (): { selection: WorkbenchSelection } => ({ selection: focus }),
+  }, WorkbenchChart))
 }

@@ -6,7 +6,7 @@ import type {
   NameDossier,
   NameRecordView,
 } from '@deepseek-ai/dsh-api-remotes/client'
-import { PriceSeriesBlock, priceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
+import { ProChart } from './chart/ProChart.tsx'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { directionOf, formatChange, formatLast, instrumentLabel } from './watchlist-model.ts'
 import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
@@ -86,14 +86,6 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
   const loaded = typeof state === 'object' ? state : null
   const quote = loaded?.dossier?.quote ?? null
   const bars = loaded?.dossier?.bars ?? []
-  const chart = bars.length === 0
-    ? null
-    : priceSeriesModel({
-      label,
-      bars,
-      adjustment: loaded?.dossier?.adjustment ?? 'none',
-      currency: quote?.currency,
-    })
 
   const submit = (event: FormEvent): void => {
     event.preventDefault()
@@ -136,7 +128,18 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
         )}
       </header>
 
-      {chart !== null ? <div className={css.chart}><PriceSeriesBlock model={chart} /></div> : null}
+      {bars.length === 0 ? null : (
+        <div className={css.chart}>
+          <ProChart
+            label={label}
+            bars={bars}
+            adjustment={loaded?.dossier?.adjustment ?? 'none'}
+            currency={quote?.currency}
+            showLabel={false}
+            t={t}
+          />
+        </div>
+      )}
 
       {state === 'error' ? <p className={css.failure} role="alert">{t('record.failed')}</p> : null}
 

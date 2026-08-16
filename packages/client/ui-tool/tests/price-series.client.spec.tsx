@@ -34,14 +34,17 @@ function settled(resultView: unknown): ToolCallBlock {
 
 describe('priceSeriesCardModel', () => {
   it('extracts the card a market-data tool declared, with its label and basis', () => {
-    const model = priceSeriesCardModel(settled({
+    const card = priceSeriesCardModel(settled({
       card: 'price-series', label: 'SZSE:300750', bars, adjustment: 'backward', currency: 'CNY',
     }))
 
-    expect(model?.label).toBe('SZSE:300750')
-    expect(model?.adjustment).toBe('backward')
-    expect(model?.currency).toBe('CNY')
-    expect(model?.bars).toHaveLength(3)
+    expect(card?.model.label).toBe('SZSE:300750')
+    expect(card?.model.adjustment).toBe('backward')
+    expect(card?.model.currency).toBe('CNY')
+    expect(card?.model.bars).toHaveLength(3)
+    // The source bars travel with the derived model so a chart on the seat can
+    // read what the geometry drops — volume above all.
+    expect(card?.bars.map(bar => bar.volume)).toEqual([10, 12, 15])
   })
 
   it('takes the generic path for a running call', () => {
@@ -86,8 +89,15 @@ describe('PriceSeriesRow expansion', () => {
     } as never
   }
 
-  const rowProps = (block: ToolCallBlock): Parameters<typeof PriceSeriesRow>[0] =>
-    ({ callId: 'c1', toolName: PRICE_SERIES_TOOL, block, openFile: () => {}, t } as never)
+  /** An empty chart seat: what every composition that registers no chart has. */
+  const emptySeat = { occupied: () => false, subscribe: () => () => {}, version: () => 0 }
+
+  const rowProps = (
+    block: ToolCallBlock,
+    seat: typeof emptySeat = emptySeat,
+    renderSlot: () => unknown = () => null,
+  ): Parameters<typeof PriceSeriesRow>[0] =>
+    ({ callId: 'c1', toolName: PRICE_SERIES_TOOL, block, openFile: () => {}, t, chartSeat: seat, renderSlot } as never)
 
   it('opens the chart with no click, because the series is the answer, not the work behind one', () => {
     const view = render(<PriceSeriesRow {...rowProps(done())} />)
@@ -110,6 +120,53 @@ describe('PriceSeriesRow expansion', () => {
     fireEvent.click(view.container.querySelector('[data-expandable]')!)
 
     expect(view.queryByRole('img')).toBeNull()
+  })
+})
+
+describe('PriceSeriesRow chart seat', () => {
+  const CARD = { card: 'price-series', label: 'SZSE:300750', bars, adjustment: 'none' as const }
+
+  /** A settled call carrying the card, the only state that draws a chart. */
+  function done(): ToolCallBlock {
+    return {
+      kind: 'tool-result', seq: 10, time: 2_000, callId: 'c1',
+      call: { name: PRICE_SERIES_TOOL, argsRaw: '{}' }, callTime: 1_000,
+      content: [], isError: false, callView: null, resultView: CARD, subCalls: [],
+    } as never
+  }
+
+  const props = (
+    occupied: boolean,
+    renderSlot: (key: string, owner: unknown) => unknown,
+  ): Parameters<typeof PriceSeriesRow>[0] => ({
+    callId: 'c1',
+    toolName: PRICE_SERIES_TOOL,
+    block: done(),
+    openFile: () => {},
+    t,
+    chartSeat: { occupied: () => occupied, subscribe: () => () => {}, version: () => 0 },
+    renderSlot,
+  } as never)
+
+  it('draws the shipped candles when no composition claimed the seat', () => {
+    const view = render(<PriceSeriesRow {...props(false, () => <div data-testid="other" />)} />)
+
+    expect(view.getByRole('img').getAttribute('aria-label')).toContain('3 sessions')
+    expect(view.queryByTestId('other')).toBeNull()
+  })
+
+  it('hands an occupied seat the derived model and the source bars, and draws that chart instead', () => {
+    let owner: { model?: { label?: string }; bars?: readonly { volume: number }[] } = {}
+    const view = render(<PriceSeriesRow {...props(true, (_key, received) => {
+      owner = received as typeof owner
+      return <div data-testid="pro-chart" />
+    })} />)
+
+    expect(view.getByTestId('pro-chart')).toBeTruthy()
+    // The shipped candles are gone, not merely covered.
+    expect(view.queryByRole('img')).toBeNull()
+    expect(owner.model?.label).toBe('SZSE:300750')
+    expect(owner.bars?.map(bar => bar.volume)).toEqual([10, 12, 15])
   })
 })
 

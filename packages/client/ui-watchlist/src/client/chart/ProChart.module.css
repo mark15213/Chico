@@ -1,0 +1,264 @@
+/* Workbench candle chart. Rising red / falling green follows the local market
+   convention the product serves, the inverse of the Western one. Every colour
+   resolves from a theme token with a literal fallback, so both themes hold even
+   where the upstream token sheet is absent. */
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+
+  --chart-rise: var(--dsw-static-red-500, #e4393c);
+  --chart-fall: var(--dsw-static-green-500, #12a150);
+  --chart-grid: rgba(151, 157, 166, 0.18);
+  --chart-axis: var(--ds-color-text-tertiary, #979da6);
+  --chart-cursor: var(--ds-color-text-tertiary, #81858c);
+  --chart-bubble: var(--ds-color-bg-inverse, #353638);
+  --chart-bubble-text: var(--ds-color-text-inverse, #ffffff);
+  --chart-ma-0: #f5a623;
+  --chart-ma-1: #4176e6;
+  --chart-ma-2: #9b6be8;
+  --chart-ma-3: #17a2a2;
+  --chart-num: var(--ds-font-family-code, 'SF Mono', Menlo, monospace);
+}
+
+/* The token sheet ships one palette per theme, but these five are chart-only
+   and have no semantic token upstream; restate them for the dark ground. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .chart {
+    --chart-rise: #ff5b5f;
+    --chart-fall: #24c97e;
+    --chart-grid: rgba(151, 157, 166, 0.14);
+    --chart-ma-0: #f7ad31;
+    --chart-ma-1: #679efe;
+    --chart-ma-2: #b78cf2;
+    --chart-ma-3: #2fbfbf;
+  }
+}
+
+:root[data-theme='dark'] .chart {
+  --chart-rise: #ff5b5f;
+  --chart-fall: #24c97e;
+  --chart-grid: rgba(151, 157, 166, 0.14);
+  --chart-ma-0: #f7ad31;
+  --chart-ma-1: #679efe;
+  --chart-ma-2: #b78cf2;
+  --chart-ma-3: #2fbfbf;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.identity {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.date {
+  font-family: var(--chart-num);
+  font-size: 12px;
+  color: var(--ds-color-text-tertiary, #979da6);
+}
+
+.quote {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--chart-num);
+  font-variant-numeric: tabular-nums;
+}
+
+.last {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.delta {
+  font-size: 13px;
+}
+
+.currency {
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #979da6);
+}
+
+.rise { color: var(--chart-rise); }
+.fall { color: var(--chart-fall); }
+.flat { color: var(--ds-color-text-secondary, #61666b); }
+
+.readout {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--chart-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--ds-color-text-primary, #1b1b1c);
+}
+
+.readout b {
+  font-weight: 500;
+  color: var(--ds-color-text-tertiary, #979da6);
+  margin-right: 4px;
+}
+
+.paneValues {
+  color: var(--ds-color-text-secondary, #61666b);
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: var(--chart-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  color: var(--ds-color-text-secondary, #61666b);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.swatch {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+  display: inline-block;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.segment {
+  display: inline-flex;
+  border: 1px solid var(--ds-color-border-secondary, #e1e5ee);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.segment button {
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 10px;
+  border: 0;
+  border-right: 1px solid var(--ds-color-border-secondary, #e1e5ee);
+  background: transparent;
+  color: var(--ds-color-text-secondary, #61666b);
+  cursor: pointer;
+}
+
+.segment button:last-child {
+  border-right: 0;
+}
+
+.segment button[aria-pressed='true'] {
+  background: var(--ds-color-bg-secondary, #f1f3f5);
+  color: var(--ds-color-text-primary, #1b1b1c);
+  font-weight: 600;
+}
+
+.segment button:focus-visible {
+  outline: 2px solid var(--chart-ma-1);
+  outline-offset: -2px;
+}
+
+.plot {
+  display: block;
+  max-width: 100%;
+  touch-action: pan-y;
+  cursor: crosshair;
+}
+
+.plot:focus-visible {
+  outline: 2px solid var(--chart-ma-1);
+  outline-offset: -2px;
+}
+
+.wick {
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+.body {
+  fill: currentColor;
+}
+
+.volumeBar {
+  fill: currentColor;
+  opacity: 0.55;
+}
+
+.grid,
+.zeroLine {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.axisText {
+  fill: var(--chart-axis);
+  font-family: var(--chart-num);
+  font-size: 10.5px;
+}
+
+.ma {
+  fill: none;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.ma0 { stroke: var(--chart-ma-0); background: var(--chart-ma-0); }
+.ma1 { stroke: var(--chart-ma-1); background: var(--chart-ma-1); }
+.ma2 { stroke: var(--chart-ma-2); background: var(--chart-ma-2); }
+.ma3 { stroke: var(--chart-ma-3); background: var(--chart-ma-3); }
+
+.cursor line {
+  stroke: var(--chart-cursor);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.bubble {
+  fill: var(--chart-bubble);
+}
+
+.bubbleText {
+  fill: var(--chart-bubble-text);
+  font-family: var(--chart-num);
+  font-size: 10.5px;
+}
+
+.summary {
+  margin: 0;
+  font-family: var(--chart-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  color: var(--ds-color-text-tertiary, #979da6);
+}
+
+.empty {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ds-color-text-tertiary, #979da6);
+}

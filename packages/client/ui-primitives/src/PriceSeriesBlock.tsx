@@ -24,6 +24,13 @@ export interface PriceSeriesBar {
   low: number
   /** Last traded price of the session. */
   close: number
+  /**
+   * Session volume in shares or contracts. This block does not draw it, but
+   * both callers read it off a bar that carries it, and a chart on the
+   * `tool.call.priceSeries` seat needs it for a volume pane — dropping it here
+   * would force that chart to re-fetch a series it was already handed.
+   */
+  volume: number
 }
 
 /** What a caller supplies to draw one series. */

@@ -34,6 +34,19 @@ owner 载荷为 `ToolCallOwnerProps`：`callId`、`toolName`、冻结的 `block`
 
 各类卡片的上限与 fallback 规则仍由对应的 [terminal](../../../.agents/notes/implemented/feature/2026-07-28-web-terminal-card.md)、[diff](../../../.agents/notes/implemented/feature/2026-07-30-web-diff-card.md)、[read](../../../.agents/notes/implemented/feature/2026-07-30-web-read-card-frontend.md)、[search](../../../.agents/notes/implemented/feature/2026-07-30-web-search-card.md) 和 [web](../../../.agents/notes/implemented/feature/2026-07-30-web-result-card-frontend.md) Agent Note 负责。
 
+## 价格序列的图表座位
+
+price-series 行声明了一个子插槽 `tool.call.priceSeries`，任何组合都可以把自己的图表放上去：
+
+```ts ignore-check
+ctx.slots.inject('tool.call.priceSeries', () =>
+  ctx.slots.register({ name: 'tool.call.priceSeries' }, InvestmentChart))
+```
+
+占位者收到 `PriceSeriesChartOwnerProps`：派生出的 `model`，以及工具上报的原始 `bars`——几何计算把价格归一化进单位盒并丢弃蜡烛用不到的字段，成交量首当其冲。无人占座时，该行绘制 `PriceSeriesBlock`，因此不注册任何东西的组合保持出厂图表不变。
+
+这个座位只替换绘制本身，行的外壳——图标、摘要、展开——原样保留。它之所以存在，是因为图表是唯一一种正确形态取决于所在界面的卡片：顺带提到一只股票的对话要的是紧凑蜡烛，而投资工作台要的是坐标轴、指标和读数。占座是组合级的，因此只想对部分对话生效的占位者要自己做判断；`dsh-client-ui-watchlist` 正是这么做的——对任何未绑定到标的的对话，它绘制出厂蜡烛图。
+
 ## 模型体验
 
 无，因为本包只渲染已经记录的工具调用和结果，不改变模型请求、工具执行或会话事件。

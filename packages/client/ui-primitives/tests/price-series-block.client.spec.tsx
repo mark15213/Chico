@@ -10,9 +10,9 @@ import { PriceSeriesBlock, priceSeriesModel } from '../src/PriceSeriesBlock.tsx'
 afterEach(cleanup)
 
 const bars = [
-  { date: '2026-08-12', open: 100, high: 110, low: 95, close: 105 },
-  { date: '2026-08-13', open: 105, high: 108, low: 100, close: 102 },
-  { date: '2026-08-14', open: 102, high: 120, low: 101, close: 118 },
+  { date: '2026-08-12', open: 100, high: 110, low: 95, close: 105 , volume: 1000 },
+  { date: '2026-08-13', open: 105, high: 108, low: 100, close: 102 , volume: 1000 },
+  { date: '2026-08-14', open: 102, high: 120, low: 101, close: 118 , volume: 1000 },
 ]
 
 describe('priceSeriesModel', () => {
@@ -52,7 +52,7 @@ describe('priceSeriesModel', () => {
   })
 
   it('refuses a flat series rather than drawing an arbitrary line', () => {
-    const flat = [{ date: '2026-08-14', open: 10, high: 10, low: 10, close: 10 }]
+    const flat = [{ date: '2026-08-14', open: 10, high: 10, low: 10, close: 10 , volume: 1000 }]
 
     expect(priceSeriesModel({ label: 'x', bars: flat, adjustment: 'none' })).toBeNull()
   })
@@ -88,8 +88,8 @@ describe('PriceSeriesBlock', () => {
 
   it('draws a doji session as a hairline rather than a zero-height body', () => {
     const doji = [
-      { date: '2026-08-13', open: 100, high: 110, low: 90, close: 100 },
-      { date: '2026-08-14', open: 100, high: 105, low: 95, close: 104 },
+      { date: '2026-08-13', open: 100, high: 110, low: 90, close: 100 , volume: 1000 },
+      { date: '2026-08-14', open: 100, high: 105, low: 95, close: 104 , volume: 1000 },
     ]
     const model = priceSeriesModel({ label: 'x', bars: doji, adjustment: 'none' })
     const { container } = render(<PriceSeriesBlock model={model!} />)
