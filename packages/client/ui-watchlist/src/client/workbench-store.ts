@@ -10,6 +10,9 @@
 import { useSyncExternalStore } from 'react'
 import type { InstrumentRef, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
 
+/** Whether the selected name's conversation can be shown or needs another attempt. */
+export type WorkbenchSessionStatus = 'pending' | 'ready' | 'failed'
+
 /** The open name and the conversations recorded against it. */
 export interface WorkbenchFocusState {
   /** The instrument the workbench is showing, or null before one is opened. */
@@ -24,6 +27,8 @@ export interface WorkbenchFocusState {
   readonly displayName: string | null
   /** Conversations bound to that name, in the order they were bound. */
   readonly sessions: readonly SessionId[]
+  /** Whether the matching conversation is selected, in flight, or failed. */
+  readonly sessionStatus: WorkbenchSessionStatus
 }
 
 /** The selection as a surface receives it. */
@@ -41,7 +46,12 @@ export interface WorkbenchSelection {
   snapshot: () => WorkbenchFocusState
 }
 
-const EMPTY: WorkbenchFocusState = { instrument: null, displayName: null, sessions: [] }
+const EMPTY: WorkbenchFocusState = {
+  instrument: null,
+  displayName: null,
+  sessions: [],
+  sessionStatus: 'pending',
+}
 
 /** The one selection behind every workbench column. */
 export class WorkbenchFocus implements WorkbenchSelection {
@@ -69,11 +79,13 @@ export class WorkbenchFocus implements WorkbenchSelection {
    * @param instrument - the instrument to show.
    * @param displayName - that name as the clicked surface knows it.
    * @param sessions - its bound conversations, oldest first.
+   * @param sessionStatus - whether the matching conversation is selected.
    */
   open = (
     instrument: InstrumentRef, displayName: string, sessions: readonly SessionId[] = [],
+    sessionStatus: WorkbenchSessionStatus = 'ready',
   ): void => {
-    this.publish({ instrument, displayName, sessions })
+    this.publish({ instrument, displayName, sessions, sessionStatus })
   }
 
   /**
@@ -85,6 +97,15 @@ export class WorkbenchFocus implements WorkbenchSelection {
   setSessions = (sessions: readonly SessionId[]): void => {
     if (this.state.instrument === null) return
     this.publish({ ...this.state, sessions })
+  }
+
+  /**
+   * Mark whether the selected name's conversation is safe to show.
+   * @param sessionStatus - navigation state for the matching conversation.
+   */
+  setSessionStatus = (sessionStatus: WorkbenchSessionStatus): void => {
+    if (this.state.instrument === null || this.state.sessionStatus === sessionStatus) return
+    this.publish({ ...this.state, sessionStatus })
   }
 
   private publish(state: WorkbenchFocusState): void {

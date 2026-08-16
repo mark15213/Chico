@@ -21,6 +21,8 @@
  * returns to that blank rather than adding a second.
  */
 import type { InstrumentRef, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import { sameInstrument } from './watchlist-model.ts'
+import type { WorkbenchSessionStatus } from './workbench-store.ts'
 
 /** The session facts and moves this controller uses. */
 export interface SessionsFace {
@@ -51,11 +53,21 @@ export interface RecordFace {
 /** Where the controller publishes what it learned, and reads it back. */
 export interface FocusFace {
   /** Show one name with its conversations. */
-  open: (instrument: InstrumentRef, displayName: string, sessions: readonly SessionId[]) => void
+  open: (
+    instrument: InstrumentRef,
+    displayName: string,
+    sessions: readonly SessionId[],
+    sessionStatus: WorkbenchSessionStatus,
+  ) => void
   /** Replace the open name's conversation list. */
   setSessions: (sessions: readonly SessionId[]) => void
+  /** Mark whether the selected name's conversation can be shown. */
+  setSessionStatus: (status: WorkbenchSessionStatus) => void
   /** The open name and its conversations. */
-  snapshot: () => { readonly sessions: readonly SessionId[] }
+  snapshot: () => {
+    readonly instrument: InstrumentRef | null
+    readonly sessions: readonly SessionId[]
+  }
 }
 
 /**
@@ -63,6 +75,8 @@ export interface FocusFace {
  * started there. One instance per plugin.
  */
 export class WorkbenchSessions {
+  private navigationEpoch = 0
+
   /**
    * @param sessions - the navigation face.
    * @param record - the host record's read, bind, and archive directory.
@@ -82,17 +96,25 @@ export class WorkbenchSessions {
    * @returns when the record has been read and the column navigated.
    */
   open = async (instrument: InstrumentRef, displayName: string): Promise<void> => {
+    const epoch = this.nextNavigation()
     // Published before the read so the other two columns move on the click
     // rather than after a round trip.
-    this.focus.open(instrument, displayName, [])
-    const bound = await this.record.read(instrument).then(view => view.sessions, () => [])
-    this.focus.open(instrument, displayName, bound)
+    this.focus.open(instrument, displayName, [], 'pending')
+    let bound: readonly SessionId[]
+    try {
+      bound = (await this.record.read(instrument)).sessions
+    } catch {
+      // Binding before selection remains the ownership check when the session
+      // list cannot be read.
+      bound = []
+    }
+    if (!this.isLatest(epoch)) return
     const newest = bound.at(-1)
     if (newest !== undefined) {
-      this.sessions.open(newest)
+      if (this.select(newest, epoch)) this.focus.open(instrument, displayName, bound, 'ready')
       return
     }
-    await this.create(instrument, bound)
+    await this.create(instrument, epoch)
   }
 
   /**
@@ -100,7 +122,9 @@ export class WorkbenchSessions {
    * @param id - the conversation to select.
    */
   show = (id: SessionId): void => {
-    this.sessions.open(id)
+    const epoch = this.nextNavigation()
+    this.focus.setSessionStatus('pending')
+    if (this.select(id, epoch)) this.focus.setSessionStatus('ready')
   }
 
   /**
@@ -111,26 +135,80 @@ export class WorkbenchSessions {
    * @returns when the conversation is open.
    */
   start = async (instrument: InstrumentRef): Promise<void> => {
-    const bound = this.focus.snapshot().sessions
+    const selection = this.focus.snapshot()
+    if (selection.instrument === null || !sameInstrument(selection.instrument, instrument)) return
+    const epoch = this.nextNavigation()
+    this.focus.setSessionStatus('pending')
+    const bound = selection.sessions
     const newest = bound.at(-1)
     if (newest !== undefined && this.sessions.list.getSnapshot().byId[newest]?.blank === true) {
-      this.sessions.open(newest)
+      if (this.select(newest, epoch)) this.focus.setSessionStatus('ready')
       return
     }
-    await this.create(instrument, bound)
+    await this.create(instrument, epoch)
   }
 
   /**
    * Create one conversation for one name and bind it before anything else can
    * claim it.
    * @param instrument - the name the conversation is about.
-   * @param bound - the name's conversations before this one.
+   * @param epoch - the navigation that requested the conversation.
    */
-  private async create(instrument: InstrumentRef, bound: readonly SessionId[]): Promise<void> {
-    const { path } = await this.record.archive()
-    const id = await this.sessions.startAt(path)
-    this.sessions.open(id)
-    const listed = await this.record.bind(instrument, id).catch(() => bound)
+  private async create(instrument: InstrumentRef, epoch: number): Promise<void> {
+    let path: string
+    try {
+      path = (await this.record.archive()).path
+    } catch {
+      this.fail(epoch)
+      return
+    }
+    if (!this.isLatest(epoch)) return
+    let id: SessionId
+    try {
+      id = await this.sessions.startAt(path)
+    } catch {
+      this.fail(epoch)
+      return
+    }
+    // Once creation succeeds, binding is completed even if another navigation
+    // wins while the record write is in flight. The created conversation must
+    // never become an unowned candidate for a later name.
+    let listed: readonly SessionId[]
+    try {
+      listed = await this.record.bind(instrument, id)
+    } catch {
+      this.fail(epoch)
+      return
+    }
+    if (!this.isLatest(epoch) || !this.select(id, epoch)) return
     this.focus.setSessions(listed)
+    this.focus.setSessionStatus('ready')
+  }
+
+  /** Begin an operation that supersedes every earlier navigation. */
+  private nextNavigation(): number {
+    this.navigationEpoch += 1
+    return this.navigationEpoch
+  }
+
+  /** Whether an asynchronous continuation still owns navigation. */
+  private isLatest(epoch: number): boolean {
+    return epoch === this.navigationEpoch
+  }
+
+  /** Select a session without allowing a thrown adapter error to escape. */
+  private select(id: SessionId, epoch: number): boolean {
+    try {
+      this.sessions.open(id)
+    } catch {
+      this.fail(epoch)
+      return false
+    }
+    return this.isLatest(epoch)
+  }
+
+  /** Publish a retryable failure only for the navigation that still owns focus. */
+  private fail(epoch: number): void {
+    if (this.isLatest(epoch)) this.focus.setSessionStatus('failed')
   }
 }

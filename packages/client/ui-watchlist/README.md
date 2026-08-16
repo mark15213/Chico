@@ -2,17 +2,25 @@
 
 English | [中文](README.zh.md)
 
-The **investing frame**: what Chico adds to the harness frame. It registers one navigation frame in the sidebar (`sidebar.mode`, id `names`, labelled Investing), one detail panel keyed to that frame (`details`), and that frame's own blank-conversation opening (`conversation.hero`). Switching to the frame swaps the left column to the followed names, the right column to the open name's record, and the centre column's opening to the name being discussed; the conversation body itself stays [ui-conversation](../ui-conversation/README.md)'s.
+The **investing frame**: what Chico adds to the harness frame. It registers one navigation frame in the sidebar (`sidebar.mode`, id `names`, labelled Investing), one detail column keyed to that frame (`details`), and that frame's own blank-conversation opening (`conversation.hero`). Switching to the frame swaps the left column to the followed names, the right column to what the conversation rests on and the open name's record, and the centre column's opening to the name being discussed; the conversation body itself stays [ui-conversation](../ui-conversation/README.md)'s.
 
 The left column lists followed names **in follow order**, each with its price, its signed change, and a marker when one of its theses is still waiting to be settled. Sorting by anything the market decides would reshuffle the column under the reader between two glances. Above the list, one search field looks up listings by code or name; a match can be opened without being followed, so "let me look at this first" works. The open name expands to its own conversations — "what did I say about this one last week" is answered beside the name rather than in a global list sorted by time.
 
-Opening a name moves all three columns: the record panel is revealed, and the centre column navigates to that name's newest conversation, or opens its first. Collapsing the record panel keeps the open name and conversation unchanged; selecting or re-selecting a name reveals the panel again.
+Opening a name moves all three columns: the details column is revealed, and the centre column navigates to that name's newest conversation, or opens its first. Collapsing the details column keeps the open name and conversation unchanged; selecting or re-selecting a name reveals the column again.
 
 Conversations here belong to **no Workspace**. They run at the [followed-names](../../investment/followed-names/README.md) archive directory, through `sessions.startAt(cwd)`, so produced files land somewhere durable and no folder appears for a name someone merely glanced at. The Workspace flow is the right way in when the reader's unit of work is a project; under a name it would stand between them and their first word about a stock. This package's `conversation.hero` entry is what removes it: the Workspace opening holds the composer inert until a project is picked, and the investing opening names the instrument instead and leaves the composer live.
 
 **A conversation is created for one name and bound at creation.** Nothing is shared and nothing is claimed later — an unbound conversation the reader is typing into cannot be adopted by whichever name they open next, which is how a conversation about one stock ends up filed under another. The reuse that keeps blank conversations from piling up is per name and reads that name's own list: opening a name returns to its newest conversation, and starting a new one while its newest is still blank returns to that blank rather than adding a second. A failed bind loses the association, not the conversation.
 
-The right column is what the market says about the open name and everything the user has said about it: the figures, a sixty-session chart, the stance, and the decision chain. Its fixed header keeps the collapse control reachable while the record scrolls. Entries are written by hand — a thesis, a decision, or an event — and an open thesis carries the two controls that settle it. That settlement is the product's own surface: a general agent neither keeps a claim nor comes back to score it.
+The right column has **two tabs**. Evidence leads, because a reader checking an answer is looking at the conversation: for every question in it, the external sources the answer drew on — a venue feed, a fetched page, a file in the archive — each naming the feed, the datasets, the event time, the acquisition instant, and the original text the tool returned. An answer that drew on nothing external says so, since that answer is the model's own. Record is what the market says about the open name and everything the user has said about it: the figures, a sixty-session chart, the stance, and the decision chain. Entries are written by hand — a thesis, a decision, or an event — and an open thesis carries the two controls that settle it. That settlement is the product's own surface: a general agent neither keeps a claim nor comes back to score it.
+
+The details column's shared fixed header keeps the open name and collapse control reachable while either tab scrolls. Both tabs stay mounted and the inactive one is hidden rather than unmounted. Each holds work a switch must not discard: a half-written chain entry on one side, an opened original on the other.
+
+## Evidence is derived, never recorded twice
+
+Nothing writes an evidence log. The column derives from the session log the conversation already has, and the rule that anything model-visible is reconstructable from that log is what makes an after-the-fact attribution honest rather than a second story told beside the first. Market rows read the market-data tools' result metadata for the feed, its datasets, and both time facts; web and archive rows read the call's own arguments and result view. A tool outside those three families contributes no row: the column answers what an answer rested on, and a todo write is work the conversation did rather than something it learned.
+
+A feed states when it was read, and a null there means the values were computed rather than acquired — never the current clock, because substituting it would present a generated number as a fetched one. A web or archive read is performed by the harness itself, so the call's own time is the acquisition instant.
 
 ## The workbench chart, and where it applies
 
@@ -24,7 +32,7 @@ The chart appears in two places, and reaches the second through [ui-tool](../ui-
 
 | Where | What draws |
 |---|---|
-| The record panel | Always this chart — that column exists only under an open name. |
+| The Record tab | This chart whenever a name is open. |
 | A `market_history` call in a conversation | This chart when the conversation is **bound to a name**; the shipped `PriceSeriesBlock` otherwise. |
 
 Binding, not the active frame, is the test. A conversation is bound at creation and never reassigned, so the chart a conversation draws does not change when the reader switches frames — and mounting Chico does not change how a price series looks in a conversation about a codebase.
@@ -51,7 +59,9 @@ None; this package neither assembles nor sends a provider request.
 
 - **Nothing extracts entries from a conversation** — every chain entry is written by hand. Automatic extraction, and the receipt that would make it reversible, belong to the memory system's design.
 - **The stance is read but not written here** — posture, position, and conviction are shown from the record; the panel has no editor for them yet, so they stay at their defaults until something else sets them.
-- **An event carries no attribution** — the design splits a move into market, sector, and name-specific parts. That needs data no seam supplies, so an event is prose.
+- **An event carries no return attribution** — the design splits a move into market, sector, and name-specific parts. That needs data no seam supplies, so an event is prose. The evidence column attributes sources, which is a different question.
+- **Evidence is per answer, not per claim** — the column says which sources an answer drew on, not which sentence rests on which source. Tying a sentence to a source needs the model to emit the citation.
+- **Evidence stops at the loaded window** — an older turn that has not been loaded contributes nothing, and a source whose question fell outside it is filed under an unlabelled exchange rather than dropped.
 - **One read per mount** — no column subscribes to quote changes, so an open workbench is as stale as its last read.
 - **A conversation does not know its name** — the binding is one-way, so a conversation opened from the sessions frame shows nothing about which instrument it belongs to.
 - **The chart neither zooms nor pans** — the window is one of five preset ranges. Wheel zoom and drag-to-pan need a viewport model the preset list does not have.

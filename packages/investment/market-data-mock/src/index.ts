@@ -19,6 +19,7 @@ import type {
   InstrumentSearchRequest,
   InstrumentSearchResult,
   MarketDataProvider,
+  ObservationSource,
   PriceBar,
   PriceHistory,
   PriceHistoryRequest,
@@ -36,6 +37,20 @@ export const inject = ['marketData']
 
 /** Registry id this provider claims. */
 export const PROVIDER_ID = 'mock'
+
+/** Dataset name attached to every observation this provider serves. */
+export const MOCK_DATASET = 'chico-mock-data'
+
+/**
+ * Provenance of the compiled observations. `retrievedAt` is null because the
+ * provider reads generated values compiled into this package rather than
+ * acquiring them from an external source.
+ */
+const MOCK_SOURCE: ObservationSource = {
+  providerId: PROVIDER_ID,
+  datasets: [MOCK_DATASET],
+  retrievedAt: null,
+}
 
 /** Venue close, as the instant a session's bar is dated to. */
 const VENUE_CLOSE_SUFFIX = 'T15:00:00+08:00'
@@ -162,6 +177,7 @@ export function createMockProvider(usable: boolean): MarketDataProvider {
         asOf: `${dateAt(series, last)}${VENUE_CLOSE_SUFFIX}`,
         // The dataset is end-of-day by construction, whatever the wall clock says.
         session: 'closed',
+        source: MOCK_SOURCE,
       })
     },
     priceHistory: (request: PriceHistoryRequest): Promise<PriceHistory> => {
@@ -175,6 +191,7 @@ export function createMockProvider(usable: boolean): MarketDataProvider {
         instrument: { market: series.market, symbol: series.symbol },
         bars,
         adjustment: series.adjustment,
+        source: MOCK_SOURCE,
       })
     },
   }

@@ -14,6 +14,7 @@ import type {
   InstrumentSearchRequest,
   InstrumentSearchResult,
   MarketDataProvider,
+  ObservationSource,
   PriceBar,
   PriceHistory,
   PriceHistoryRequest,
@@ -37,6 +38,21 @@ export const PROVIDER_ID = 'fixture'
  * replayable snapshot.
  */
 export const DEFAULT_ANCHOR_DATE = '2026-08-14'
+
+/** The dataset name this provider attributes its values to. */
+export const FIXTURE_DATASET = 'fixture-table'
+
+/**
+ * Provenance of every fixture observation. `retrievedAt` is null because the
+ * values are computed here rather than acquired: there is no fetch to date, and
+ * stamping the clock would both present a generated number as a fetched one and
+ * cost this provider the determinism it exists for.
+ */
+const FIXTURE_SOURCE: ObservationSource = {
+  providerId: PROVIDER_ID,
+  datasets: [FIXTURE_DATASET],
+  retrievedAt: null,
+}
 
 /** One instrument the fixture table knows, with the facts a quote needs. */
 interface FixtureInstrument {
@@ -174,6 +190,7 @@ export function createFixtureProvider(anchorDate: string): MarketDataProvider {
         // Venue close, expressed as the instant the anchor session ended.
         asOf: `${anchorDate}T07:00:00.000Z`,
         session: 'closed',
+        source: FIXTURE_SOURCE,
       })
     },
     priceHistory: (request: PriceHistoryRequest): Promise<PriceHistory> => {
@@ -189,6 +206,7 @@ export function createFixtureProvider(anchorDate: string): MarketDataProvider {
         // The table is synthetic and carries no corporate actions, so its
         // prices are as-traded by construction rather than by restatement.
         adjustment: 'none',
+        source: FIXTURE_SOURCE,
       })
     },
   }

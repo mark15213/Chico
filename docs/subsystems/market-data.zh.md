@@ -46,6 +46,41 @@ interface InstrumentMatch {
 
 数据源没有检索端点的提供方会以 `MARKET_DATA_SEARCH_UNSUPPORTED` 拒绝，而不是解析出空列表。空结果与无能力的来源会把消费方引向相反的结论——"这个名字不存在"对"去别处问"——因此它们不能共用一种表示。
 
+## 来源与采集
+
+每一次观测都说明自己从哪里来。观测自己的事件时间说的是交易场所何时为标的定价，对这个数字如何到达本进程只字未提，因此两组事实一起传递：服务它的数据源、该数据源中被读取的数据集，以及读取发生的时刻。
+
+当提供方是计算出取值而不是采集来的，`retrievedAt` 是 null 而不是当前时钟。fixture 提供方正是这种情形，在那里盖上时钟既会把生成的数字呈现成抓取来的，也会让该提供方失去无密钥快照所依赖的确定性。
+
+```ts type-equiv
+/**
+ * Where one observation came from and when it was acquired.
+ *
+ * An observation's own event time says when the venue priced the instrument and
+ * nothing about how that value reached this process. A reader deciding whether
+ * to act on a figure needs both, so every observation carries this beside its
+ * numbers: the feed that served it, the datasets inside that feed the values
+ * were read from, and the instant they were read.
+ */
+interface ObservationSource {
+  /** Registry id of the provider that served the observation ({@link MarketDataProvider.id}). */
+  readonly providerId: string
+  /**
+   * The provider's own datasets the values were read from, in the order the
+   * provider consulted them — an endpoint, a table, or whatever that feed calls
+   * its addressable unit of data.
+   */
+  readonly datasets: readonly string[]
+  /**
+   * When the provider acquired the values (ISO-8601 instant), or null when
+   * there was no acquisition. A provider that computes its values in-process
+   * has no retrieval to report, and stamping the clock there would present a
+   * generated number as a fetched one.
+   */
+  readonly retrievedAt: string | null
+}
+```
+
 ## 报价
 
 报价是某一时刻的观测值，而这个时刻属于取值本身。`asOf` 是交易场所为该标的定价的时间——绝不是提供方被询问的时间或界面渲染的时间——因此消费方能区分陈旧读数和新鲜读数。`session` 则区分"因为闭市所以不会动"和"本该在动却没有动"。
@@ -89,6 +124,8 @@ interface Quote {
    * still a valid observation; it just will not change until the next session.
    */
   readonly session: 'open' | 'closed'
+  /** Which feed served these numbers and when they were read. */
+  readonly source: ObservationSource
 }
 ```
 
@@ -145,6 +182,11 @@ interface PriceHistory {
    * the first bar's basis.
    */
   readonly adjustment: 'none' | 'backward' | 'forward'
+  /**
+   * Which feed served these bars and when they were read. Restatement reads a
+   * second dataset, so a provider that restated lists both.
+   */
+  readonly source: ObservationSource
 }
 ```
 
@@ -272,5 +314,5 @@ async quote(request: QuoteRequest, signal?: AbortSignal): Promise<Quote>
 async priceHistory(request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory>
 ```
 
-Source: [`packages/investment/market-data/src/index.ts:95`](../../packages/investment/market-data/src/index.ts)
+Source: [`packages/investment/market-data/src/index.ts:96`](../../packages/investment/market-data/src/index.ts)
 <!-- END GENERATED cordis-surface -->

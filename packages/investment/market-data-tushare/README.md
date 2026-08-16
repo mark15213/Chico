@@ -43,6 +43,12 @@ Tushare has no search endpoint, so `search` matches locally over the full listin
 
 The roster is one call that every search and every quote reads, so it is fetched once and held for `rosterTtlMinutes`. Concurrent readers share one fetch: a watchlist prices every row at once and each of those quotes needs a display name, so without that sharing the first glance would download the roster once per followed name. That shared fetch deliberately does not honour any one caller's cancellation — aborting it would cancel it for every reader waiting on the same promise — and the per-call time budget bounds it instead.
 
+## What each answer is attributed to
+
+Every observation names the Tushare interfaces it was read from and the instant the reads finished. A quote lists `daily` and `stock_basic`, because the price comes from the bars and the display name from the roster; as-traded history lists `daily` alone, and restated history lists `daily` and `adj_factor`.
+
+`retrievedAt` dates the price read rather than the roster, which may have been held for up to `rosterTtlMinutes`. The price is the fact a reader acts on, and dating the answer by the older of the two would understate how fresh the number is.
+
 ## Failure
 
 Tushare reports refusals in the body rather than the status line: a revoked token and an interface the account has too few points for both arrive as HTTP 200 with a non-zero `code`. Those, transport failures, timeouts, and an undecodable body all become `MARKET_DATA_PROVIDER_UNAVAILABLE`, because all of them would fail every instrument identically — which is what makes a consumer raise for the whole call instead of degrading one row. A code the venue has no sessions for is `MARKET_DATA_UNKNOWN_INSTRUMENT`, and a venue this provider does not reach is `MARKET_DATA_VENUE_UNSUPPORTED`; both are about one request, so a list degrades that entry alone.

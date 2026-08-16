@@ -310,6 +310,13 @@ describe('tushare quotes', () => {
       volume: 30_100_000,
       asOf: '2026-08-14T07:00:00.000Z',
       session: 'closed',
+      // The roster is named too: the display name comes from it, and the stamp
+      // dates the price read rather than the held listing.
+      source: {
+        providerId: 'tushare',
+        datasets: ['daily', 'stock_basic'],
+        retrievedAt: '2026-08-14T02:00:00.000Z',
+      },
     })
   })
 
@@ -367,6 +374,9 @@ describe('tushare price history', () => {
 
     const history = await provider().priceHistory({ instrument: CATL, sessions: 2 })
     expect(history.adjustment).toBe('none')
+    expect(history.source).toEqual({
+      providerId: 'tushare', datasets: ['daily'], retrievedAt: '2026-08-14T02:00:00.000Z',
+    })
     expect(history.bars.map(bar => bar.date)).toEqual(['2026-08-13', '2026-08-14'])
     expect(history.bars[0]).toEqual({
       date: '2026-08-13', open: 209, high: 212, low: 207, close: 210, volume: 2000,
@@ -401,6 +411,8 @@ describe('tushare price history', () => {
 
     const history = await provider({ adjustment: 'backward' }).priceHistory({ instrument: CATL, sessions: 2 })
     expect(history.adjustment).toBe('backward')
+    // Restatement reads a second interface, so the answer says it read both.
+    expect(history.source.datasets).toEqual(['daily', 'adj_factor'])
     // The older bar is scaled by its factor over the newest one; the newest is
     // already on today's basis and keeps its traded close.
     expect(history.bars.map(bar => bar.close)).toEqual([25, 100])

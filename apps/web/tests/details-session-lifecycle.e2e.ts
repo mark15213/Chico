@@ -69,10 +69,14 @@ async function handleSnapshot(page: Page): Promise<string> {
   ].join('\n').trimEnd()
 }
 
-/** Stable Chico workbench projection after the selected name has reopened its details. */
-async function chicoWorkbenchSnapshot(page: Page, workspaceCwd: string): Promise<string> {
+/** Stable Chico workbench projection across its default and reopened detail tabs. */
+async function chicoWorkbenchSnapshot(
+  page: Page,
+  workspaceCwd: string,
+  defaultEvidence: string,
+): Promise<string> {
   const watchlist = await captureStableAria(page, '[class*="regionArea"]', workspaceCwd)
-  const details = await captureStableAria(page, '[class*="detailsCol"]', workspaceCwd)
+  const reopenedRecord = await captureStableAria(page, '[class*="detailsCol"]', workspaceCwd)
   return [
     '# Chico investment workbench',
     '',
@@ -80,9 +84,13 @@ async function chicoWorkbenchSnapshot(page: Page, workspaceCwd: string): Promise
     '',
     watchlist,
     '',
-    '## Stock details',
+    '## Default evidence',
     '',
-    details,
+    defaultEvidence,
+    '',
+    '## Reopened record',
+    '',
+    reopenedRecord,
   ].join('\n')
 }
 
@@ -227,12 +235,30 @@ describe.skipIf(MODE === 'record')('web e2e: Chico investment workbench', () => 
 
     const details = page.locator('[class*="detailsCol"]').first()
     const collapse = details.getByRole('button', {
-      name: 'Collapse investment record',
+      name: 'Collapse investing details',
       exact: true,
     })
     await collapse.waitFor({ timeout: 15_000 })
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(360)
     await details.getByRole('heading', { name: '宁德时代', exact: true }).waitFor()
+
+    const evidenceTab = details.getByRole('tab', { name: 'Evidence', exact: true })
+    const recordTab = details.getByRole('tab', { name: 'Record', exact: true })
+    await expect.poll(() => evidenceTab.getAttribute('aria-selected')).toBe('true')
+    expect(await recordTab.getAttribute('aria-selected')).toBe('false')
+    await details.getByText(
+      'Start a conversation; every source an answer draws on is listed here.',
+      { exact: true },
+    ).waitFor()
+    const defaultEvidence = await captureStableAria(
+      page,
+      '[class*="detailsCol"]',
+      scaffold.workspaceCwd,
+    )
+
+    await recordTab.click()
+    expect(await evidenceTab.getAttribute('aria-selected')).toBe('false')
+    await expect.poll(() => recordTab.getAttribute('aria-selected')).toBe('true')
     await details.getByRole('region', { name: 'Price trend', exact: true }).waitFor({ timeout: 15_000 })
     await details.getByRole('heading', { name: 'Investment rationale and record', exact: true }).waitFor()
 
@@ -244,10 +270,12 @@ describe.skipIf(MODE === 'record')('web e2e: Chico investment workbench', () => 
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(360)
     expect(await appFrame(page).getAttribute('data-details-collapsed')).toBeNull()
     await collapse.waitFor()
+    await expect.poll(() => recordTab.getAttribute('aria-selected')).toBe('true')
+    await details.getByRole('region', { name: 'Price trend', exact: true }).waitFor()
 
     await compareOrRefreshGolden(
       CHICO_WORKBENCH_EXPECTED,
-      await chicoWorkbenchSnapshot(page, scaffold.workspaceCwd),
+      await chicoWorkbenchSnapshot(page, scaffold.workspaceCwd, defaultEvidence),
       MODE,
     )
     await assertFixtureInventory(CHICO_SNAPSHOT_DIR, ['workbench.expected.md'])

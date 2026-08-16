@@ -9,42 +9,13 @@
   min-width: 0;
   height: 100%;
   box-sizing: border-box;
-  padding: 0 16px 20px;
+  padding: 14px 16px 20px;
   overflow-y: auto;
   scrollbar-gutter: stable;
   background: var(--dsw-alias-bg-base);
   color: var(--dsw-alias-label-primary);
 }
 
-.head,
-.emptyHead {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-width: 0;
-  margin: 0 -16px;
-  padding: 14px 16px 11px;
-  border-bottom: 1px solid var(--dsw-alias-border-l1);
-  background: color-mix(in srgb, var(--dsw-alias-bg-base) 94%, transparent);
-  backdrop-filter: blur(10px);
-}
-
-.emptyHead {
-  flex: 0 0 auto;
-}
-
-.security {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.eyebrow,
 .sectionKicker,
 .marketLabel {
   color: var(--dsw-alias-label-caption);
@@ -52,59 +23,6 @@
   font-weight: 600;
   line-height: 14px;
   letter-spacing: 0.04em;
-}
-
-.titleLine {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-  min-width: 0;
-}
-
-.title {
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  color: var(--dsw-alias-label-primary);
-  font-size: 16px;
-  font-weight: 650;
-  line-height: 23px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ticker {
-  flex: 0 0 auto;
-  color: var(--dsw-alias-label-tertiary);
-  font-family: var(--ds-font-family-code);
-  font-size: 9.5px;
-  line-height: 14px;
-  font-variant-numeric: tabular-nums;
-}
-
-.collapse {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--dsw-alias-border-l2);
-  border-radius: 50%;
-  background: var(--dsw-alias-button-elevated-fill);
-  color: var(--dsw-alias-label-secondary);
-  cursor: pointer;
-  transition:
-    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    background var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    transform var(--ds-transition-duration-fast) var(--ds-ease-in-out);
-}
-
-.collapse:hover {
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-button-floating-hover);
-  transform: translateX(1px);
 }
 
 .market {
@@ -573,7 +491,6 @@
   color: var(--dsw-alias-state-error-primary);
 }
 
-.collapse:focus-visible,
 .kind:focus-visible,
 .save:focus-visible,
 .settle button:focus-visible {
@@ -582,7 +499,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .collapse,
   .body {
     transition: none;
   }

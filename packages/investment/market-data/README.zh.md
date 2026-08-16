@@ -25,6 +25,8 @@ DeepSeek Harness 的行情能力接缝（`ctx.marketData`）：提供方注册�
 
 `PriceBar.date` 是交易场所的交易日而非时间戳，因为一根 K 线覆盖的是一个交易日。`PriceHistory.adjustment` 是必填而非默认：把某根 K 线与更早记录的价格作比较的消费方，必须知道公司行动是被重述到今天的基准（`backward`）、第一根 K 线的基准（`forward`），还是完全未重述（`none`）。
 
+每一次观测还携带一个 `ObservationSource`：服务它的提供方、该数据源中被读取的数据集，以及 `retrievedAt`——读取发生的时刻。事件时间和采集时间是两个不同的事实，而要决定是否据此行动的消费方两者都需要。当提供方是算出取值而不是采集来的，`retrievedAt` 是 null——缺失被如实记录，而不是拿时钟填上，因为那会把生成的数字呈现成抓取来的。
+
 `InstrumentRef` 是 `{ market, symbol }` 组合而非不透明 id，因为两半对消费方都有意义，并且同一代码在两个交易场所属于两个标的。`Market` 是封闭联合：结算日历、涨跌幅限制和交易单位因场所而异，所以每个消费方都在已知成员上分支，而不是解析自由字符串。
 
 ## Model Experience

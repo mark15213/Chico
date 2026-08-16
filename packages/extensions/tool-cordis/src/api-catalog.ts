@@ -3722,6 +3722,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type ObjectJsonSchema = JsonSchemaNode & {\n    type: \'object\';\n};',
   },
   {
+    name: 'ObservationSource',
+    declaration: 'export interface ObservationSource {\n    readonly providerId: string;\n    readonly datasets: readonly string[];\n    readonly retrievedAt: string | null;\n}',
+  },
+  {
     name: 'OneShotSubagentDescriptorData',
     declaration: 'export interface OneShotSubagentDescriptorData extends SubagentDescriptorBase {\n    readonly mode: \'one-shot\';\n    readonly label?: string;\n}',
   },
@@ -3771,7 +3775,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'PriceHistory',
-    declaration: 'export interface PriceHistory {\n    readonly instrument: InstrumentRef;\n    readonly bars: readonly PriceBar[];\n    readonly adjustment: \'none\' | \'backward\' | \'forward\';\n}',
+    declaration: 'export interface PriceHistory {\n    readonly instrument: InstrumentRef;\n    readonly bars: readonly PriceBar[];\n    readonly adjustment: \'none\' | \'backward\' | \'forward\';\n    readonly source: ObservationSource;\n}',
   },
   {
     name: 'PriceHistoryRequest',
@@ -3831,7 +3835,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'Quote',
-    declaration: 'export interface Quote {\n    readonly instrument: InstrumentRef;\n    readonly name: string;\n    readonly currency: string;\n    readonly last: number;\n    readonly previousClose: number;\n    readonly changePercent: number;\n    readonly volume: number;\n    readonly asOf: string;\n    readonly session: \'open\' | \'closed\';\n}',
+    declaration: 'export interface Quote {\n    readonly instrument: InstrumentRef;\n    readonly name: string;\n    readonly currency: string;\n    readonly last: number;\n    readonly previousClose: number;\n    readonly changePercent: number;\n    readonly volume: number;\n    readonly asOf: string;\n    readonly session: \'open\' | \'closed\';\n    readonly source: ObservationSource;\n}',
   },
   {
     name: 'QuoteRequest',

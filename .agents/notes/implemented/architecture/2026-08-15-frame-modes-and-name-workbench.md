@@ -28,13 +28,15 @@ The shell draws one switch entry per registration and renders only the active on
 
 ### The details column becomes keyed by frame
 
-`details` (single) became `keyed`, keyed by the mode. `ui-conversation` registers the tool inspector under `sessions`; the workbench registers the record panel under `names`.
+`details` (single) became `keyed`, keyed by the mode. `ui-conversation` registers the tool inspector under `sessions`; the workbench registers the name details column under `names`.
 
 This is what finally answers the open question the workbench design left: *does the dossier share the details column with the tool inspector, or does one of them move?* Neither. They are not in the same frame, so they never compete for the seat. A question that looked like a conflict was a missing distinction.
 
+The investing details column has Evidence and Record tabs. Evidence presents the selected conversation's [source attribution](2026-08-16-conversation-source-attribution.md), while Record presents the open name's figures and decision chain. The instrument title and collapse control belong to shared column chrome above both tabs, so the reader can collapse the column from either tab. Both tab bodies stay mounted while the inactive one is hidden, preserving an expanded source and a draft chain entry across switches.
+
 ### Opening a name opens the column it lands in
 
-The names frame asks the layout to reveal the record column whenever a name opens. The record panel can collapse itself without clearing the selection; selecting or re-selecting a name reveals it again. A selection that does not surface its own result is not navigation, while returning width to the conversation must not discard the reader's place.
+The names frame asks the layout to reveal the details column whenever a name opens. The shared column chrome can collapse it without clearing the selection; selecting or re-selecting a name reveals it again. A selection that does not surface its own result is not navigation, while returning width to the conversation must not discard the reader's place.
 
 The session gate went with it. The details column was gated on a live non-blank session, which is right for the harness's own detail — a call inside one conversation — and wrong for a name, which outlives every session and exists before the first one opens. The gate now applies to the default frame alone.
 
@@ -42,9 +44,11 @@ The session gate went with it. The details column was gated on a live non-blank 
 
 The centre column belongs to `ui-conversation`, so the workbench does not render it — it *navigates* it. Opening a name reads the record, selects that name's most recent conversation, and starts a fresh one when there is none. The open name expands in the left column to its own conversations, so an older one can be picked directly.
 
+Every name, existing-conversation, or new-conversation navigation receives a monotonically increasing epoch. Opening a name publishes the instrument immediately with conversation status `pending`; only the latest epoch may select a conversation or publish `ready` or `failed`. The session runtime still points at the previous conversation until selection completes, so Evidence shows the pending state without reading the session selector. A failure owned by the latest epoch hides the same stale evidence and presents a retryable `failed` state; selecting the name again starts another epoch. Older reads and failures cannot replace the latest name or its status.
+
 **A conversation under a name belongs to no Workspace.** The Workspace flow is the right way in when the reader's unit of work is a project; under a name it stands between them and their first word about a stock. `ISessions` gained `startAt(cwd)` for this: a conversation with `cwd` and no `workspaceId`. The workbench passes the [followed-names](../../../../packages/investment/followed-names/README.md) archive directory, read over `watchlist.archive()`, so produced files land somewhere durable and no folder appears for a name someone merely glanced at. Registering a Workspace per name was the alternative, and it puts a directory on disk for every glance.
 
-Removing the call was not enough to remove the Workspace, and binding a conversation the moment it stopped being blank filed one name's conversation under another. [A frame owns its conversation opening](2026-08-15-frame-owned-conversation-opening.md) supersedes both: the opening itself is what carries the Workspace prerequisite, and a conversation is created for one name and bound at creation.
+Removing the call was not enough to remove the Workspace, and binding a conversation the moment it stopped being blank filed one name's conversation under another. [A frame owns its conversation opening](2026-08-15-frame-owned-conversation-opening.md) supersedes both: the opening itself is what carries the Workspace prerequisite, and a conversation is created for one name and bound before it is selected. Once creation returns a session id, the controller completes that binding even if a later navigation has won; the stale creation never opens its session or publishes its rows or status. Ownership therefore survives the race without taking the interface back from the latest navigation.
 
 ### The workbench owns two columns and two observables
 
@@ -84,7 +88,9 @@ Nothing extracts chain entries from a conversation, so in practice the user writ
 
 `packages/client/ui-layout/tests` covers the mode in the store, including that switching closes the details panel and that re-selecting the current frame leaves it alone, and the service forwarding plus its unwired fail-loud.
 
-`packages/client/ui-watchlist/tests` covers the pure derivations, the names frame (rows, the unverified marker and its absence, opening a name, the empty state, the rail's silence, the unpriceable row) and its lookup (trimmed query with limit, no request for an empty field, opening an unfollowed match without following it, following on request, the already-followed marker); the record panel (the no-name state, the figures and chart, both reads, collapsing without clearing focus, the empty-chain explanation, an entry's date and provenance, the calibration figure, the session link, settling only an open thesis, the verdict the settlement sends, a hand-written entry of the picked kind, the refused empty entry, the record surviving unreadable figures, the failed read); both observables; and the two registrations with open/close forwarding and fiber teardown proving removal.
+`packages/client/ui-watchlist/tests` covers the pure derivations, the names frame and lookup, the record panel and chart, both observables, and the two registrations with open/close forwarding and fiber teardown proving removal. The centre-column coverage pins immediate `pending` publication, latest-wins completion when reads resolve out of order, binding before selection, a stale creation continuing through its binding without reclaiming the interface or surfacing a stale bind failure, and a current bind failure publishing `failed` without opening the unbound conversation.
+
+The same package's details-column coverage pins Evidence as the initial tab, shared title and collapse chrome, mounted inactive bodies, tab-to-panel relationships, roving keyboard focus with Left/Right/Home/End, and the rule that `pending` and retryable `failed` states neither render nor read the previous session's evidence.
 
 `packages/client/runtime/tests` covers `startAt`: every call creates a session carrying `cwd` and no `workspaceId`; per-name blank-session reuse belongs to the workbench, which reads only that name's bound conversations.
 

@@ -18,6 +18,8 @@ Three instruments — `SZSE:300750`, `SSE:600519`, and `SZSE:300274` — each wi
 
 Bars report `adjustment: 'none'`, which is accurate rather than conventional: the series is synthetic and carries no corporate actions, so its prices are as-traded by construction.
 
+Every observation is attributed to the `fixture-table` dataset with a null `retrievedAt`. Nothing was acquired here — the values are computed — and recording the absence keeps the provider deterministic while making a synthetic close impossible to mistake for a venue's own.
+
 ## Model Experience
 
 ### Fixture market data

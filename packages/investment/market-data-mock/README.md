@@ -18,6 +18,8 @@ Six equities — `SSE:600519`, `SZSE:300750`, `SSE:600036`, `SSE:688981`, `SZSE:
 
 Bars report `adjustment: 'none'`, which is accurate rather than conventional: the compiled series carry no corporate actions, so their prices are as-traded by construction. Quotes report `session: 'closed'` — the dataset is end-of-day, whatever the wall clock says.
 
+Every observation is attributed to the `chico-mock-data` dataset with a null `retrievedAt`. The provider reads generated values compiled into the package rather than acquiring them from an external source, so it records that absence instead of inventing a retrieval time.
+
 `disabled: true` takes the provider out of selection, so a composition that mounted it by accident fails with `MARKET_DATA_PROVIDER_UNAVAILABLE` instead of presenting invented closes as a venue's own.
 
 ## The compiled dataset
@@ -49,7 +51,6 @@ Independent of live requests: the package never touches a request prefix, so it 
 
 ## Known Limitations and Deferred Work
 
-- **Nothing marks a served price as synthetic at the point of display.** `Quote` and `PriceBar` carry no provenance field, so a surface drawing these numbers looks exactly like one drawing real ones. A composition that mounts this provider is responsible for saying so in its own chrome.
 - **The dataset ends on a fixed anchor date and never advances.** Prices are as of 2026-08-14 forever, so a surface that compares them against the wall clock reports a series that is stale by however long the checkout has existed.
 - **Off-exchange funds are absent.** The source dataset carries two, but `Market` is a closed union with no member for a fund that trades on no venue, so they have no address on this seam.
 - **Lookup matches by prefix and substring only.** No pinyin, no fuzzy matching, and no ranking — the table is small enough that a ranking would be an invention rather than a measurement.

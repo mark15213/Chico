@@ -29,6 +29,7 @@ export type {
   Market,
   MarketDataErrorCode,
   MarketDataProvider,
+  ObservationSource,
   PriceBar,
   PriceHistory,
   PriceHistoryRequest,

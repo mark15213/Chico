@@ -6,7 +6,15 @@
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it } from 'vitest'
 import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
-import { apply, Config, createMockProvider, inject, name, PROVIDER_ID } from '../src/index.ts'
+import {
+  apply,
+  Config,
+  createMockProvider,
+  inject,
+  MOCK_DATASET,
+  name,
+  PROVIDER_ID,
+} from '../src/index.ts'
 import { ANCHOR_DATE, DATASET } from '../src/dataset.ts'
 import * as MockInvariant from '../src/invariant.ts'
 
@@ -118,6 +126,15 @@ describe('history', () => {
   it('refuses an instrument the dataset does not carry', async () => {
     await expect(provider.priceHistory({ instrument: { market: 'NYSE', symbol: 'X' }, sessions: 5 }))
       .rejects.toThrow(expect.objectContaining({ code: 'MARKET_DATA_UNKNOWN_INSTRUMENT' }))
+  })
+})
+
+describe('source attribution', () => {
+  it('attributes compiled values to the mock dataset without inventing a retrieval', async () => {
+    const source = { providerId: PROVIDER_ID, datasets: [MOCK_DATASET], retrievedAt: null }
+
+    expect((await provider.quote({ instrument: CATL })).source).toEqual(source)
+    expect((await provider.priceHistory({ instrument: CATL, sessions: 2 })).source).toEqual(source)
   })
 })
 

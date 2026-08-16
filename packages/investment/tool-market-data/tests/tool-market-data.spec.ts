@@ -9,10 +9,17 @@ import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
 import { apply as applyFixture, Config as FixtureConfig, inject as fixtureInject } from '@deepseek-ai/dsh-market-data-fixture'
 import {
-  apply, Config, DEFAULT_HISTORY_SESSIONS, formatHistory, formatQuote, historyMetaFromResult,
-  historyMetaFromValue, inject, MARKETS, parseSymbol, presentHistoryResult,
+  apply, Config, DEFAULT_HISTORY_SESSIONS, formatHistory, formatQuote, formatSource,
+  historyMetaFromResult, historyMetaFromValue, inject, MARKETS, observationMetaFromResult,
+  parseSymbol, presentHistoryResult, quoteMetaFromValue,
 } from '../src/index.ts'
 import * as ToolInvariant from '../src/invariant.ts'
+
+/** Provenance of a feed that was actually read, for the formatting tests. */
+const fetched = { providerId: 'tushare', datasets: ['daily'], retrievedAt: '2026-08-15T01:12:00.000Z' }
+
+/** Provenance of a provider that computes rather than acquires. */
+const computed = { providerId: 'fixture', datasets: ['fixture-table'], retrievedAt: null }
 
 /** Boot the tools over a real seam, optionally with the fixture provider. */
 async function bench(options: { provider?: boolean; config?: Config } = {}) {
@@ -87,6 +94,7 @@ describe('market_quote execution', () => {
     expect(value.asOf).toBe('2026-08-14T07:00:00.000Z')
     expect(value.session).toBe('closed')
     expect(typeof value.changePercent).toBe('number')
+    expect(value.source).toEqual({ providerId: 'fixture', datasets: ['fixture-table'], retrievedAt: null })
   })
 
   it('surfaces the seam refusal when no provider is registered', async () => {
@@ -115,10 +123,11 @@ describe('market_history execution', () => {
   it('honors an explicit session count and reports the adjustment', async () => {
     const { tools } = await bench()
     const value = await call(tools, 'market_history', { market: 'SSE', symbol: '600519', sessions: 5 }) as
-      { bars: { date: string }[]; adjustment: string }
+      { bars: { date: string }[]; adjustment: string; source: { providerId: string } }
 
     expect(value.bars).toHaveLength(5)
     expect(value.adjustment).toBe('none')
+    expect(value.source.providerId).toBe('fixture')
     // Oldest first, so the range reads forward in time.
     expect(value.bars[0]!.date < value.bars[4]!.date).toBe(true)
   })
@@ -163,11 +172,13 @@ describe('model-facing formatting', () => {
       volume: 41_200_000,
       asOf: '2026-08-14T07:00:00.000Z',
       session: 'closed',
+      source: fetched,
     })
 
     expect(text).toContain('宁德时代 (SZSE:300750)')
     expect(text).toContain('Last 212.3 CNY (-7% vs previous close 228.28)')
     expect(text).toContain('As of 2026-08-14T07:00:00.000Z; venue closed.')
+    expect(text).toContain('Source tushare via daily; retrieved 2026-08-15T01:12:00.000Z.')
   })
 
   it('marks a positive change explicitly so the sign is never ambiguous', () => {
@@ -180,6 +191,7 @@ describe('model-facing formatting', () => {
       volume: 1,
       asOf: '2026-08-14T07:00:00.000Z',
       session: 'open',
+      source: fetched,
     })
 
     expect(text).toContain('(+1% vs previous close 100)')
@@ -189,19 +201,93 @@ describe('model-facing formatting', () => {
     const text = formatHistory({ market: 'SZSE', symbol: '300750' }, {
       bars: [{ date: '2026-08-14', open: 1, high: 2, low: 0.5, close: 1.5, volume: 10 }],
       adjustment: 'backward',
+      source: fetched,
     })
 
     expect(text).toContain('SZSE:300750 — 1 sessions, backward adjustment')
     expect(text).toContain('2026-08-14  open 1  high 2  low 0.5  close 1.5  volume 10')
+    expect(text).toContain('Source tushare via daily; retrieved 2026-08-15T01:12:00.000Z.')
   })
 
   it('says so plainly when a provider returns no sessions', () => {
     const text = formatHistory({ market: 'SZSE', symbol: '300750' }, {
       bars: [],
       adjustment: 'none',
+      source: fetched,
     })
 
     expect(text).toContain('(no sessions returned)')
+    expect(text).toContain('Source tushare via daily; retrieved 2026-08-15T01:12:00.000Z.')
+  })
+
+  it('says a computed value was never retrieved rather than dating it from the clock', () => {
+    expect(formatSource(computed))
+      .toBe('Source fixture via fixture-table; computed in process, so there is no retrieval time.')
+  })
+
+  it('names every dataset an answer was assembled from', () => {
+    expect(formatSource({ ...fetched, datasets: ['daily', 'adj_factor'] }))
+      .toContain('via daily, adj_factor;')
+  })
+
+  it('says the dataset is unnamed rather than printing an empty list', () => {
+    expect(formatSource({ ...fetched, datasets: [] })).toContain('via an unnamed dataset;')
+  })
+})
+
+describe('replayable provenance', () => {
+  const bars = [
+    { date: '2026-08-13', open: 1, high: 2, low: 0.5, close: 1.5, volume: 10 },
+    { date: '2026-08-14', open: 1, high: 2, low: 0.5, close: 1.6, volume: 12 },
+  ]
+
+  it('carries a quote\'s source and its own event time', () => {
+    const meta = quoteMetaFromValue({
+      name: '宁德时代',
+      currency: 'CNY',
+      last: 212.3,
+      previousClose: 228.28,
+      changePercent: -7,
+      volume: 41_200_000,
+      asOf: '2026-08-14T07:00:00.000Z',
+      session: 'closed',
+      source: fetched,
+    })
+
+    expect(observationMetaFromResult(meta)).toEqual({ source: fetched, asOf: '2026-08-14T07:00:00.000Z' })
+  })
+
+  it('dates a history by its last session rather than by the request', () => {
+    const meta = historyMetaFromValue({ bars, adjustment: 'none', source: fetched })
+
+    expect(observationMetaFromResult(meta)).toEqual({ source: fetched, asOf: '2026-08-14' })
+  })
+
+  it('states that a history with no sessions has no event time', () => {
+    const meta = historyMetaFromValue({ bars: [], adjustment: 'none', source: computed })
+
+    expect(observationMetaFromResult(meta)).toEqual({ source: computed, asOf: null })
+  })
+
+  it('leaves the price-series card readable beside the provenance', () => {
+    const meta = historyMetaFromValue({ bars, adjustment: 'backward', source: fetched })
+
+    expect(historyMetaFromResult(meta)).toEqual({ bars, adjustment: 'backward' })
+  })
+
+  it.each([
+    ['absent', undefined],
+    ['a non-object', 'nope'],
+    ['an array', []],
+    ['metadata from before either tool carried provenance', { bars: [], adjustment: 'none' }],
+    ['a source that is not an object', { source: 'tushare', asOf: null }],
+    ['a source with no provider id', { source: { datasets: [], retrievedAt: null }, asOf: null }],
+    ['datasets that are not strings', { source: { providerId: 'x', datasets: [1], retrievedAt: null }, asOf: null }],
+    ['datasets that are not a list', { source: { providerId: 'x', datasets: 'daily', retrievedAt: null }, asOf: null }],
+    ['a retrieval time that is not a stamp', { source: { providerId: 'x', datasets: [], retrievedAt: 7 }, asOf: null }],
+    ['an event time that is not a stamp', { source: { providerId: 'x', datasets: [], retrievedAt: null }, asOf: 7 }],
+  ])('refuses %s rather than inventing a feed', (_case, meta) => {
+    expect(observationMetaFromResult(meta)).toBeUndefined()
   })
 })
 
@@ -209,7 +295,7 @@ describe('price-series presentation', () => {
   const bars = [{ date: '2026-08-14', open: 1, high: 2, low: 0.5, close: 1.5, volume: 10 }]
 
   it('projects bars into replayable meta and reads them back', () => {
-    const meta = historyMetaFromValue({ bars, adjustment: 'backward' })
+    const meta = historyMetaFromValue({ bars, adjustment: 'backward', source: fetched })
 
     expect(historyMetaFromResult(meta)).toEqual({ bars, adjustment: 'backward' })
   })
@@ -217,7 +303,7 @@ describe('price-series presentation', () => {
   it('renders a price-series card carrying the adjustment', () => {
     const view = presentHistoryResult(
       { market: 'SZSE', symbol: '300750' },
-      { isError: false, meta: historyMetaFromValue({ bars, adjustment: 'none' }) } as never,
+      { isError: false, meta: historyMetaFromValue({ bars, adjustment: 'none', source: fetched }) } as never,
     )
 
     expect(view).toEqual({
@@ -232,7 +318,7 @@ describe('price-series presentation', () => {
   it('falls back to the generic card on an errored call', () => {
     const view = presentHistoryResult(
       { market: 'SZSE', symbol: '300750' },
-      { isError: true, meta: historyMetaFromValue({ bars, adjustment: 'none' }) } as never,
+      { isError: true, meta: historyMetaFromValue({ bars, adjustment: 'none', source: fetched }) } as never,
     )
 
     expect(view).toEqual({ card: 'generic', title: 'History SZSE:300750' })

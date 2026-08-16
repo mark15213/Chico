@@ -93,6 +93,7 @@ function quoteOf(symbol: string): Quote {
     volume: 1_000,
     asOf: T1,
     session: 'closed',
+    source: { providerId: 'stub', datasets: ['bars'], retrievedAt: T1 },
   }
 }
 
