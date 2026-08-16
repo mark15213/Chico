@@ -1,0 +1,1065 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "count": 96,
+  "events": [
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-08-13",
+      "category": "定期报告",
+      "headline": "2026 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-08-13",
+      "category": "业绩",
+      "headline": "腾讯 Q2 营收同比增长 11%，AI 基础设施投入推高资本开支，自由现金流转负",
+      "sentiment": "negative",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-08-13",
+      "category": "定期报告",
+      "headline": "2026 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-08-13",
+      "category": "业绩",
+      "headline": "比亚迪半年报：海外销量占比升至 28%，单车盈利环比回升",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-08-13",
+      "category": "定期报告",
+      "headline": "2026 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-08-13",
+      "category": "业绩",
+      "headline": "中芯国际 Q2 毛利率由 20.1% 升至 25.3%，单季营收首次突破 30 亿美元",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-08-13",
+      "category": "定期报告",
+      "headline": "2026 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-08-13",
+      "category": "业绩",
+      "headline": "2026 年半年报：净息差 1.85%，不良率 0.92%，拨备覆盖率 390%",
+      "sentiment": "neutral",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-08-13",
+      "category": "定期报告",
+      "headline": "2026 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-08-13",
+      "category": "业绩",
+      "headline": "宁德时代半年报：储能出货同比翻倍，毛利率环比改善 1.4 个百分点",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-08-13",
+      "category": "定期报告",
+      "headline": "2026 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-08-13",
+      "category": "业绩",
+      "headline": "贵州茅台披露 2026 年半年报：上半年归母净利润 445 亿元，日均净赚 2.45 亿元",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-08-11",
+      "category": "经营",
+      "headline": "招商银行零售客户管理总资产（AUM）突破 18 万亿元",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-08-05",
+      "category": "资金",
+      "headline": "南向资金单周净买入 68.3 亿港元，为近三个月最高",
+      "sentiment": "positive",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-07-08",
+      "category": "分红",
+      "headline": "2025 年度分红实施：每股派现 2.011 元（含税），股息率约 5.2%",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-07-03",
+      "category": "经营",
+      "headline": "6 月新能源汽车销量公布，出口连续第五个月创新高",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-07-02",
+      "category": "产品",
+      "headline": "第三代神行超充电池量产下线，配套车型覆盖 30 款以上",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-06-25",
+      "category": "分红",
+      "headline": "2025 年度权益分派实施：每 10 股派现 385.20 元（含税），今日除权除息",
+      "sentiment": "neutral",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-06-18",
+      "category": "产能",
+      "headline": "京津新厂 12 英寸产线通线，2026 年资本开支指引维持不变",
+      "sentiment": "neutral",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-06-11",
+      "category": "产品",
+      "headline": "微信生态接入自研大模型，广告加载率小幅提升",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-05-28",
+      "category": "行业",
+      "headline": "行业价格战再起，多家车企跟进降价",
+      "sentiment": "negative",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-05-19",
+      "category": "股东",
+      "headline": "境外战略投资者完成配售，H 股流通比例提升",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-05-15",
+      "category": "监管",
+      "headline": "存款利率再度下调，行业息差压力延续",
+      "sentiment": "negative",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-05-14",
+      "category": "回购",
+      "headline": "年内累计回购金额超 400 亿港元",
+      "sentiment": "positive",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-05-08",
+      "category": "经营",
+      "headline": "公司回应 i茅台 渠道调整：直销占比提升至 46%，控量稳价策略延续",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-05-06",
+      "category": "行业",
+      "headline": "成熟制程价格竞争加剧，同业下调全年出货指引",
+      "sentiment": "negative",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-04-24",
+      "category": "定期报告",
+      "headline": "2026 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-04-24",
+      "category": "定期报告",
+      "headline": "2026 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-04-24",
+      "category": "业绩",
+      "headline": "一季报：营收同比增长 10.8%，毛利率 19.1%",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-04-24",
+      "category": "定期报告",
+      "headline": "2026 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-04-24",
+      "category": "业绩",
+      "headline": "一季报：产能利用率 92.4%，环比提升 3.1 个百分点",
+      "sentiment": "positive",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-04-24",
+      "category": "定期报告",
+      "headline": "2026 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-04-24",
+      "category": "定期报告",
+      "headline": "2026 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-04-24",
+      "category": "业绩",
+      "headline": "2026 年一季报：营收同比增长 9.4%，海外收入占比 34%",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-04-24",
+      "category": "定期报告",
+      "headline": "2026 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-03-27",
+      "category": "定期报告",
+      "headline": "2025 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-03-27",
+      "category": "定期报告",
+      "headline": "2025 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-03-27",
+      "category": "定期报告",
+      "headline": "2025 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-03-27",
+      "category": "定期报告",
+      "headline": "2025 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2026-03-27",
+      "category": "业绩",
+      "headline": "2025 年报：营业收入 3412 亿元，归母净利润 1500 亿元",
+      "sentiment": "neutral",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-03-27",
+      "category": "定期报告",
+      "headline": "2025 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-03-27",
+      "category": "定期报告",
+      "headline": "2025 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-03-27",
+      "category": "业绩",
+      "headline": "2025 年报：营业总收入 1902 亿元，同比增长 7.2%",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2026-03-19",
+      "category": "业绩",
+      "headline": "2025 年报：非国际准则归母净利润 2265 亿元人民币",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2026-03-12",
+      "category": "行业",
+      "headline": "碳酸锂价格企稳，行业排产环比回升",
+      "sentiment": "positive",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2026-02-11",
+      "category": "行业",
+      "headline": "春节动销数据低于预期，飞天茅台批价回落至 2100 元区间",
+      "sentiment": "negative",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2026-02-05",
+      "category": "产品",
+      "headline": "第五代 DM 技术平台发布，亏电油耗进入 2L 时代",
+      "sentiment": "positive",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2026-01-20",
+      "category": "监管",
+      "headline": "出口管制清单更新，设备采购周期延长",
+      "sentiment": "negative",
+      "importance": "high"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2025-10-24",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2025-10-24",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2025-10-24",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2025-10-24",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2025-10-24",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2025-10-24",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2025-08-15",
+      "category": "定期报告",
+      "headline": "2025 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2025-08-15",
+      "category": "定期报告",
+      "headline": "2025 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2025-08-15",
+      "category": "定期报告",
+      "headline": "2025 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2025-08-15",
+      "category": "定期报告",
+      "headline": "2025 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2025-08-15",
+      "category": "定期报告",
+      "headline": "2025 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2025-08-15",
+      "category": "定期报告",
+      "headline": "2025 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2025-04-25",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2025-04-25",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2025-04-25",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2025-04-25",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2025-04-25",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2025-04-25",
+      "category": "定期报告",
+      "headline": "2025 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2025-03-28",
+      "category": "定期报告",
+      "headline": "2024 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2025-03-28",
+      "category": "定期报告",
+      "headline": "2024 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2025-03-28",
+      "category": "定期报告",
+      "headline": "2024 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2025-03-28",
+      "category": "定期报告",
+      "headline": "2024 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2025-03-28",
+      "category": "定期报告",
+      "headline": "2024 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2025-03-28",
+      "category": "定期报告",
+      "headline": "2024 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2024-10-26",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2024-10-26",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2024-10-26",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2024-10-26",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2024-10-26",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2024-10-26",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2024-08-09",
+      "category": "定期报告",
+      "headline": "2024 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2024-08-09",
+      "category": "定期报告",
+      "headline": "2024 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2024-08-09",
+      "category": "定期报告",
+      "headline": "2024 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2024-08-09",
+      "category": "定期报告",
+      "headline": "2024 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2024-08-09",
+      "category": "定期报告",
+      "headline": "2024 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2024-08-09",
+      "category": "定期报告",
+      "headline": "2024 年半年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2024-04-27",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2024-04-27",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2024-04-27",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2024-04-27",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2024-04-27",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2024-04-27",
+      "category": "定期报告",
+      "headline": "2024 年季度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "date": "2024-04-02",
+      "category": "定期报告",
+      "headline": "2023 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "date": "2024-04-02",
+      "category": "定期报告",
+      "headline": "2023 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "date": "2024-04-02",
+      "category": "定期报告",
+      "headline": "2023 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "date": "2024-04-02",
+      "category": "定期报告",
+      "headline": "2023 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "date": "2024-04-02",
+      "category": "定期报告",
+      "headline": "2023 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "date": "2024-04-02",
+      "category": "定期报告",
+      "headline": "2023 年年度报告披露",
+      "sentiment": "neutral",
+      "importance": "medium"
+    }
+  ]
+}

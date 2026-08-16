@@ -1,0 +1,320 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "consensus": [
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "asOf": "2026-08-14",
+      "coverageCount": 23,
+      "rating": {
+        "buy": 23,
+        "hold": 0,
+        "sell": 0
+      },
+      "consensusRating": "买入",
+      "targetPrice": {
+        "mean": 1722.27,
+        "high": 1980,
+        "low": 1450,
+        "median": 1777.09
+      },
+      "upsideToMean": 28.34,
+      "forecasts": [
+        {
+          "fiscalYear": 2026,
+          "revenue": 1679.25,
+          "netProfit": 839.62,
+          "eps": 66.838,
+          "impliedPe": 20.08,
+          "analystCount": 23
+        },
+        {
+          "fiscalYear": 2027,
+          "revenue": 1800.15,
+          "netProfit": 909.14,
+          "eps": 72.373,
+          "impliedPe": 18.54,
+          "analystCount": 16
+        },
+        {
+          "fiscalYear": 2028,
+          "revenue": 1929.76,
+          "netProfit": 984.42,
+          "eps": 78.365,
+          "impliedPe": 17.12,
+          "analystCount": 9
+        }
+      ],
+      "revision3M": {
+        "upgrades": 3,
+        "downgrades": 1,
+        "epsRevisionPercent": 3.5
+      }
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "asOf": "2026-08-14",
+      "coverageCount": 41,
+      "rating": {
+        "buy": 36,
+        "hold": 5,
+        "sell": 0
+      },
+      "consensusRating": "买入",
+      "targetPrice": {
+        "mean": 488,
+        "high": 560,
+        "low": 380,
+        "median": 503.04
+      },
+      "upsideToMean": 23.45,
+      "forecasts": [
+        {
+          "fiscalYear": 2026,
+          "revenue": 4135.14,
+          "netProfit": 720.52,
+          "eps": 15.801,
+          "impliedPe": 25.02,
+          "analystCount": 41
+        },
+        {
+          "fiscalYear": 2027,
+          "revenue": 4523.85,
+          "netProfit": 798.41,
+          "eps": 17.509,
+          "impliedPe": 22.58,
+          "analystCount": 34
+        },
+        {
+          "fiscalYear": 2028,
+          "revenue": 4949.09,
+          "netProfit": 884.72,
+          "eps": 19.402,
+          "impliedPe": 20.37,
+          "analystCount": 27
+        }
+      ],
+      "revision3M": {
+        "upgrades": 3,
+        "downgrades": 2,
+        "epsRevisionPercent": 0
+      }
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "asOf": "2026-08-14",
+      "coverageCount": 32,
+      "rating": {
+        "buy": 27,
+        "hold": 5,
+        "sell": 0
+      },
+      "consensusRating": "买入",
+      "targetPrice": {
+        "mean": 46.2,
+        "high": 53,
+        "low": 39.5,
+        "median": 47.62
+      },
+      "upsideToMean": 18.55,
+      "forecasts": [
+        {
+          "fiscalYear": 2026,
+          "revenue": 3509.31,
+          "netProfit": 1551.15,
+          "eps": 6.15,
+          "impliedPe": 6.34,
+          "analystCount": 32
+        },
+        {
+          "fiscalYear": 2027,
+          "revenue": 3618.1,
+          "netProfit": 1606.45,
+          "eps": 6.37,
+          "impliedPe": 6.12,
+          "analystCount": 25
+        },
+        {
+          "fiscalYear": 2028,
+          "revenue": 3730.26,
+          "netProfit": 1663.72,
+          "eps": 6.597,
+          "impliedPe": 5.91,
+          "analystCount": 18
+        }
+      ],
+      "revision3M": {
+        "upgrades": 3,
+        "downgrades": 2,
+        "epsRevisionPercent": 3.5
+      }
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "asOf": "2026-08-14",
+      "coverageCount": 26,
+      "rating": {
+        "buy": 15,
+        "hold": 9,
+        "sell": 2
+      },
+      "consensusRating": "增持",
+      "targetPrice": {
+        "mean": 128.5,
+        "high": 168,
+        "low": 92,
+        "median": 142.32
+      },
+      "upsideToMean": 25.33,
+      "forecasts": [
+        {
+          "fiscalYear": 2026,
+          "revenue": 750.69,
+          "netProfit": 53.97,
+          "eps": 0.676,
+          "impliedPe": 151.57,
+          "analystCount": 26
+        },
+        {
+          "fiscalYear": 2027,
+          "revenue": 890.32,
+          "netProfit": 65.51,
+          "eps": 0.821,
+          "impliedPe": 124.87,
+          "analystCount": 19
+        },
+        {
+          "fiscalYear": 2028,
+          "revenue": 1055.91,
+          "netProfit": 79.52,
+          "eps": 0.997,
+          "impliedPe": 102.86,
+          "analystCount": 12
+        }
+      ],
+      "revision3M": {
+        "upgrades": 1,
+        "downgrades": 2,
+        "epsRevisionPercent": 2.5
+      }
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "asOf": "2026-08-14",
+      "coverageCount": 38,
+      "rating": {
+        "buy": 30,
+        "hold": 7,
+        "sell": 1
+      },
+      "consensusRating": "买入",
+      "targetPrice": {
+        "mean": 112.4,
+        "high": 140,
+        "low": 84,
+        "median": 121.15
+      },
+      "upsideToMean": 24.72,
+      "forecasts": [
+        {
+          "fiscalYear": 2026,
+          "revenue": 9476.48,
+          "netProfit": 449.76,
+          "eps": 4.932,
+          "impliedPe": 18.27,
+          "analystCount": 38
+        },
+        {
+          "fiscalYear": 2027,
+          "revenue": 10499.94,
+          "netProfit": 505.62,
+          "eps": 5.544,
+          "impliedPe": 16.26,
+          "analystCount": 31
+        },
+        {
+          "fiscalYear": 2028,
+          "revenue": 11633.94,
+          "netProfit": 568.42,
+          "eps": 6.233,
+          "impliedPe": 14.46,
+          "analystCount": 24
+        }
+      ],
+      "revision3M": {
+        "upgrades": 6,
+        "downgrades": 3,
+        "epsRevisionPercent": -2
+      }
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "asOf": "2026-08-14",
+      "coverageCount": 47,
+      "rating": {
+        "buy": 44,
+        "hold": 3,
+        "sell": 0
+      },
+      "consensusRating": "买入",
+      "targetPrice": {
+        "mean": 585,
+        "high": 700,
+        "low": 470,
+        "median": 616.8
+      },
+      "upsideToMean": 27.12,
+      "forecasts": [
+        {
+          "fiscalYear": 2026,
+          "revenue": 7794.32,
+          "netProfit": 2496.71,
+          "eps": 27.286,
+          "impliedPe": 16.87,
+          "analystCount": 47
+        },
+        {
+          "fiscalYear": 2027,
+          "revenue": 8519.19,
+          "netProfit": 2763.73,
+          "eps": 30.205,
+          "impliedPe": 15.24,
+          "analystCount": 40
+        },
+        {
+          "fiscalYear": 2028,
+          "revenue": 9311.48,
+          "netProfit": 3059.31,
+          "eps": 33.435,
+          "impliedPe": 13.76,
+          "analystCount": 33
+        }
+      ],
+      "revision3M": {
+        "upgrades": 5,
+        "downgrades": 0,
+        "epsRevisionPercent": -2.5
+      }
+    }
+  ]
+}

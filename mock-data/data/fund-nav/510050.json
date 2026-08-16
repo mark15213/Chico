@@ -1,0 +1,4515 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "fund": {
+    "code": "510050",
+    "market": "SSE",
+    "name": "华夏上证50ETF",
+    "kind": "etf",
+    "currency": "CNY"
+  },
+  "navs": [
+    {
+      "date": "2024-07-24",
+      "nav": 2.4338,
+      "cumulativeNav": 4.0165,
+      "dailyReturn": 0,
+      "marketPrice": 2.441,
+      "premiumDiscount": 0.275,
+      "iopv": 2.4331
+    },
+    {
+      "date": "2024-07-25",
+      "nav": 2.4404,
+      "cumulativeNav": 4.0272,
+      "dailyReturn": 0.268,
+      "marketPrice": 2.446,
+      "premiumDiscount": 0.242,
+      "iopv": 2.4407
+    },
+    {
+      "date": "2024-07-26",
+      "nav": 2.419,
+      "cumulativeNav": 3.9919,
+      "dailyReturn": -0.877,
+      "marketPrice": 2.418,
+      "premiumDiscount": -0.036,
+      "iopv": 2.4187
+    },
+    {
+      "date": "2024-07-29",
+      "nav": 2.366,
+      "cumulativeNav": 3.9044,
+      "dailyReturn": -2.192,
+      "marketPrice": 2.362,
+      "premiumDiscount": -0.161,
+      "iopv": 2.3659
+    },
+    {
+      "date": "2024-07-30",
+      "nav": 2.3547,
+      "cumulativeNav": 3.8859,
+      "dailyReturn": -0.474,
+      "marketPrice": 2.35,
+      "premiumDiscount": -0.209,
+      "iopv": 2.3541
+    },
+    {
+      "date": "2024-07-31",
+      "nav": 2.3854,
+      "cumulativeNav": 3.9365,
+      "dailyReturn": 1.301,
+      "marketPrice": 2.379,
+      "premiumDiscount": -0.268,
+      "iopv": 2.3853
+    },
+    {
+      "date": "2024-08-01",
+      "nav": 2.3982,
+      "cumulativeNav": 3.9576,
+      "dailyReturn": 0.537,
+      "marketPrice": 2.403,
+      "premiumDiscount": 0.203,
+      "iopv": 2.3977
+    },
+    {
+      "date": "2024-08-02",
+      "nav": 2.4054,
+      "cumulativeNav": 3.9695,
+      "dailyReturn": 0.299,
+      "marketPrice": 2.409,
+      "premiumDiscount": 0.169,
+      "iopv": 2.4059
+    },
+    {
+      "date": "2024-08-05",
+      "nav": 2.3885,
+      "cumulativeNav": 3.9417,
+      "dailyReturn": -0.699,
+      "marketPrice": 2.388,
+      "premiumDiscount": -0.017,
+      "iopv": 2.389
+    },
+    {
+      "date": "2024-08-06",
+      "nav": 2.4181,
+      "cumulativeNav": 3.9905,
+      "dailyReturn": 1.238,
+      "marketPrice": 2.423,
+      "premiumDiscount": 0.193,
+      "iopv": 2.4186
+    },
+    {
+      "date": "2024-08-07",
+      "nav": 2.437,
+      "cumulativeNav": 4.0216,
+      "dailyReturn": 0.781,
+      "marketPrice": 2.434,
+      "premiumDiscount": -0.139,
+      "iopv": 2.4378
+    },
+    {
+      "date": "2024-08-08",
+      "nav": 2.4667,
+      "cumulativeNav": 4.0707,
+      "dailyReturn": 1.22,
+      "marketPrice": 2.472,
+      "premiumDiscount": 0.219,
+      "iopv": 2.466
+    },
+    {
+      "date": "2024-08-09",
+      "nav": 2.4666,
+      "cumulativeNav": 4.0705,
+      "dailyReturn": -0.005,
+      "marketPrice": 2.473,
+      "premiumDiscount": 0.255,
+      "iopv": 2.4676
+    },
+    {
+      "date": "2024-08-12",
+      "nav": 2.4523,
+      "cumulativeNav": 4.0469,
+      "dailyReturn": -0.58,
+      "marketPrice": 2.456,
+      "premiumDiscount": 0.165,
+      "iopv": 2.4535
+    },
+    {
+      "date": "2024-08-13",
+      "nav": 2.4161,
+      "cumulativeNav": 3.9871,
+      "dailyReturn": -1.477,
+      "marketPrice": 2.418,
+      "premiumDiscount": 0.074,
+      "iopv": 2.4151
+    },
+    {
+      "date": "2024-08-14",
+      "nav": 2.4293,
+      "cumulativeNav": 4.009,
+      "dailyReturn": 0.547,
+      "marketPrice": 2.429,
+      "premiumDiscount": -0.03,
+      "iopv": 2.4285
+    },
+    {
+      "date": "2024-08-15",
+      "nav": 2.4636,
+      "cumulativeNav": 4.0656,
+      "dailyReturn": 1.412,
+      "marketPrice": 2.463,
+      "premiumDiscount": -0.03,
+      "iopv": 2.464
+    },
+    {
+      "date": "2024-08-16",
+      "nav": 2.4233,
+      "cumulativeNav": 3.9991,
+      "dailyReturn": -1.636,
+      "marketPrice": 2.426,
+      "premiumDiscount": 0.104,
+      "iopv": 2.4243
+    },
+    {
+      "date": "2024-08-19",
+      "nav": 2.4128,
+      "cumulativeNav": 3.9818,
+      "dailyReturn": -0.432,
+      "marketPrice": 2.418,
+      "premiumDiscount": 0.2,
+      "iopv": 2.4138
+    },
+    {
+      "date": "2024-08-20",
+      "nav": 2.3745,
+      "cumulativeNav": 3.9185,
+      "dailyReturn": -1.591,
+      "marketPrice": 2.373,
+      "premiumDiscount": -0.069,
+      "iopv": 2.3735
+    },
+    {
+      "date": "2024-08-21",
+      "nav": 2.4031,
+      "cumulativeNav": 3.9658,
+      "dailyReturn": 1.208,
+      "marketPrice": 2.404,
+      "premiumDiscount": 0.022,
+      "iopv": 2.4029
+    },
+    {
+      "date": "2024-08-22",
+      "nav": 2.4333,
+      "cumulativeNav": 4.0155,
+      "dailyReturn": 1.253,
+      "marketPrice": 2.429,
+      "premiumDiscount": -0.158,
+      "iopv": 2.4332
+    },
+    {
+      "date": "2024-08-23",
+      "nav": 2.4546,
+      "cumulativeNav": 4.0508,
+      "dailyReturn": 0.879,
+      "marketPrice": 2.452,
+      "premiumDiscount": -0.105,
+      "iopv": 2.4555
+    },
+    {
+      "date": "2024-08-26",
+      "nav": 2.4617,
+      "cumulativeNav": 4.0624,
+      "dailyReturn": 0.288,
+      "marketPrice": 2.466,
+      "premiumDiscount": 0.163,
+      "iopv": 2.4621
+    },
+    {
+      "date": "2024-08-27",
+      "nav": 2.4712,
+      "cumulativeNav": 4.0781,
+      "dailyReturn": 0.386,
+      "marketPrice": 2.472,
+      "premiumDiscount": 0.048,
+      "iopv": 2.4722
+    },
+    {
+      "date": "2024-08-28",
+      "nav": 2.4657,
+      "cumulativeNav": 4.069,
+      "dailyReturn": -0.223,
+      "marketPrice": 2.468,
+      "premiumDiscount": 0.108,
+      "iopv": 2.4667
+    },
+    {
+      "date": "2024-08-29",
+      "nav": 2.4793,
+      "cumulativeNav": 4.0915,
+      "dailyReturn": 0.553,
+      "marketPrice": 2.476,
+      "premiumDiscount": -0.127,
+      "iopv": 2.4802
+    },
+    {
+      "date": "2024-08-30",
+      "nav": 2.4976,
+      "cumulativeNav": 4.1216,
+      "dailyReturn": 0.735,
+      "marketPrice": 2.493,
+      "premiumDiscount": -0.181,
+      "iopv": 2.498
+    },
+    {
+      "date": "2024-09-02",
+      "nav": 2.5092,
+      "cumulativeNav": 4.1408,
+      "dailyReturn": 0.465,
+      "marketPrice": 2.503,
+      "premiumDiscount": -0.246,
+      "iopv": 2.5104
+    },
+    {
+      "date": "2024-09-03",
+      "nav": 2.5156,
+      "cumulativeNav": 4.1514,
+      "dailyReturn": 0.256,
+      "marketPrice": 2.512,
+      "premiumDiscount": -0.159,
+      "iopv": 2.5147
+    },
+    {
+      "date": "2024-09-04",
+      "nav": 2.5048,
+      "cumulativeNav": 4.1335,
+      "dailyReturn": -0.431,
+      "marketPrice": 2.508,
+      "premiumDiscount": 0.112,
+      "iopv": 2.505
+    },
+    {
+      "date": "2024-09-05",
+      "nav": 2.4882,
+      "cumulativeNav": 4.1061,
+      "dailyReturn": -0.662,
+      "marketPrice": 2.494,
+      "premiumDiscount": 0.224,
+      "iopv": 2.488
+    },
+    {
+      "date": "2024-09-06",
+      "nav": 2.4904,
+      "cumulativeNav": 4.1098,
+      "dailyReturn": 0.088,
+      "marketPrice": 2.49,
+      "premiumDiscount": -0.017,
+      "iopv": 2.4898
+    },
+    {
+      "date": "2024-09-09",
+      "nav": 2.4777,
+      "cumulativeNav": 4.0888,
+      "dailyReturn": -0.509,
+      "marketPrice": 2.477,
+      "premiumDiscount": -0.036,
+      "iopv": 2.4787
+    },
+    {
+      "date": "2024-09-10",
+      "nav": 2.4644,
+      "cumulativeNav": 4.0669,
+      "dailyReturn": -0.537,
+      "marketPrice": 2.459,
+      "premiumDiscount": -0.237,
+      "iopv": 2.4637
+    },
+    {
+      "date": "2024-09-11",
+      "nav": 2.4937,
+      "cumulativeNav": 4.1152,
+      "dailyReturn": 1.189,
+      "marketPrice": 2.488,
+      "premiumDiscount": -0.243,
+      "iopv": 2.4941
+    },
+    {
+      "date": "2024-09-12",
+      "nav": 2.4445,
+      "cumulativeNav": 4.034,
+      "dailyReturn": -1.973,
+      "marketPrice": 2.449,
+      "premiumDiscount": 0.202,
+      "iopv": 2.4437
+    },
+    {
+      "date": "2024-09-13",
+      "nav": 2.4523,
+      "cumulativeNav": 4.0469,
+      "dailyReturn": 0.321,
+      "marketPrice": 2.447,
+      "premiumDiscount": -0.233,
+      "iopv": 2.4524
+    },
+    {
+      "date": "2024-09-18",
+      "nav": 2.4814,
+      "cumulativeNav": 4.095,
+      "dailyReturn": 1.187,
+      "marketPrice": 2.48,
+      "premiumDiscount": -0.039,
+      "iopv": 2.4809
+    },
+    {
+      "date": "2024-09-19",
+      "nav": 2.52,
+      "cumulativeNav": 4.1586,
+      "dailyReturn": 1.554,
+      "marketPrice": 2.524,
+      "premiumDiscount": 0.162,
+      "iopv": 2.52
+    },
+    {
+      "date": "2024-09-20",
+      "nav": 2.5643,
+      "cumulativeNav": 4.2317,
+      "dailyReturn": 1.758,
+      "marketPrice": 2.571,
+      "premiumDiscount": 0.266,
+      "iopv": 2.5632
+    },
+    {
+      "date": "2024-09-23",
+      "nav": 2.5642,
+      "cumulativeNav": 4.2315,
+      "dailyReturn": -0.005,
+      "marketPrice": 2.558,
+      "premiumDiscount": -0.244,
+      "iopv": 2.564
+    },
+    {
+      "date": "2024-09-24",
+      "nav": 2.5738,
+      "cumulativeNav": 4.2475,
+      "dailyReturn": 0.378,
+      "marketPrice": 2.571,
+      "premiumDiscount": -0.129,
+      "iopv": 2.5726
+    },
+    {
+      "date": "2024-09-25",
+      "nav": 2.6011,
+      "cumulativeNav": 4.2924,
+      "dailyReturn": 1.058,
+      "marketPrice": 2.596,
+      "premiumDiscount": -0.194,
+      "iopv": 2.5999
+    },
+    {
+      "date": "2024-09-26",
+      "nav": 2.6141,
+      "cumulativeNav": 4.3139,
+      "dailyReturn": 0.499,
+      "marketPrice": 2.61,
+      "premiumDiscount": -0.139,
+      "iopv": 2.6147
+    },
+    {
+      "date": "2024-09-27",
+      "nav": 2.6344,
+      "cumulativeNav": 4.3475,
+      "dailyReturn": 0.779,
+      "marketPrice": 2.627,
+      "premiumDiscount": -0.265,
+      "iopv": 2.6351
+    },
+    {
+      "date": "2024-09-30",
+      "nav": 2.6552,
+      "cumulativeNav": 4.3818,
+      "dailyReturn": 0.79,
+      "marketPrice": 2.661,
+      "premiumDiscount": 0.224,
+      "iopv": 2.6549
+    },
+    {
+      "date": "2024-10-08",
+      "nav": 2.6358,
+      "cumulativeNav": 4.3497,
+      "dailyReturn": -0.733,
+      "marketPrice": 2.632,
+      "premiumDiscount": -0.148,
+      "iopv": 2.637
+    },
+    {
+      "date": "2024-10-09",
+      "nav": 2.7021,
+      "cumulativeNav": 4.4592,
+      "dailyReturn": 2.516,
+      "marketPrice": 2.702,
+      "premiumDiscount": 0.013,
+      "iopv": 2.7011
+    },
+    {
+      "date": "2024-10-10",
+      "nav": 2.6922,
+      "cumulativeNav": 4.4428,
+      "dailyReturn": -0.366,
+      "marketPrice": 2.684,
+      "premiumDiscount": -0.3,
+      "iopv": 2.6935
+    },
+    {
+      "date": "2024-10-11",
+      "nav": 2.7054,
+      "cumulativeNav": 4.4645,
+      "dailyReturn": 0.488,
+      "marketPrice": 2.702,
+      "premiumDiscount": -0.134,
+      "iopv": 2.7048
+    },
+    {
+      "date": "2024-10-14",
+      "nav": 2.724,
+      "cumulativeNav": 4.4953,
+      "dailyReturn": 0.689,
+      "marketPrice": 2.731,
+      "premiumDiscount": 0.257,
+      "iopv": 2.7237
+    },
+    {
+      "date": "2024-10-15",
+      "nav": 2.784,
+      "cumulativeNav": 4.5944,
+      "dailyReturn": 2.204,
+      "marketPrice": 2.789,
+      "premiumDiscount": 0.171,
+      "iopv": 2.7836
+    },
+    {
+      "date": "2024-10-16",
+      "nav": 2.7891,
+      "cumulativeNav": 4.6026,
+      "dailyReturn": 0.18,
+      "marketPrice": 2.796,
+      "premiumDiscount": 0.244,
+      "iopv": 2.7896
+    },
+    {
+      "date": "2024-10-17",
+      "nav": 2.7866,
+      "cumulativeNav": 4.5987,
+      "dailyReturn": -0.087,
+      "marketPrice": 2.787,
+      "premiumDiscount": 0,
+      "iopv": 2.7871
+    },
+    {
+      "date": "2024-10-18",
+      "nav": 2.8215,
+      "cumulativeNav": 4.6562,
+      "dailyReturn": 1.252,
+      "marketPrice": 2.828,
+      "premiumDiscount": 0.247,
+      "iopv": 2.8214
+    },
+    {
+      "date": "2024-10-21",
+      "nav": 2.8297,
+      "cumulativeNav": 4.6697,
+      "dailyReturn": 0.29,
+      "marketPrice": 2.835,
+      "premiumDiscount": 0.194,
+      "iopv": 2.8305
+    },
+    {
+      "date": "2024-10-22",
+      "nav": 2.8714,
+      "cumulativeNav": 4.7385,
+      "dailyReturn": 1.473,
+      "marketPrice": 2.867,
+      "premiumDiscount": -0.136,
+      "iopv": 2.8728
+    },
+    {
+      "date": "2024-10-23",
+      "nav": 2.8921,
+      "cumulativeNav": 4.7727,
+      "dailyReturn": 0.721,
+      "marketPrice": 2.897,
+      "premiumDiscount": 0.178,
+      "iopv": 2.8911
+    },
+    {
+      "date": "2024-10-24",
+      "nav": 2.8742,
+      "cumulativeNav": 4.7432,
+      "dailyReturn": -0.618,
+      "marketPrice": 2.87,
+      "premiumDiscount": -0.146,
+      "iopv": 2.8755
+    },
+    {
+      "date": "2024-10-25",
+      "nav": 2.8416,
+      "cumulativeNav": 4.6894,
+      "dailyReturn": -1.134,
+      "marketPrice": 2.834,
+      "premiumDiscount": -0.283,
+      "iopv": 2.8412
+    },
+    {
+      "date": "2024-10-28",
+      "nav": 2.8492,
+      "cumulativeNav": 4.7019,
+      "dailyReturn": 0.266,
+      "marketPrice": 2.857,
+      "premiumDiscount": 0.262,
+      "iopv": 2.8478
+    },
+    {
+      "date": "2024-10-29",
+      "nav": 2.8235,
+      "cumulativeNav": 4.6594,
+      "dailyReturn": -0.903,
+      "marketPrice": 2.826,
+      "premiumDiscount": 0.089,
+      "iopv": 2.8227
+    },
+    {
+      "date": "2024-10-30",
+      "nav": 2.7773,
+      "cumulativeNav": 4.5832,
+      "dailyReturn": -1.635,
+      "marketPrice": 2.783,
+      "premiumDiscount": 0.194,
+      "iopv": 2.7769
+    },
+    {
+      "date": "2024-10-31",
+      "nav": 2.7857,
+      "cumulativeNav": 4.5971,
+      "dailyReturn": 0.302,
+      "marketPrice": 2.781,
+      "premiumDiscount": -0.165,
+      "iopv": 2.7852
+    },
+    {
+      "date": "2024-11-01",
+      "nav": 2.7806,
+      "cumulativeNav": 4.5887,
+      "dailyReturn": -0.182,
+      "marketPrice": 2.773,
+      "premiumDiscount": -0.257,
+      "iopv": 2.78
+    },
+    {
+      "date": "2024-11-04",
+      "nav": 2.7854,
+      "cumulativeNav": 4.5967,
+      "dailyReturn": 0.174,
+      "marketPrice": 2.782,
+      "premiumDiscount": -0.116,
+      "iopv": 2.7858
+    },
+    {
+      "date": "2024-11-05",
+      "nav": 2.814,
+      "cumulativeNav": 4.6438,
+      "dailyReturn": 1.026,
+      "marketPrice": 2.809,
+      "premiumDiscount": -0.163,
+      "iopv": 2.8128
+    },
+    {
+      "date": "2024-11-06",
+      "nav": 2.8239,
+      "cumulativeNav": 4.6602,
+      "dailyReturn": 0.353,
+      "marketPrice": 2.828,
+      "premiumDiscount": 0.15,
+      "iopv": 2.8245
+    },
+    {
+      "date": "2024-11-07",
+      "nav": 2.7955,
+      "cumulativeNav": 4.6134,
+      "dailyReturn": -1.006,
+      "marketPrice": 2.789,
+      "premiumDiscount": -0.248,
+      "iopv": 2.7965
+    },
+    {
+      "date": "2024-11-08",
+      "nav": 2.7859,
+      "cumulativeNav": 4.5975,
+      "dailyReturn": -0.344,
+      "marketPrice": 2.791,
+      "premiumDiscount": 0.187,
+      "iopv": 2.7853
+    },
+    {
+      "date": "2024-11-11",
+      "nav": 2.7575,
+      "cumulativeNav": 4.5506,
+      "dailyReturn": -1.02,
+      "marketPrice": 2.751,
+      "premiumDiscount": -0.237,
+      "iopv": 2.7577
+    },
+    {
+      "date": "2024-11-12",
+      "nav": 2.7508,
+      "cumulativeNav": 4.5395,
+      "dailyReturn": -0.244,
+      "marketPrice": 2.753,
+      "premiumDiscount": 0.068,
+      "iopv": 2.7498
+    },
+    {
+      "date": "2024-11-13",
+      "nav": 2.7522,
+      "cumulativeNav": 4.5418,
+      "dailyReturn": 0.051,
+      "marketPrice": 2.75,
+      "premiumDiscount": -0.086,
+      "iopv": 2.7525
+    },
+    {
+      "date": "2024-11-14",
+      "nav": 2.7551,
+      "cumulativeNav": 4.5467,
+      "dailyReturn": 0.108,
+      "marketPrice": 2.752,
+      "premiumDiscount": -0.121,
+      "iopv": 2.7562
+    },
+    {
+      "date": "2024-11-15",
+      "nav": 2.7997,
+      "cumulativeNav": 4.6202,
+      "dailyReturn": 1.617,
+      "marketPrice": 2.799,
+      "premiumDiscount": -0.04,
+      "iopv": 2.8001
+    },
+    {
+      "date": "2024-11-18",
+      "nav": 2.8238,
+      "cumulativeNav": 4.6599,
+      "dailyReturn": 0.86,
+      "marketPrice": 2.828,
+      "premiumDiscount": 0.146,
+      "iopv": 2.8248
+    },
+    {
+      "date": "2024-11-19",
+      "nav": 2.8613,
+      "cumulativeNav": 4.7218,
+      "dailyReturn": 1.329,
+      "marketPrice": 2.86,
+      "premiumDiscount": -0.054,
+      "iopv": 2.8622
+    },
+    {
+      "date": "2024-11-20",
+      "nav": 2.8196,
+      "cumulativeNav": 4.653,
+      "dailyReturn": -1.458,
+      "marketPrice": 2.818,
+      "premiumDiscount": -0.064,
+      "iopv": 2.8199
+    },
+    {
+      "date": "2024-11-21",
+      "nav": 2.8375,
+      "cumulativeNav": 4.6825,
+      "dailyReturn": 0.634,
+      "marketPrice": 2.843,
+      "premiumDiscount": 0.19,
+      "iopv": 2.837
+    },
+    {
+      "date": "2024-11-22",
+      "nav": 2.8279,
+      "cumulativeNav": 4.6668,
+      "dailyReturn": -0.336,
+      "marketPrice": 2.826,
+      "premiumDiscount": -0.082,
+      "iopv": 2.8292
+    },
+    {
+      "date": "2024-11-25",
+      "nav": 2.8305,
+      "cumulativeNav": 4.671,
+      "dailyReturn": 0.089,
+      "marketPrice": 2.833,
+      "premiumDiscount": 0.079,
+      "iopv": 2.8301
+    },
+    {
+      "date": "2024-11-26",
+      "nav": 2.7929,
+      "cumulativeNav": 4.609,
+      "dailyReturn": -1.326,
+      "marketPrice": 2.792,
+      "premiumDiscount": -0.029,
+      "iopv": 2.7931
+    },
+    {
+      "date": "2024-11-27",
+      "nav": 2.8258,
+      "cumulativeNav": 4.6634,
+      "dailyReturn": 1.178,
+      "marketPrice": 2.823,
+      "premiumDiscount": -0.088,
+      "iopv": 2.826
+    },
+    {
+      "date": "2024-11-28",
+      "nav": 2.7894,
+      "cumulativeNav": 4.6032,
+      "dailyReturn": -1.29,
+      "marketPrice": 2.783,
+      "premiumDiscount": -0.226,
+      "iopv": 2.7892
+    },
+    {
+      "date": "2024-11-29",
+      "nav": 2.7851,
+      "cumulativeNav": 4.596,
+      "dailyReturn": -0.155,
+      "marketPrice": 2.793,
+      "premiumDiscount": 0.291,
+      "iopv": 2.7854
+    },
+    {
+      "date": "2024-12-02",
+      "nav": 2.8072,
+      "cumulativeNav": 4.6326,
+      "dailyReturn": 0.794,
+      "marketPrice": 2.806,
+      "premiumDiscount": -0.028,
+      "iopv": 2.8071
+    },
+    {
+      "date": "2024-12-03",
+      "nav": 2.7562,
+      "cumulativeNav": 4.5484,
+      "dailyReturn": -1.817,
+      "marketPrice": 2.751,
+      "premiumDiscount": -0.186,
+      "iopv": 2.7561
+    },
+    {
+      "date": "2024-12-04",
+      "nav": 2.7553,
+      "cumulativeNav": 4.5469,
+      "dailyReturn": -0.032,
+      "marketPrice": 2.756,
+      "premiumDiscount": 0.026,
+      "iopv": 2.7561
+    },
+    {
+      "date": "2024-12-05",
+      "nav": 2.7009,
+      "cumulativeNav": 4.4572,
+      "dailyReturn": -1.973,
+      "marketPrice": 2.706,
+      "premiumDiscount": 0.177,
+      "iopv": 2.7014
+    },
+    {
+      "date": "2024-12-06",
+      "nav": 2.7038,
+      "cumulativeNav": 4.4619,
+      "dailyReturn": 0.105,
+      "marketPrice": 2.703,
+      "premiumDiscount": -0.031,
+      "iopv": 2.7027
+    },
+    {
+      "date": "2024-12-09",
+      "nav": 2.6893,
+      "cumulativeNav": 4.438,
+      "dailyReturn": -0.535,
+      "marketPrice": 2.683,
+      "premiumDiscount": -0.22,
+      "iopv": 2.6885
+    },
+    {
+      "date": "2024-12-10",
+      "nav": 2.753,
+      "cumulativeNav": 4.5431,
+      "dailyReturn": 2.368,
+      "marketPrice": 2.756,
+      "premiumDiscount": 0.104,
+      "iopv": 2.7535
+    },
+    {
+      "date": "2024-12-11",
+      "nav": 2.748,
+      "cumulativeNav": 4.5349,
+      "dailyReturn": -0.18,
+      "marketPrice": 2.741,
+      "premiumDiscount": -0.247,
+      "iopv": 2.7471
+    },
+    {
+      "date": "2024-12-12",
+      "nav": 2.7956,
+      "cumulativeNav": 4.6134,
+      "dailyReturn": 1.731,
+      "marketPrice": 2.792,
+      "premiumDiscount": -0.127,
+      "iopv": 2.7946
+    },
+    {
+      "date": "2024-12-13",
+      "nav": 2.7485,
+      "cumulativeNav": 4.5357,
+      "dailyReturn": -1.684,
+      "marketPrice": 2.745,
+      "premiumDiscount": -0.129,
+      "iopv": 2.7486
+    },
+    {
+      "date": "2024-12-16",
+      "nav": 2.7349,
+      "cumulativeNav": 4.5133,
+      "dailyReturn": -0.493,
+      "marketPrice": 2.733,
+      "premiumDiscount": -0.064,
+      "iopv": 2.7362
+    },
+    {
+      "date": "2024-12-17",
+      "nav": 2.7674,
+      "cumulativeNav": 4.5668,
+      "dailyReturn": 1.186,
+      "marketPrice": 2.771,
+      "premiumDiscount": 0.121,
+      "iopv": 2.7684
+    },
+    {
+      "date": "2024-12-18",
+      "nav": 2.7278,
+      "cumulativeNav": 4.5015,
+      "dailyReturn": -1.431,
+      "marketPrice": 2.736,
+      "premiumDiscount": 0.296,
+      "iopv": 2.7287
+    },
+    {
+      "date": "2024-12-19",
+      "nav": 2.7147,
+      "cumulativeNav": 4.48,
+      "dailyReturn": -0.478,
+      "marketPrice": 2.719,
+      "premiumDiscount": 0.144,
+      "iopv": 2.7134
+    },
+    {
+      "date": "2024-12-20",
+      "nav": 2.623,
+      "cumulativeNav": 4.3287,
+      "dailyReturn": -3.378,
+      "marketPrice": 2.624,
+      "premiumDiscount": 0.039,
+      "iopv": 2.6224
+    },
+    {
+      "date": "2024-12-23",
+      "nav": 2.6477,
+      "cumulativeNav": 4.3694,
+      "dailyReturn": 0.94,
+      "marketPrice": 2.645,
+      "premiumDiscount": -0.09,
+      "iopv": 2.6467
+    },
+    {
+      "date": "2024-12-24",
+      "nav": 2.6229,
+      "cumulativeNav": 4.3284,
+      "dailyReturn": -0.937,
+      "marketPrice": 2.619,
+      "premiumDiscount": -0.165,
+      "iopv": 2.6225
+    },
+    {
+      "date": "2024-12-25",
+      "nav": 2.6115,
+      "cumulativeNav": 4.3096,
+      "dailyReturn": -0.434,
+      "marketPrice": 2.618,
+      "premiumDiscount": 0.268,
+      "iopv": 2.6109
+    },
+    {
+      "date": "2024-12-26",
+      "nav": 2.6174,
+      "cumulativeNav": 4.3194,
+      "dailyReturn": 0.227,
+      "marketPrice": 2.617,
+      "premiumDiscount": -0.034,
+      "iopv": 2.6174
+    },
+    {
+      "date": "2024-12-27",
+      "nav": 2.6672,
+      "cumulativeNav": 4.4015,
+      "dailyReturn": 1.9,
+      "marketPrice": 2.662,
+      "premiumDiscount": -0.187,
+      "iopv": 2.6681
+    },
+    {
+      "date": "2024-12-30",
+      "nav": 2.665,
+      "cumulativeNav": 4.3979,
+      "dailyReturn": -0.081,
+      "marketPrice": 2.658,
+      "premiumDiscount": -0.247,
+      "iopv": 2.6653
+    },
+    {
+      "date": "2024-12-31",
+      "nav": 2.6889,
+      "cumulativeNav": 4.4374,
+      "dailyReturn": 0.897,
+      "marketPrice": 2.691,
+      "premiumDiscount": 0.073,
+      "iopv": 2.689
+    },
+    {
+      "date": "2025-01-02",
+      "nav": 2.7389,
+      "cumulativeNav": 4.5199,
+      "dailyReturn": 1.86,
+      "marketPrice": 2.733,
+      "premiumDiscount": -0.204,
+      "iopv": 2.7395
+    },
+    {
+      "date": "2025-01-03",
+      "nav": 2.667,
+      "cumulativeNav": 4.4012,
+      "dailyReturn": -2.626,
+      "marketPrice": 2.67,
+      "premiumDiscount": 0.104,
+      "iopv": 2.6682
+    },
+    {
+      "date": "2025-01-06",
+      "nav": 2.7094,
+      "cumulativeNav": 4.4712,
+      "dailyReturn": 1.59,
+      "marketPrice": 2.714,
+      "premiumDiscount": 0.165,
+      "iopv": 2.7096
+    },
+    {
+      "date": "2025-01-07",
+      "nav": 2.7382,
+      "cumulativeNav": 4.5187,
+      "dailyReturn": 1.062,
+      "marketPrice": 2.737,
+      "premiumDiscount": -0.034,
+      "iopv": 2.7369
+    },
+    {
+      "date": "2025-01-08",
+      "nav": 2.7306,
+      "cumulativeNav": 4.5061,
+      "dailyReturn": -0.278,
+      "marketPrice": 2.723,
+      "premiumDiscount": -0.281,
+      "iopv": 2.7301
+    },
+    {
+      "date": "2025-01-09",
+      "nav": 2.728,
+      "cumulativeNav": 4.5018,
+      "dailyReturn": -0.095,
+      "marketPrice": 2.734,
+      "premiumDiscount": 0.237,
+      "iopv": 2.7286
+    },
+    {
+      "date": "2025-01-10",
+      "nav": 2.7286,
+      "cumulativeNav": 4.5029,
+      "dailyReturn": 0.024,
+      "marketPrice": 2.722,
+      "premiumDiscount": -0.231,
+      "iopv": 2.7284
+    },
+    {
+      "date": "2025-01-13",
+      "nav": 2.7303,
+      "cumulativeNav": 4.5056,
+      "dailyReturn": 0.06,
+      "marketPrice": 2.723,
+      "premiumDiscount": -0.278,
+      "iopv": 2.7315
+    },
+    {
+      "date": "2025-01-14",
+      "nav": 2.7411,
+      "cumulativeNav": 4.5234,
+      "dailyReturn": 0.396,
+      "marketPrice": 2.742,
+      "premiumDiscount": 0.046,
+      "iopv": 2.7403
+    },
+    {
+      "date": "2025-01-15",
+      "nav": 2.7417,
+      "cumulativeNav": 4.5246,
+      "dailyReturn": 0.025,
+      "marketPrice": 2.74,
+      "premiumDiscount": -0.052,
+      "iopv": 2.7406
+    },
+    {
+      "date": "2025-01-16",
+      "nav": 2.7178,
+      "cumulativeNav": 4.4851,
+      "dailyReturn": -0.873,
+      "marketPrice": 2.72,
+      "premiumDiscount": 0.073,
+      "iopv": 2.7188
+    },
+    {
+      "date": "2025-01-17",
+      "nav": 2.6824,
+      "cumulativeNav": 4.4267,
+      "dailyReturn": -1.302,
+      "marketPrice": 2.685,
+      "premiumDiscount": 0.111,
+      "iopv": 2.6837
+    },
+    {
+      "date": "2025-01-20",
+      "nav": 2.7066,
+      "cumulativeNav": 4.4666,
+      "dailyReturn": 0.903,
+      "marketPrice": 2.701,
+      "premiumDiscount": -0.215,
+      "iopv": 2.707
+    },
+    {
+      "date": "2025-01-21",
+      "nav": 2.757,
+      "cumulativeNav": 4.5497,
+      "dailyReturn": 1.859,
+      "marketPrice": 2.763,
+      "premiumDiscount": 0.216,
+      "iopv": 2.7565
+    },
+    {
+      "date": "2025-01-22",
+      "nav": 2.7793,
+      "cumulativeNav": 4.5865,
+      "dailyReturn": 0.809,
+      "marketPrice": 2.787,
+      "premiumDiscount": 0.287,
+      "iopv": 2.7794
+    },
+    {
+      "date": "2025-01-23",
+      "nav": 2.7432,
+      "cumulativeNav": 4.5269,
+      "dailyReturn": -1.299,
+      "marketPrice": 2.746,
+      "premiumDiscount": 0.101,
+      "iopv": 2.7422
+    },
+    {
+      "date": "2025-01-24",
+      "nav": 2.7603,
+      "cumulativeNav": 4.5552,
+      "dailyReturn": 0.625,
+      "marketPrice": 2.768,
+      "premiumDiscount": 0.296,
+      "iopv": 2.7612
+    },
+    {
+      "date": "2025-01-27",
+      "nav": 2.711,
+      "cumulativeNav": 4.4738,
+      "dailyReturn": -1.785,
+      "marketPrice": 2.712,
+      "premiumDiscount": 0.022,
+      "iopv": 2.7114
+    },
+    {
+      "date": "2025-02-05",
+      "nav": 2.7023,
+      "cumulativeNav": 4.4594,
+      "dailyReturn": -0.322,
+      "marketPrice": 2.704,
+      "premiumDiscount": 0.059,
+      "iopv": 2.701
+    },
+    {
+      "date": "2025-02-06",
+      "nav": 2.7433,
+      "cumulativeNav": 4.5272,
+      "dailyReturn": 1.519,
+      "marketPrice": 2.749,
+      "premiumDiscount": 0.204,
+      "iopv": 2.742
+    },
+    {
+      "date": "2025-02-07",
+      "nav": 2.7626,
+      "cumulativeNav": 4.559,
+      "dailyReturn": 0.703,
+      "marketPrice": 2.763,
+      "premiumDiscount": 0.016,
+      "iopv": 2.7623
+    },
+    {
+      "date": "2025-02-10",
+      "nav": 2.7988,
+      "cumulativeNav": 4.6188,
+      "dailyReturn": 1.312,
+      "marketPrice": 2.797,
+      "premiumDiscount": -0.065,
+      "iopv": 2.7979
+    },
+    {
+      "date": "2025-02-11",
+      "nav": 2.8313,
+      "cumulativeNav": 4.6724,
+      "dailyReturn": 1.161,
+      "marketPrice": 2.827,
+      "premiumDiscount": -0.159,
+      "iopv": 2.8324
+    },
+    {
+      "date": "2025-02-12",
+      "nav": 2.8268,
+      "cumulativeNav": 4.6649,
+      "dailyReturn": -0.161,
+      "marketPrice": 2.827,
+      "premiumDiscount": 0.012,
+      "iopv": 2.8261
+    },
+    {
+      "date": "2025-02-13",
+      "nav": 2.8201,
+      "cumulativeNav": 4.6538,
+      "dailyReturn": -0.238,
+      "marketPrice": 2.815,
+      "premiumDiscount": -0.189,
+      "iopv": 2.8202
+    },
+    {
+      "date": "2025-02-14",
+      "nav": 2.7959,
+      "cumulativeNav": 4.6139,
+      "dailyReturn": -0.857,
+      "marketPrice": 2.795,
+      "premiumDiscount": -0.023,
+      "iopv": 2.7954
+    },
+    {
+      "date": "2025-02-17",
+      "nav": 2.8132,
+      "cumulativeNav": 4.6426,
+      "dailyReturn": 0.62,
+      "marketPrice": 2.815,
+      "premiumDiscount": 0.073,
+      "iopv": 2.8129
+    },
+    {
+      "date": "2025-02-18",
+      "nav": 2.8391,
+      "cumulativeNav": 4.6852,
+      "dailyReturn": 0.92,
+      "marketPrice": 2.845,
+      "premiumDiscount": 0.218,
+      "iopv": 2.8394
+    },
+    {
+      "date": "2025-02-19",
+      "nav": 2.8054,
+      "cumulativeNav": 4.6297,
+      "dailyReturn": -1.186,
+      "marketPrice": 2.81,
+      "premiumDiscount": 0.18,
+      "iopv": 2.8062
+    },
+    {
+      "date": "2025-02-20",
+      "nav": 2.8167,
+      "cumulativeNav": 4.6483,
+      "dailyReturn": 0.403,
+      "marketPrice": 2.811,
+      "premiumDiscount": -0.213,
+      "iopv": 2.8166
+    },
+    {
+      "date": "2025-02-21",
+      "nav": 2.7592,
+      "cumulativeNav": 4.5533,
+      "dailyReturn": -2.043,
+      "marketPrice": 2.763,
+      "premiumDiscount": 0.138,
+      "iopv": 2.7599
+    },
+    {
+      "date": "2025-02-24",
+      "nav": 2.8135,
+      "cumulativeNav": 4.643,
+      "dailyReturn": 1.97,
+      "marketPrice": 2.808,
+      "premiumDiscount": -0.198,
+      "iopv": 2.8147
+    },
+    {
+      "date": "2025-02-25",
+      "nav": 2.7909,
+      "cumulativeNav": 4.6057,
+      "dailyReturn": -0.805,
+      "marketPrice": 2.795,
+      "premiumDiscount": 0.155,
+      "iopv": 2.79
+    },
+    {
+      "date": "2025-02-26",
+      "nav": 2.7908,
+      "cumulativeNav": 4.6055,
+      "dailyReturn": -0.003,
+      "marketPrice": 2.783,
+      "premiumDiscount": -0.276,
+      "iopv": 2.7899
+    },
+    {
+      "date": "2025-02-27",
+      "nav": 2.7657,
+      "cumulativeNav": 4.5641,
+      "dailyReturn": -0.898,
+      "marketPrice": 2.764,
+      "premiumDiscount": -0.056,
+      "iopv": 2.7668
+    },
+    {
+      "date": "2025-02-28",
+      "nav": 2.7372,
+      "cumulativeNav": 4.5171,
+      "dailyReturn": -1.032,
+      "marketPrice": 2.745,
+      "premiumDiscount": 0.28,
+      "iopv": 2.7366
+    },
+    {
+      "date": "2025-03-03",
+      "nav": 2.7292,
+      "cumulativeNav": 4.5039,
+      "dailyReturn": -0.291,
+      "marketPrice": 2.722,
+      "premiumDiscount": -0.256,
+      "iopv": 2.7291
+    },
+    {
+      "date": "2025-03-04",
+      "nav": 2.724,
+      "cumulativeNav": 4.4952,
+      "dailyReturn": -0.193,
+      "marketPrice": 2.726,
+      "premiumDiscount": 0.067,
+      "iopv": 2.7253
+    },
+    {
+      "date": "2025-03-05",
+      "nav": 2.7448,
+      "cumulativeNav": 4.5296,
+      "dailyReturn": 0.764,
+      "marketPrice": 2.752,
+      "premiumDiscount": 0.279,
+      "iopv": 2.7458
+    },
+    {
+      "date": "2025-03-06",
+      "nav": 2.7473,
+      "cumulativeNav": 4.5337,
+      "dailyReturn": 0.091,
+      "marketPrice": 2.754,
+      "premiumDiscount": 0.249,
+      "iopv": 2.7462
+    },
+    {
+      "date": "2025-03-07",
+      "nav": 2.7239,
+      "cumulativeNav": 4.4951,
+      "dailyReturn": -0.852,
+      "marketPrice": 2.731,
+      "premiumDiscount": 0.278,
+      "iopv": 2.724
+    },
+    {
+      "date": "2025-03-10",
+      "nav": 2.7385,
+      "cumulativeNav": 4.5192,
+      "dailyReturn": 0.537,
+      "marketPrice": 2.736,
+      "premiumDiscount": -0.074,
+      "iopv": 2.7394
+    },
+    {
+      "date": "2025-03-11",
+      "nav": 2.7215,
+      "cumulativeNav": 4.4911,
+      "dailyReturn": -0.622,
+      "marketPrice": 2.728,
+      "premiumDiscount": 0.249,
+      "iopv": 2.7222
+    },
+    {
+      "date": "2025-03-12",
+      "nav": 2.7082,
+      "cumulativeNav": 4.4693,
+      "dailyReturn": -0.486,
+      "marketPrice": 2.712,
+      "premiumDiscount": 0.124,
+      "iopv": 2.7096
+    },
+    {
+      "date": "2025-03-13",
+      "nav": 2.73,
+      "cumulativeNav": 4.5052,
+      "dailyReturn": 0.803,
+      "marketPrice": 2.728,
+      "premiumDiscount": -0.056,
+      "iopv": 2.7288
+    },
+    {
+      "date": "2025-03-14",
+      "nav": 2.7158,
+      "cumulativeNav": 4.4817,
+      "dailyReturn": -0.52,
+      "marketPrice": 2.718,
+      "premiumDiscount": 0.08,
+      "iopv": 2.7149
+    },
+    {
+      "date": "2025-03-17",
+      "nav": 2.7077,
+      "cumulativeNav": 4.4683,
+      "dailyReturn": -0.299,
+      "marketPrice": 2.711,
+      "premiumDiscount": 0.135,
+      "iopv": 2.7073
+    },
+    {
+      "date": "2025-03-18",
+      "nav": 2.7215,
+      "cumulativeNav": 4.4911,
+      "dailyReturn": 0.51,
+      "marketPrice": 2.717,
+      "premiumDiscount": -0.148,
+      "iopv": 2.7212
+    },
+    {
+      "date": "2025-03-19",
+      "nav": 2.7739,
+      "cumulativeNav": 4.5776,
+      "dailyReturn": 1.925,
+      "marketPrice": 2.776,
+      "premiumDiscount": 0.065,
+      "iopv": 2.7733
+    },
+    {
+      "date": "2025-03-20",
+      "nav": 2.7712,
+      "cumulativeNav": 4.5732,
+      "dailyReturn": -0.096,
+      "marketPrice": 2.771,
+      "premiumDiscount": -0.004,
+      "iopv": 2.7702
+    },
+    {
+      "date": "2025-03-21",
+      "nav": 2.7966,
+      "cumulativeNav": 4.615,
+      "dailyReturn": 0.914,
+      "marketPrice": 2.791,
+      "premiumDiscount": -0.208,
+      "iopv": 2.7962
+    },
+    {
+      "date": "2025-03-24",
+      "nav": 2.8152,
+      "cumulativeNav": 4.6458,
+      "dailyReturn": 0.666,
+      "marketPrice": 2.819,
+      "premiumDiscount": 0.142,
+      "iopv": 2.814
+    },
+    {
+      "date": "2025-03-25",
+      "nav": 2.8389,
+      "cumulativeNav": 4.6849,
+      "dailyReturn": 0.842,
+      "marketPrice": 2.84,
+      "premiumDiscount": 0.052,
+      "iopv": 2.8396
+    },
+    {
+      "date": "2025-03-26",
+      "nav": 2.8613,
+      "cumulativeNav": 4.7218,
+      "dailyReturn": 0.789,
+      "marketPrice": 2.854,
+      "premiumDiscount": -0.249,
+      "iopv": 2.8626
+    },
+    {
+      "date": "2025-03-27",
+      "nav": 2.9096,
+      "cumulativeNav": 4.8015,
+      "dailyReturn": 1.688,
+      "marketPrice": 2.902,
+      "premiumDiscount": -0.268,
+      "iopv": 2.9107
+    },
+    {
+      "date": "2025-03-28",
+      "nav": 2.9094,
+      "cumulativeNav": 4.8012,
+      "dailyReturn": -0.008,
+      "marketPrice": 2.916,
+      "premiumDiscount": 0.23,
+      "iopv": 2.9092
+    },
+    {
+      "date": "2025-03-31",
+      "nav": 2.8887,
+      "cumulativeNav": 4.7672,
+      "dailyReturn": -0.709,
+      "marketPrice": 2.896,
+      "premiumDiscount": 0.251,
+      "iopv": 2.8896
+    },
+    {
+      "date": "2025-04-01",
+      "nav": 2.91,
+      "cumulativeNav": 4.8023,
+      "dailyReturn": 0.737,
+      "marketPrice": 2.914,
+      "premiumDiscount": 0.128,
+      "iopv": 2.9089
+    },
+    {
+      "date": "2025-04-02",
+      "nav": 2.8957,
+      "cumulativeNav": 4.7787,
+      "dailyReturn": -0.492,
+      "marketPrice": 2.894,
+      "premiumDiscount": -0.043,
+      "iopv": 2.8956
+    },
+    {
+      "date": "2025-04-03",
+      "nav": 2.8865,
+      "cumulativeNav": 4.7635,
+      "dailyReturn": -0.317,
+      "marketPrice": 2.891,
+      "premiumDiscount": 0.162,
+      "iopv": 2.8864
+    },
+    {
+      "date": "2025-04-07",
+      "nav": 2.9325,
+      "cumulativeNav": 4.8394,
+      "dailyReturn": 1.593,
+      "marketPrice": 2.938,
+      "premiumDiscount": 0.173,
+      "iopv": 2.9322
+    },
+    {
+      "date": "2025-04-08",
+      "nav": 2.875,
+      "cumulativeNav": 4.7445,
+      "dailyReturn": -1.961,
+      "marketPrice": 2.88,
+      "premiumDiscount": 0.166,
+      "iopv": 2.8745
+    },
+    {
+      "date": "2025-04-09",
+      "nav": 2.8285,
+      "cumulativeNav": 4.6678,
+      "dailyReturn": -1.617,
+      "marketPrice": 2.826,
+      "premiumDiscount": -0.085,
+      "iopv": 2.8273
+    },
+    {
+      "date": "2025-04-10",
+      "nav": 2.7664,
+      "cumulativeNav": 4.5653,
+      "dailyReturn": -2.196,
+      "marketPrice": 2.761,
+      "premiumDiscount": -0.202,
+      "iopv": 2.7668
+    },
+    {
+      "date": "2025-04-11",
+      "nav": 2.7844,
+      "cumulativeNav": 4.5949,
+      "dailyReturn": 0.65,
+      "marketPrice": 2.779,
+      "premiumDiscount": -0.203,
+      "iopv": 2.7855
+    },
+    {
+      "date": "2025-04-14",
+      "nav": 2.7588,
+      "cumulativeNav": 4.5527,
+      "dailyReturn": -0.92,
+      "marketPrice": 2.764,
+      "premiumDiscount": 0.182,
+      "iopv": 2.758
+    },
+    {
+      "date": "2025-04-15",
+      "nav": 2.7276,
+      "cumulativeNav": 4.5013,
+      "dailyReturn": -1.129,
+      "marketPrice": 2.732,
+      "premiumDiscount": 0.146,
+      "iopv": 2.727
+    },
+    {
+      "date": "2025-04-16",
+      "nav": 2.7504,
+      "cumulativeNav": 4.5388,
+      "dailyReturn": 0.834,
+      "marketPrice": 2.748,
+      "premiumDiscount": -0.079,
+      "iopv": 2.7499
+    },
+    {
+      "date": "2025-04-17",
+      "nav": 2.7401,
+      "cumulativeNav": 4.5219,
+      "dailyReturn": -0.373,
+      "marketPrice": 2.744,
+      "premiumDiscount": 0.136,
+      "iopv": 2.7398
+    },
+    {
+      "date": "2025-04-18",
+      "nav": 2.7434,
+      "cumulativeNav": 4.5273,
+      "dailyReturn": 0.119,
+      "marketPrice": 2.737,
+      "premiumDiscount": -0.246,
+      "iopv": 2.7445
+    },
+    {
+      "date": "2025-04-21",
+      "nav": 2.7719,
+      "cumulativeNav": 4.5743,
+      "dailyReturn": 1.039,
+      "marketPrice": 2.769,
+      "premiumDiscount": -0.089,
+      "iopv": 2.7721
+    },
+    {
+      "date": "2025-04-22",
+      "nav": 2.7671,
+      "cumulativeNav": 4.5664,
+      "dailyReturn": -0.173,
+      "marketPrice": 2.766,
+      "premiumDiscount": -0.053,
+      "iopv": 2.7668
+    },
+    {
+      "date": "2025-04-23",
+      "nav": 2.7883,
+      "cumulativeNav": 4.6014,
+      "dailyReturn": 0.766,
+      "marketPrice": 2.79,
+      "premiumDiscount": 0.077,
+      "iopv": 2.7891
+    },
+    {
+      "date": "2025-04-24",
+      "nav": 2.8406,
+      "cumulativeNav": 4.6876,
+      "dailyReturn": 1.874,
+      "marketPrice": 2.845,
+      "premiumDiscount": 0.166,
+      "iopv": 2.8395
+    },
+    {
+      "date": "2025-04-25",
+      "nav": 2.8381,
+      "cumulativeNav": 4.6835,
+      "dailyReturn": -0.088,
+      "marketPrice": 2.837,
+      "premiumDiscount": -0.033,
+      "iopv": 2.838
+    },
+    {
+      "date": "2025-04-28",
+      "nav": 2.912,
+      "cumulativeNav": 4.8055,
+      "dailyReturn": 2.604,
+      "marketPrice": 2.911,
+      "premiumDiscount": -0.049,
+      "iopv": 2.9115
+    },
+    {
+      "date": "2025-04-29",
+      "nav": 2.959,
+      "cumulativeNav": 4.8831,
+      "dailyReturn": 1.616,
+      "marketPrice": 2.96,
+      "premiumDiscount": 0.03,
+      "iopv": 2.9576
+    },
+    {
+      "date": "2025-04-30",
+      "nav": 2.9946,
+      "cumulativeNav": 4.9419,
+      "dailyReturn": 1.203,
+      "marketPrice": 2.989,
+      "premiumDiscount": -0.192,
+      "iopv": 2.9937
+    },
+    {
+      "date": "2025-05-06",
+      "nav": 3.0205,
+      "cumulativeNav": 4.9847,
+      "dailyReturn": 0.866,
+      "marketPrice": 3.017,
+      "premiumDiscount": -0.117,
+      "iopv": 3.02
+    },
+    {
+      "date": "2025-05-07",
+      "nav": 3.0597,
+      "cumulativeNav": 5.0493,
+      "dailyReturn": 1.297,
+      "marketPrice": 3.054,
+      "premiumDiscount": -0.175,
+      "iopv": 3.0599
+    },
+    {
+      "date": "2025-05-08",
+      "nav": 3.0579,
+      "cumulativeNav": 5.0463,
+      "dailyReturn": -0.061,
+      "marketPrice": 3.051,
+      "premiumDiscount": -0.227,
+      "iopv": 3.0565
+    },
+    {
+      "date": "2025-05-09",
+      "nav": 3.0564,
+      "cumulativeNav": 5.0439,
+      "dailyReturn": -0.047,
+      "marketPrice": 3.056,
+      "premiumDiscount": -0.02,
+      "iopv": 3.0575
+    },
+    {
+      "date": "2025-05-12",
+      "nav": 3.0846,
+      "cumulativeNav": 5.0904,
+      "dailyReturn": 0.922,
+      "marketPrice": 3.086,
+      "premiumDiscount": 0.058,
+      "iopv": 3.0846
+    },
+    {
+      "date": "2025-05-13",
+      "nav": 3.1009,
+      "cumulativeNav": 5.1173,
+      "dailyReturn": 0.53,
+      "marketPrice": 3.103,
+      "premiumDiscount": 0.06,
+      "iopv": 3.1006
+    },
+    {
+      "date": "2025-05-14",
+      "nav": 3.0903,
+      "cumulativeNav": 5.0998,
+      "dailyReturn": -0.343,
+      "marketPrice": 3.093,
+      "premiumDiscount": 0.098,
+      "iopv": 3.0896
+    },
+    {
+      "date": "2025-05-15",
+      "nav": 3.0442,
+      "cumulativeNav": 5.0238,
+      "dailyReturn": -1.491,
+      "marketPrice": 3.036,
+      "premiumDiscount": -0.272,
+      "iopv": 3.0435
+    },
+    {
+      "date": "2025-05-16",
+      "nav": 3.0842,
+      "cumulativeNav": 5.0897,
+      "dailyReturn": 1.312,
+      "marketPrice": 3.078,
+      "premiumDiscount": -0.188,
+      "iopv": 3.0842
+    },
+    {
+      "date": "2025-05-19",
+      "nav": 3.0868,
+      "cumulativeNav": 5.094,
+      "dailyReturn": 0.085,
+      "marketPrice": 3.079,
+      "premiumDiscount": -0.24,
+      "iopv": 3.087
+    },
+    {
+      "date": "2025-05-20",
+      "nav": 3.0166,
+      "cumulativeNav": 4.9782,
+      "dailyReturn": -2.273,
+      "marketPrice": 3.023,
+      "premiumDiscount": 0.223,
+      "iopv": 3.0156
+    },
+    {
+      "date": "2025-05-21",
+      "nav": 2.9756,
+      "cumulativeNav": 4.9105,
+      "dailyReturn": -1.36,
+      "marketPrice": 2.982,
+      "premiumDiscount": 0.213,
+      "iopv": 2.9767
+    },
+    {
+      "date": "2025-05-22",
+      "nav": 2.9334,
+      "cumulativeNav": 4.8408,
+      "dailyReturn": -1.42,
+      "marketPrice": 2.934,
+      "premiumDiscount": 0.031,
+      "iopv": 2.9331
+    },
+    {
+      "date": "2025-05-23",
+      "nav": 2.9439,
+      "cumulativeNav": 4.8581,
+      "dailyReturn": 0.358,
+      "marketPrice": 2.946,
+      "premiumDiscount": 0.065,
+      "iopv": 2.9442
+    },
+    {
+      "date": "2025-05-26",
+      "nav": 2.9245,
+      "cumulativeNav": 4.8261,
+      "dailyReturn": -0.658,
+      "marketPrice": 2.92,
+      "premiumDiscount": -0.16,
+      "iopv": 2.9236
+    },
+    {
+      "date": "2025-05-27",
+      "nav": 2.9265,
+      "cumulativeNav": 4.8295,
+      "dailyReturn": 0.07,
+      "marketPrice": 2.934,
+      "premiumDiscount": 0.263,
+      "iopv": 2.9268
+    },
+    {
+      "date": "2025-05-28",
+      "nav": 2.8896,
+      "cumulativeNav": 4.7686,
+      "dailyReturn": -1.261,
+      "marketPrice": 2.891,
+      "premiumDiscount": 0.047,
+      "iopv": 2.8884
+    },
+    {
+      "date": "2025-05-29",
+      "nav": 2.841,
+      "cumulativeNav": 4.6883,
+      "dailyReturn": -1.684,
+      "marketPrice": 2.839,
+      "premiumDiscount": -0.086,
+      "iopv": 2.8409
+    },
+    {
+      "date": "2025-05-30",
+      "nav": 2.8703,
+      "cumulativeNav": 4.7367,
+      "dailyReturn": 1.032,
+      "marketPrice": 2.87,
+      "premiumDiscount": -0.027,
+      "iopv": 2.8702
+    },
+    {
+      "date": "2025-06-03",
+      "nav": 2.9049,
+      "cumulativeNav": 4.7939,
+      "dailyReturn": 1.207,
+      "marketPrice": 2.9,
+      "premiumDiscount": -0.183,
+      "iopv": 2.905
+    },
+    {
+      "date": "2025-06-04",
+      "nav": 2.9207,
+      "cumulativeNav": 4.8199,
+      "dailyReturn": 0.543,
+      "marketPrice": 2.913,
+      "premiumDiscount": -0.268,
+      "iopv": 2.9206
+    },
+    {
+      "date": "2025-06-05",
+      "nav": 2.8779,
+      "cumulativeNav": 4.7493,
+      "dailyReturn": -1.465,
+      "marketPrice": 2.872,
+      "premiumDiscount": -0.205,
+      "iopv": 2.877
+    },
+    {
+      "date": "2025-06-06",
+      "nav": 2.8727,
+      "cumulativeNav": 4.7407,
+      "dailyReturn": -0.182,
+      "marketPrice": 2.88,
+      "premiumDiscount": 0.262,
+      "iopv": 2.8739
+    },
+    {
+      "date": "2025-06-09",
+      "nav": 2.913,
+      "cumulativeNav": 4.8073,
+      "dailyReturn": 1.404,
+      "marketPrice": 2.905,
+      "premiumDiscount": -0.261,
+      "iopv": 2.9117
+    },
+    {
+      "date": "2025-06-10",
+      "nav": 2.94,
+      "cumulativeNav": 4.8517,
+      "dailyReturn": 0.925,
+      "marketPrice": 2.934,
+      "premiumDiscount": -0.219,
+      "iopv": 2.9402
+    },
+    {
+      "date": "2025-06-11",
+      "nav": 2.8654,
+      "cumulativeNav": 4.7286,
+      "dailyReturn": -2.537,
+      "marketPrice": 2.872,
+      "premiumDiscount": 0.218,
+      "iopv": 2.8652
+    },
+    {
+      "date": "2025-06-12",
+      "nav": 2.8902,
+      "cumulativeNav": 4.7695,
+      "dailyReturn": 0.865,
+      "marketPrice": 2.897,
+      "premiumDiscount": 0.237,
+      "iopv": 2.8905
+    },
+    {
+      "date": "2025-06-13",
+      "nav": 2.909,
+      "cumulativeNav": 4.8005,
+      "dailyReturn": 0.65,
+      "marketPrice": 2.913,
+      "premiumDiscount": 0.137,
+      "iopv": 2.9096
+    },
+    {
+      "date": "2025-06-16",
+      "nav": 2.8745,
+      "cumulativeNav": 4.7437,
+      "dailyReturn": -1.184,
+      "marketPrice": 2.867,
+      "premiumDiscount": -0.27,
+      "iopv": 2.8748
+    },
+    {
+      "date": "2025-06-17",
+      "nav": 2.8549,
+      "cumulativeNav": 4.7113,
+      "dailyReturn": -0.681,
+      "marketPrice": 2.862,
+      "premiumDiscount": 0.258,
+      "iopv": 2.8544
+    },
+    {
+      "date": "2025-06-18",
+      "nav": 2.8441,
+      "cumulativeNav": 4.6935,
+      "dailyReturn": -0.38,
+      "marketPrice": 2.846,
+      "premiumDiscount": 0.058,
+      "iopv": 2.8439
+    },
+    {
+      "date": "2025-06-19",
+      "nav": 2.8386,
+      "cumulativeNav": 4.6843,
+      "dailyReturn": -0.194,
+      "marketPrice": 2.831,
+      "premiumDiscount": -0.267,
+      "iopv": 2.8397
+    },
+    {
+      "date": "2025-06-20",
+      "nav": 2.8354,
+      "cumulativeNav": 4.6791,
+      "dailyReturn": -0.112,
+      "marketPrice": 2.841,
+      "premiumDiscount": 0.197,
+      "iopv": 2.8365
+    },
+    {
+      "date": "2025-06-23",
+      "nav": 2.8304,
+      "cumulativeNav": 4.6709,
+      "dailyReturn": -0.175,
+      "marketPrice": 2.833,
+      "premiumDiscount": 0.086,
+      "iopv": 2.8301
+    },
+    {
+      "date": "2025-06-24",
+      "nav": 2.8277,
+      "cumulativeNav": 4.6664,
+      "dailyReturn": -0.098,
+      "marketPrice": 2.835,
+      "premiumDiscount": 0.263,
+      "iopv": 2.8278
+    },
+    {
+      "date": "2025-06-25",
+      "nav": 2.8884,
+      "cumulativeNav": 4.7665,
+      "dailyReturn": 2.146,
+      "marketPrice": 2.883,
+      "premiumDiscount": -0.186,
+      "iopv": 2.8892
+    },
+    {
+      "date": "2025-06-26",
+      "nav": 2.9077,
+      "cumulativeNav": 4.7985,
+      "dailyReturn": 0.67,
+      "marketPrice": 2.913,
+      "premiumDiscount": 0.186,
+      "iopv": 2.9064
+    },
+    {
+      "date": "2025-06-27",
+      "nav": 2.8718,
+      "cumulativeNav": 4.7392,
+      "dailyReturn": -1.234,
+      "marketPrice": 2.88,
+      "premiumDiscount": 0.275,
+      "iopv": 2.8717
+    },
+    {
+      "date": "2025-06-30",
+      "nav": 2.8675,
+      "cumulativeNav": 4.7321,
+      "dailyReturn": -0.151,
+      "marketPrice": 2.859,
+      "premiumDiscount": -0.295,
+      "iopv": 2.8688
+    },
+    {
+      "date": "2025-07-01",
+      "nav": 2.8644,
+      "cumulativeNav": 4.727,
+      "dailyReturn": -0.106,
+      "marketPrice": 2.863,
+      "premiumDiscount": -0.053,
+      "iopv": 2.8648
+    },
+    {
+      "date": "2025-07-02",
+      "nav": 2.8749,
+      "cumulativeNav": 4.7443,
+      "dailyReturn": 0.366,
+      "marketPrice": 2.872,
+      "premiumDiscount": -0.101,
+      "iopv": 2.876
+    },
+    {
+      "date": "2025-07-03",
+      "nav": 2.848,
+      "cumulativeNav": 4.6999,
+      "dailyReturn": -0.937,
+      "marketPrice": 2.851,
+      "premiumDiscount": 0.121,
+      "iopv": 2.8489
+    },
+    {
+      "date": "2025-07-04",
+      "nav": 2.8385,
+      "cumulativeNav": 4.6843,
+      "dailyReturn": -0.331,
+      "marketPrice": 2.846,
+      "premiumDiscount": 0.275,
+      "iopv": 2.8393
+    },
+    {
+      "date": "2025-07-07",
+      "nav": 2.8074,
+      "cumulativeNav": 4.6329,
+      "dailyReturn": -1.097,
+      "marketPrice": 2.81,
+      "premiumDiscount": 0.09,
+      "iopv": 2.8066
+    },
+    {
+      "date": "2025-07-08",
+      "nav": 2.7762,
+      "cumulativeNav": 4.5814,
+      "dailyReturn": -1.111,
+      "marketPrice": 2.784,
+      "premiumDiscount": 0.287,
+      "iopv": 2.7762
+    },
+    {
+      "date": "2025-07-09",
+      "nav": 2.7848,
+      "cumulativeNav": 4.5957,
+      "dailyReturn": 0.311,
+      "marketPrice": 2.779,
+      "premiumDiscount": -0.199,
+      "iopv": 2.7846
+    },
+    {
+      "date": "2025-07-10",
+      "nav": 2.7949,
+      "cumulativeNav": 4.6122,
+      "dailyReturn": 0.36,
+      "marketPrice": 2.796,
+      "premiumDiscount": 0.037,
+      "iopv": 2.7937
+    },
+    {
+      "date": "2025-07-11",
+      "nav": 2.7349,
+      "cumulativeNav": 4.5133,
+      "dailyReturn": -2.145,
+      "marketPrice": 2.739,
+      "premiumDiscount": 0.141,
+      "iopv": 2.7351
+    },
+    {
+      "date": "2025-07-14",
+      "nav": 2.7263,
+      "cumulativeNav": 4.4991,
+      "dailyReturn": -0.315,
+      "marketPrice": 2.726,
+      "premiumDiscount": -0.02,
+      "iopv": 2.7272
+    },
+    {
+      "date": "2025-07-15",
+      "nav": 2.7576,
+      "cumulativeNav": 4.5507,
+      "dailyReturn": 1.147,
+      "marketPrice": 2.756,
+      "premiumDiscount": -0.068,
+      "iopv": 2.7582
+    },
+    {
+      "date": "2025-07-16",
+      "nav": 2.7577,
+      "cumulativeNav": 4.5509,
+      "dailyReturn": 0.004,
+      "marketPrice": 2.753,
+      "premiumDiscount": -0.183,
+      "iopv": 2.7574
+    },
+    {
+      "date": "2025-07-17",
+      "nav": 2.7219,
+      "cumulativeNav": 4.4919,
+      "dailyReturn": -1.296,
+      "marketPrice": 2.729,
+      "premiumDiscount": 0.272,
+      "iopv": 2.7223
+    },
+    {
+      "date": "2025-07-18",
+      "nav": 2.7071,
+      "cumulativeNav": 4.4674,
+      "dailyReturn": -0.546,
+      "marketPrice": 2.712,
+      "premiumDiscount": 0.196,
+      "iopv": 2.706
+    },
+    {
+      "date": "2025-07-21",
+      "nav": 2.6765,
+      "cumulativeNav": 4.4168,
+      "dailyReturn": -1.131,
+      "marketPrice": 2.668,
+      "premiumDiscount": -0.3,
+      "iopv": 2.6757
+    },
+    {
+      "date": "2025-07-22",
+      "nav": 2.6844,
+      "cumulativeNav": 4.4299,
+      "dailyReturn": 0.297,
+      "marketPrice": 2.691,
+      "premiumDiscount": 0.242,
+      "iopv": 2.6848
+    },
+    {
+      "date": "2025-07-23",
+      "nav": 2.6619,
+      "cumulativeNav": 4.3929,
+      "dailyReturn": -0.837,
+      "marketPrice": 2.666,
+      "premiumDiscount": 0.168,
+      "iopv": 2.6631
+    },
+    {
+      "date": "2025-07-24",
+      "nav": 2.653,
+      "cumulativeNav": 4.3781,
+      "dailyReturn": -0.335,
+      "marketPrice": 2.657,
+      "premiumDiscount": 0.157,
+      "iopv": 2.6518
+    },
+    {
+      "date": "2025-07-25",
+      "nav": 2.6483,
+      "cumulativeNav": 4.3703,
+      "dailyReturn": -0.179,
+      "marketPrice": 2.653,
+      "premiumDiscount": 0.177,
+      "iopv": 2.6487
+    },
+    {
+      "date": "2025-07-28",
+      "nav": 2.6716,
+      "cumulativeNav": 4.4088,
+      "dailyReturn": 0.881,
+      "marketPrice": 2.673,
+      "premiumDiscount": 0.038,
+      "iopv": 2.6717
+    },
+    {
+      "date": "2025-07-29",
+      "nav": 2.6634,
+      "cumulativeNav": 4.3952,
+      "dailyReturn": -0.309,
+      "marketPrice": 2.665,
+      "premiumDiscount": 0.076,
+      "iopv": 2.6639
+    },
+    {
+      "date": "2025-07-30",
+      "nav": 2.6225,
+      "cumulativeNav": 4.3278,
+      "dailyReturn": -1.534,
+      "marketPrice": 2.616,
+      "premiumDiscount": -0.243,
+      "iopv": 2.6228
+    },
+    {
+      "date": "2025-07-31",
+      "nav": 2.6486,
+      "cumulativeNav": 4.3709,
+      "dailyReturn": 0.996,
+      "marketPrice": 2.647,
+      "premiumDiscount": -0.072,
+      "iopv": 2.649
+    },
+    {
+      "date": "2025-08-01",
+      "nav": 2.6302,
+      "cumulativeNav": 4.3405,
+      "dailyReturn": -0.696,
+      "marketPrice": 2.633,
+      "premiumDiscount": 0.088,
+      "iopv": 2.6301
+    },
+    {
+      "date": "2025-08-04",
+      "nav": 2.6342,
+      "cumulativeNav": 4.3471,
+      "dailyReturn": 0.153,
+      "marketPrice": 2.627,
+      "premiumDiscount": -0.265,
+      "iopv": 2.6351
+    },
+    {
+      "date": "2025-08-05",
+      "nav": 2.6511,
+      "cumulativeNav": 4.3749,
+      "dailyReturn": 0.639,
+      "marketPrice": 2.646,
+      "premiumDiscount": -0.2,
+      "iopv": 2.6507
+    },
+    {
+      "date": "2025-08-06",
+      "nav": 2.6495,
+      "cumulativeNav": 4.3724,
+      "dailyReturn": -0.057,
+      "marketPrice": 2.649,
+      "premiumDiscount": -0.024,
+      "iopv": 2.6502
+    },
+    {
+      "date": "2025-08-07",
+      "nav": 2.6633,
+      "cumulativeNav": 4.3951,
+      "dailyReturn": 0.52,
+      "marketPrice": 2.657,
+      "premiumDiscount": -0.238,
+      "iopv": 2.6644
+    },
+    {
+      "date": "2025-08-08",
+      "nav": 2.6503,
+      "cumulativeNav": 4.3737,
+      "dailyReturn": -0.488,
+      "marketPrice": 2.648,
+      "premiumDiscount": -0.08,
+      "iopv": 2.6506
+    },
+    {
+      "date": "2025-08-11",
+      "nav": 2.6561,
+      "cumulativeNav": 4.3832,
+      "dailyReturn": 0.217,
+      "marketPrice": 2.649,
+      "premiumDiscount": -0.277,
+      "iopv": 2.6551
+    },
+    {
+      "date": "2025-08-12",
+      "nav": 2.6462,
+      "cumulativeNav": 4.3669,
+      "dailyReturn": -0.372,
+      "marketPrice": 2.651,
+      "premiumDiscount": 0.184,
+      "iopv": 2.6462
+    },
+    {
+      "date": "2025-08-13",
+      "nav": 2.6214,
+      "cumulativeNav": 4.3259,
+      "dailyReturn": -0.938,
+      "marketPrice": 2.626,
+      "premiumDiscount": 0.172,
+      "iopv": 2.6221
+    },
+    {
+      "date": "2025-08-14",
+      "nav": 2.6005,
+      "cumulativeNav": 4.2914,
+      "dailyReturn": -0.798,
+      "marketPrice": 2.605,
+      "premiumDiscount": 0.176,
+      "iopv": 2.6007
+    },
+    {
+      "date": "2025-08-15",
+      "nav": 2.6225,
+      "cumulativeNav": 4.3278,
+      "dailyReturn": 0.848,
+      "marketPrice": 2.628,
+      "premiumDiscount": 0.203,
+      "iopv": 2.6218
+    },
+    {
+      "date": "2025-08-18",
+      "nav": 2.6537,
+      "cumulativeNav": 4.3792,
+      "dailyReturn": 1.188,
+      "marketPrice": 2.648,
+      "premiumDiscount": -0.21,
+      "iopv": 2.6542
+    },
+    {
+      "date": "2025-08-19",
+      "nav": 2.6724,
+      "cumulativeNav": 4.4101,
+      "dailyReturn": 0.704,
+      "marketPrice": 2.67,
+      "premiumDiscount": -0.093,
+      "iopv": 2.6719
+    },
+    {
+      "date": "2025-08-20",
+      "nav": 2.7143,
+      "cumulativeNav": 4.4793,
+      "dailyReturn": 1.57,
+      "marketPrice": 2.709,
+      "premiumDiscount": -0.194,
+      "iopv": 2.7146
+    },
+    {
+      "date": "2025-08-21",
+      "nav": 2.7191,
+      "cumulativeNav": 4.4872,
+      "dailyReturn": 0.177,
+      "marketPrice": 2.711,
+      "premiumDiscount": -0.3,
+      "iopv": 2.7188
+    },
+    {
+      "date": "2025-08-22",
+      "nav": 2.698,
+      "cumulativeNav": 4.4524,
+      "dailyReturn": -0.776,
+      "marketPrice": 2.706,
+      "premiumDiscount": 0.281,
+      "iopv": 2.6983
+    },
+    {
+      "date": "2025-08-25",
+      "nav": 2.7484,
+      "cumulativeNav": 4.5356,
+      "dailyReturn": 1.869,
+      "marketPrice": 2.754,
+      "premiumDiscount": 0.2,
+      "iopv": 2.7482
+    },
+    {
+      "date": "2025-08-26",
+      "nav": 2.7593,
+      "cumulativeNav": 4.5535,
+      "dailyReturn": 0.395,
+      "marketPrice": 2.767,
+      "premiumDiscount": 0.284,
+      "iopv": 2.7585
+    },
+    {
+      "date": "2025-08-27",
+      "nav": 2.764,
+      "cumulativeNav": 4.5613,
+      "dailyReturn": 0.17,
+      "marketPrice": 2.761,
+      "premiumDiscount": -0.094,
+      "iopv": 2.7638
+    },
+    {
+      "date": "2025-08-28",
+      "nav": 2.7705,
+      "cumulativeNav": 4.572,
+      "dailyReturn": 0.236,
+      "marketPrice": 2.762,
+      "premiumDiscount": -0.299,
+      "iopv": 2.7698
+    },
+    {
+      "date": "2025-08-29",
+      "nav": 2.7695,
+      "cumulativeNav": 4.5703,
+      "dailyReturn": -0.037,
+      "marketPrice": 2.766,
+      "premiumDiscount": -0.134,
+      "iopv": 2.7691
+    },
+    {
+      "date": "2025-09-01",
+      "nav": 2.7612,
+      "cumulativeNav": 4.5567,
+      "dailyReturn": -0.298,
+      "marketPrice": 2.755,
+      "premiumDiscount": -0.242,
+      "iopv": 2.7612
+    },
+    {
+      "date": "2025-09-02",
+      "nav": 2.7917,
+      "cumulativeNav": 4.607,
+      "dailyReturn": 1.103,
+      "marketPrice": 2.792,
+      "premiumDiscount": 0.011,
+      "iopv": 2.7914
+    },
+    {
+      "date": "2025-09-03",
+      "nav": 2.8081,
+      "cumulativeNav": 4.634,
+      "dailyReturn": 0.587,
+      "marketPrice": 2.805,
+      "premiumDiscount": -0.092,
+      "iopv": 2.8073
+    },
+    {
+      "date": "2025-09-04",
+      "nav": 2.8661,
+      "cumulativeNav": 4.7297,
+      "dailyReturn": 2.065,
+      "marketPrice": 2.864,
+      "premiumDiscount": -0.085,
+      "iopv": 2.8647
+    },
+    {
+      "date": "2025-09-05",
+      "nav": 2.8205,
+      "cumulativeNav": 4.6545,
+      "dailyReturn": -1.591,
+      "marketPrice": 2.821,
+      "premiumDiscount": 0.035,
+      "iopv": 2.8205
+    },
+    {
+      "date": "2025-09-08",
+      "nav": 2.8218,
+      "cumulativeNav": 4.6566,
+      "dailyReturn": 0.046,
+      "marketPrice": 2.813,
+      "premiumDiscount": -0.295,
+      "iopv": 2.8205
+    },
+    {
+      "date": "2025-09-09",
+      "nav": 2.8155,
+      "cumulativeNav": 4.6463,
+      "dailyReturn": -0.221,
+      "marketPrice": 2.816,
+      "premiumDiscount": 0.025,
+      "iopv": 2.8165
+    },
+    {
+      "date": "2025-09-10",
+      "nav": 2.7962,
+      "cumulativeNav": 4.6144,
+      "dailyReturn": -0.687,
+      "marketPrice": 2.795,
+      "premiumDiscount": -0.027,
+      "iopv": 2.7956
+    },
+    {
+      "date": "2025-09-11",
+      "nav": 2.8209,
+      "cumulativeNav": 4.6552,
+      "dailyReturn": 0.885,
+      "marketPrice": 2.827,
+      "premiumDiscount": 0.229,
+      "iopv": 2.8219
+    },
+    {
+      "date": "2025-09-12",
+      "nav": 2.7964,
+      "cumulativeNav": 4.6147,
+      "dailyReturn": -0.87,
+      "marketPrice": 2.803,
+      "premiumDiscount": 0.249,
+      "iopv": 2.7952
+    },
+    {
+      "date": "2025-09-15",
+      "nav": 2.7622,
+      "cumulativeNav": 4.5584,
+      "dailyReturn": -1.221,
+      "marketPrice": 2.765,
+      "premiumDiscount": 0.118,
+      "iopv": 2.7622
+    },
+    {
+      "date": "2025-09-16",
+      "nav": 2.7784,
+      "cumulativeNav": 4.585,
+      "dailyReturn": 0.585,
+      "marketPrice": 2.774,
+      "premiumDiscount": -0.151,
+      "iopv": 2.7786
+    },
+    {
+      "date": "2025-09-17",
+      "nav": 2.7964,
+      "cumulativeNav": 4.6147,
+      "dailyReturn": 0.648,
+      "marketPrice": 2.796,
+      "premiumDiscount": -0.017,
+      "iopv": 2.7971
+    },
+    {
+      "date": "2025-09-18",
+      "nav": 2.8011,
+      "cumulativeNav": 4.6225,
+      "dailyReturn": 0.169,
+      "marketPrice": 2.808,
+      "premiumDiscount": 0.231,
+      "iopv": 2.8017
+    },
+    {
+      "date": "2025-09-19",
+      "nav": 2.7957,
+      "cumulativeNav": 4.6136,
+      "dailyReturn": -0.194,
+      "marketPrice": 2.8,
+      "premiumDiscount": 0.141,
+      "iopv": 2.796
+    },
+    {
+      "date": "2025-09-22",
+      "nav": 2.7813,
+      "cumulativeNav": 4.5899,
+      "dailyReturn": -0.513,
+      "marketPrice": 2.784,
+      "premiumDiscount": 0.098,
+      "iopv": 2.7802
+    },
+    {
+      "date": "2025-09-23",
+      "nav": 2.7885,
+      "cumulativeNav": 4.6018,
+      "dailyReturn": 0.259,
+      "marketPrice": 2.783,
+      "premiumDiscount": -0.2,
+      "iopv": 2.7885
+    },
+    {
+      "date": "2025-09-24",
+      "nav": 2.7839,
+      "cumulativeNav": 4.5942,
+      "dailyReturn": -0.166,
+      "marketPrice": 2.782,
+      "premiumDiscount": -0.054,
+      "iopv": 2.7841
+    },
+    {
+      "date": "2025-09-25",
+      "nav": 2.7998,
+      "cumulativeNav": 4.6204,
+      "dailyReturn": 0.57,
+      "marketPrice": 2.801,
+      "premiumDiscount": 0.027,
+      "iopv": 2.7997
+    },
+    {
+      "date": "2025-09-26",
+      "nav": 2.7762,
+      "cumulativeNav": 4.5814,
+      "dailyReturn": -0.844,
+      "marketPrice": 2.775,
+      "premiumDiscount": -0.025,
+      "iopv": 2.776
+    },
+    {
+      "date": "2025-09-29",
+      "nav": 2.7514,
+      "cumulativeNav": 4.5406,
+      "dailyReturn": -0.891,
+      "marketPrice": 2.749,
+      "premiumDiscount": -0.086,
+      "iopv": 2.7528
+    },
+    {
+      "date": "2025-09-30",
+      "nav": 2.7454,
+      "cumulativeNav": 4.5305,
+      "dailyReturn": -0.22,
+      "marketPrice": 2.737,
+      "premiumDiscount": -0.299,
+      "iopv": 2.745
+    },
+    {
+      "date": "2025-10-09",
+      "nav": 2.7238,
+      "cumulativeNav": 4.4949,
+      "dailyReturn": -0.787,
+      "marketPrice": 2.72,
+      "premiumDiscount": -0.129,
+      "iopv": 2.723
+    },
+    {
+      "date": "2025-10-10",
+      "nav": 2.6883,
+      "cumulativeNav": 4.4364,
+      "dailyReturn": -1.302,
+      "marketPrice": 2.695,
+      "premiumDiscount": 0.258,
+      "iopv": 2.6871
+    },
+    {
+      "date": "2025-10-13",
+      "nav": 2.702,
+      "cumulativeNav": 4.459,
+      "dailyReturn": 0.51,
+      "marketPrice": 2.697,
+      "premiumDiscount": -0.176,
+      "iopv": 2.7025
+    },
+    {
+      "date": "2025-10-14",
+      "nav": 2.7365,
+      "cumulativeNav": 4.5159,
+      "dailyReturn": 1.277,
+      "marketPrice": 2.735,
+      "premiumDiscount": -0.064,
+      "iopv": 2.7365
+    },
+    {
+      "date": "2025-10-15",
+      "nav": 2.7445,
+      "cumulativeNav": 4.5291,
+      "dailyReturn": 0.292,
+      "marketPrice": 2.736,
+      "premiumDiscount": -0.297,
+      "iopv": 2.7439
+    },
+    {
+      "date": "2025-10-16",
+      "nav": 2.753,
+      "cumulativeNav": 4.5432,
+      "dailyReturn": 0.312,
+      "marketPrice": 2.747,
+      "premiumDiscount": -0.204,
+      "iopv": 2.7526
+    },
+    {
+      "date": "2025-10-17",
+      "nav": 2.8119,
+      "cumulativeNav": 4.6403,
+      "dailyReturn": 2.136,
+      "marketPrice": 2.817,
+      "premiumDiscount": 0.173,
+      "iopv": 2.8106
+    },
+    {
+      "date": "2025-10-20",
+      "nav": 2.7782,
+      "cumulativeNav": 4.5847,
+      "dailyReturn": -1.198,
+      "marketPrice": 2.773,
+      "premiumDiscount": -0.181,
+      "iopv": 2.7773
+    },
+    {
+      "date": "2025-10-21",
+      "nav": 2.7575,
+      "cumulativeNav": 4.5507,
+      "dailyReturn": -0.742,
+      "marketPrice": 2.765,
+      "premiumDiscount": 0.285,
+      "iopv": 2.7571
+    },
+    {
+      "date": "2025-10-22",
+      "nav": 2.7945,
+      "cumulativeNav": 4.6116,
+      "dailyReturn": 1.338,
+      "marketPrice": 2.794,
+      "premiumDiscount": -0.034,
+      "iopv": 2.7951
+    },
+    {
+      "date": "2025-10-23",
+      "nav": 2.8017,
+      "cumulativeNav": 4.6236,
+      "dailyReturn": 0.261,
+      "marketPrice": 2.801,
+      "premiumDiscount": -0.03,
+      "iopv": 2.8013
+    },
+    {
+      "date": "2025-10-24",
+      "nav": 2.7552,
+      "cumulativeNav": 4.5468,
+      "dailyReturn": -1.66,
+      "marketPrice": 2.755,
+      "premiumDiscount": -0.014,
+      "iopv": 2.7559
+    },
+    {
+      "date": "2025-10-27",
+      "nav": 2.7296,
+      "cumulativeNav": 4.5045,
+      "dailyReturn": -0.931,
+      "marketPrice": 2.725,
+      "premiumDiscount": -0.178,
+      "iopv": 2.7303
+    },
+    {
+      "date": "2025-10-28",
+      "nav": 2.7469,
+      "cumulativeNav": 4.5331,
+      "dailyReturn": 0.634,
+      "marketPrice": 2.742,
+      "premiumDiscount": -0.186,
+      "iopv": 2.7461
+    },
+    {
+      "date": "2025-10-29",
+      "nav": 2.7372,
+      "cumulativeNav": 4.517,
+      "dailyReturn": -0.354,
+      "marketPrice": 2.742,
+      "premiumDiscount": 0.184,
+      "iopv": 2.7374
+    },
+    {
+      "date": "2025-10-30",
+      "nav": 2.7548,
+      "cumulativeNav": 4.5462,
+      "dailyReturn": 0.646,
+      "marketPrice": 2.76,
+      "premiumDiscount": 0.19,
+      "iopv": 2.7559
+    },
+    {
+      "date": "2025-10-31",
+      "nav": 2.7204,
+      "cumulativeNav": 4.4893,
+      "dailyReturn": -1.251,
+      "marketPrice": 2.728,
+      "premiumDiscount": 0.263,
+      "iopv": 2.721
+    },
+    {
+      "date": "2025-11-03",
+      "nav": 2.7269,
+      "cumulativeNav": 4.5001,
+      "dailyReturn": 0.239,
+      "marketPrice": 2.725,
+      "premiumDiscount": -0.079,
+      "iopv": 2.7282
+    },
+    {
+      "date": "2025-11-04",
+      "nav": 2.7493,
+      "cumulativeNav": 4.5371,
+      "dailyReturn": 0.823,
+      "marketPrice": 2.75,
+      "premiumDiscount": 0.039,
+      "iopv": 2.7483
+    },
+    {
+      "date": "2025-11-05",
+      "nav": 2.7197,
+      "cumulativeNav": 4.4881,
+      "dailyReturn": -1.079,
+      "marketPrice": 2.718,
+      "premiumDiscount": -0.079,
+      "iopv": 2.7204
+    },
+    {
+      "date": "2025-11-06",
+      "nav": 2.6943,
+      "cumulativeNav": 4.4462,
+      "dailyReturn": -0.933,
+      "marketPrice": 2.687,
+      "premiumDiscount": -0.277,
+      "iopv": 2.6952
+    },
+    {
+      "date": "2025-11-07",
+      "nav": 2.7023,
+      "cumulativeNav": 4.4594,
+      "dailyReturn": 0.296,
+      "marketPrice": 2.703,
+      "premiumDiscount": 0.039,
+      "iopv": 2.7009
+    },
+    {
+      "date": "2025-11-10",
+      "nav": 2.709,
+      "cumulativeNav": 4.4705,
+      "dailyReturn": 0.25,
+      "marketPrice": 2.703,
+      "premiumDiscount": -0.23,
+      "iopv": 2.7103
+    },
+    {
+      "date": "2025-11-11",
+      "nav": 2.7323,
+      "cumulativeNav": 4.509,
+      "dailyReturn": 0.861,
+      "marketPrice": 2.725,
+      "premiumDiscount": -0.263,
+      "iopv": 2.7322
+    },
+    {
+      "date": "2025-11-12",
+      "nav": 2.7375,
+      "cumulativeNav": 4.5175,
+      "dailyReturn": 0.188,
+      "marketPrice": 2.735,
+      "premiumDiscount": -0.079,
+      "iopv": 2.7368
+    },
+    {
+      "date": "2025-11-13",
+      "nav": 2.7538,
+      "cumulativeNav": 4.5444,
+      "dailyReturn": 0.596,
+      "marketPrice": 2.755,
+      "premiumDiscount": 0.042,
+      "iopv": 2.7535
+    },
+    {
+      "date": "2025-11-14",
+      "nav": 2.7741,
+      "cumulativeNav": 4.5779,
+      "dailyReturn": 0.736,
+      "marketPrice": 2.781,
+      "premiumDiscount": 0.263,
+      "iopv": 2.7747
+    },
+    {
+      "date": "2025-11-17",
+      "nav": 2.7577,
+      "cumulativeNav": 4.5509,
+      "dailyReturn": -0.59,
+      "marketPrice": 2.765,
+      "premiumDiscount": 0.267,
+      "iopv": 2.7572
+    },
+    {
+      "date": "2025-11-18",
+      "nav": 2.7638,
+      "cumulativeNav": 4.5609,
+      "dailyReturn": 0.22,
+      "marketPrice": 2.759,
+      "premiumDiscount": -0.19,
+      "iopv": 2.7629
+    },
+    {
+      "date": "2025-11-19",
+      "nav": 2.7557,
+      "cumulativeNav": 4.5476,
+      "dailyReturn": -0.292,
+      "marketPrice": 2.758,
+      "premiumDiscount": 0.067,
+      "iopv": 2.7548
+    },
+    {
+      "date": "2025-11-20",
+      "nav": 2.7805,
+      "cumulativeNav": 4.5884,
+      "dailyReturn": 0.899,
+      "marketPrice": 2.779,
+      "premiumDiscount": -0.055,
+      "iopv": 2.7801
+    },
+    {
+      "date": "2025-11-21",
+      "nav": 2.7636,
+      "cumulativeNav": 4.5607,
+      "dailyReturn": -0.606,
+      "marketPrice": 2.766,
+      "premiumDiscount": 0.088,
+      "iopv": 2.7638
+    },
+    {
+      "date": "2025-11-24",
+      "nav": 2.7775,
+      "cumulativeNav": 4.5836,
+      "dailyReturn": 0.503,
+      "marketPrice": 2.773,
+      "premiumDiscount": -0.165,
+      "iopv": 2.7786
+    },
+    {
+      "date": "2025-11-25",
+      "nav": 2.8186,
+      "cumulativeNav": 4.6514,
+      "dailyReturn": 1.478,
+      "marketPrice": 2.825,
+      "premiumDiscount": 0.241,
+      "iopv": 2.8196
+    },
+    {
+      "date": "2025-11-26",
+      "nav": 2.822,
+      "cumulativeNav": 4.657,
+      "dailyReturn": 0.121,
+      "marketPrice": 2.823,
+      "premiumDiscount": 0.03,
+      "iopv": 2.8218
+    },
+    {
+      "date": "2025-11-27",
+      "nav": 2.8274,
+      "cumulativeNav": 4.666,
+      "dailyReturn": 0.194,
+      "marketPrice": 2.835,
+      "premiumDiscount": 0.252,
+      "iopv": 2.8274
+    },
+    {
+      "date": "2025-11-28",
+      "nav": 2.8085,
+      "cumulativeNav": 4.6348,
+      "dailyReturn": -0.669,
+      "marketPrice": 2.808,
+      "premiumDiscount": -0.01,
+      "iopv": 2.8098
+    },
+    {
+      "date": "2025-12-01",
+      "nav": 2.8116,
+      "cumulativeNav": 4.6399,
+      "dailyReturn": 0.11,
+      "marketPrice": 2.814,
+      "premiumDiscount": 0.073,
+      "iopv": 2.8103
+    },
+    {
+      "date": "2025-12-02",
+      "nav": 2.7589,
+      "cumulativeNav": 4.5529,
+      "dailyReturn": -1.875,
+      "marketPrice": 2.763,
+      "premiumDiscount": 0.15,
+      "iopv": 2.7583
+    },
+    {
+      "date": "2025-12-03",
+      "nav": 2.7647,
+      "cumulativeNav": 4.5624,
+      "dailyReturn": 0.21,
+      "marketPrice": 2.766,
+      "premiumDiscount": 0.055,
+      "iopv": 2.764
+    },
+    {
+      "date": "2025-12-04",
+      "nav": 2.7712,
+      "cumulativeNav": 4.5733,
+      "dailyReturn": 0.237,
+      "marketPrice": 2.776,
+      "premiumDiscount": 0.162,
+      "iopv": 2.771
+    },
+    {
+      "date": "2025-12-05",
+      "nav": 2.8126,
+      "cumulativeNav": 4.6415,
+      "dailyReturn": 1.493,
+      "marketPrice": 2.808,
+      "premiumDiscount": -0.169,
+      "iopv": 2.8127
+    },
+    {
+      "date": "2025-12-08",
+      "nav": 2.8295,
+      "cumulativeNav": 4.6695,
+      "dailyReturn": 0.602,
+      "marketPrice": 2.834,
+      "premiumDiscount": 0.158,
+      "iopv": 2.8304
+    },
+    {
+      "date": "2025-12-09",
+      "nav": 2.783,
+      "cumulativeNav": 4.5926,
+      "dailyReturn": -1.645,
+      "marketPrice": 2.789,
+      "premiumDiscount": 0.228,
+      "iopv": 2.7832
+    },
+    {
+      "date": "2025-12-10",
+      "nav": 2.8131,
+      "cumulativeNav": 4.6423,
+      "dailyReturn": 1.082,
+      "marketPrice": 2.821,
+      "premiumDiscount": 0.273,
+      "iopv": 2.8142
+    },
+    {
+      "date": "2025-12-11",
+      "nav": 2.8402,
+      "cumulativeNav": 4.687,
+      "dailyReturn": 0.963,
+      "marketPrice": 2.844,
+      "premiumDiscount": 0.141,
+      "iopv": 2.8412
+    },
+    {
+      "date": "2025-12-12",
+      "nav": 2.8486,
+      "cumulativeNav": 4.7009,
+      "dailyReturn": 0.297,
+      "marketPrice": 2.852,
+      "premiumDiscount": 0.118,
+      "iopv": 2.8484
+    },
+    {
+      "date": "2025-12-15",
+      "nav": 2.8352,
+      "cumulativeNav": 4.6789,
+      "dailyReturn": -0.47,
+      "marketPrice": 2.831,
+      "premiumDiscount": -0.148,
+      "iopv": 2.8342
+    },
+    {
+      "date": "2025-12-16",
+      "nav": 2.8544,
+      "cumulativeNav": 4.7105,
+      "dailyReturn": 0.676,
+      "marketPrice": 2.862,
+      "premiumDiscount": 0.276,
+      "iopv": 2.8545
+    },
+    {
+      "date": "2025-12-17",
+      "nav": 2.8774,
+      "cumulativeNav": 4.7484,
+      "dailyReturn": 0.805,
+      "marketPrice": 2.88,
+      "premiumDiscount": 0.083,
+      "iopv": 2.8766
+    },
+    {
+      "date": "2025-12-18",
+      "nav": 2.8726,
+      "cumulativeNav": 4.7406,
+      "dailyReturn": -0.165,
+      "marketPrice": 2.873,
+      "premiumDiscount": 0.014,
+      "iopv": 2.8713
+    },
+    {
+      "date": "2025-12-19",
+      "nav": 2.8425,
+      "cumulativeNav": 4.6909,
+      "dailyReturn": -1.048,
+      "marketPrice": 2.844,
+      "premiumDiscount": 0.066,
+      "iopv": 2.842
+    },
+    {
+      "date": "2025-12-22",
+      "nav": 2.804,
+      "cumulativeNav": 4.6273,
+      "dailyReturn": -1.356,
+      "marketPrice": 2.796,
+      "premiumDiscount": -0.295,
+      "iopv": 2.8036
+    },
+    {
+      "date": "2025-12-23",
+      "nav": 2.8192,
+      "cumulativeNav": 4.6524,
+      "dailyReturn": 0.543,
+      "marketPrice": 2.824,
+      "premiumDiscount": 0.159,
+      "iopv": 2.8202
+    },
+    {
+      "date": "2025-12-24",
+      "nav": 2.8113,
+      "cumulativeNav": 4.6393,
+      "dailyReturn": -0.282,
+      "marketPrice": 2.815,
+      "premiumDiscount": 0.117,
+      "iopv": 2.8116
+    },
+    {
+      "date": "2025-12-25",
+      "nav": 2.8054,
+      "cumulativeNav": 4.6296,
+      "dailyReturn": -0.208,
+      "marketPrice": 2.812,
+      "premiumDiscount": 0.241,
+      "iopv": 2.8045
+    },
+    {
+      "date": "2025-12-26",
+      "nav": 2.7901,
+      "cumulativeNav": 4.6043,
+      "dailyReturn": -0.547,
+      "marketPrice": 2.784,
+      "premiumDiscount": -0.201,
+      "iopv": 2.789
+    },
+    {
+      "date": "2025-12-29",
+      "nav": 2.7892,
+      "cumulativeNav": 4.6029,
+      "dailyReturn": -0.032,
+      "marketPrice": 2.783,
+      "premiumDiscount": -0.213,
+      "iopv": 2.7881
+    },
+    {
+      "date": "2025-12-30",
+      "nav": 2.7561,
+      "cumulativeNav": 4.5482,
+      "dailyReturn": -1.186,
+      "marketPrice": 2.75,
+      "premiumDiscount": -0.203,
+      "iopv": 2.7549
+    },
+    {
+      "date": "2025-12-31",
+      "nav": 2.7552,
+      "cumulativeNav": 4.5467,
+      "dailyReturn": -0.033,
+      "marketPrice": 2.76,
+      "premiumDiscount": 0.173,
+      "iopv": 2.754
+    },
+    {
+      "date": "2026-01-05",
+      "nav": 2.7922,
+      "cumulativeNav": 4.6078,
+      "dailyReturn": 1.344,
+      "marketPrice": 2.788,
+      "premiumDiscount": -0.142,
+      "iopv": 2.7916
+    },
+    {
+      "date": "2026-01-06",
+      "nav": 2.7733,
+      "cumulativeNav": 4.5767,
+      "dailyReturn": -0.676,
+      "marketPrice": 2.777,
+      "premiumDiscount": 0.146,
+      "iopv": 2.772
+    },
+    {
+      "date": "2026-01-07",
+      "nav": 2.7422,
+      "cumulativeNav": 4.5253,
+      "dailyReturn": -1.122,
+      "marketPrice": 2.734,
+      "premiumDiscount": -0.287,
+      "iopv": 2.7432
+    },
+    {
+      "date": "2026-01-08",
+      "nav": 2.7387,
+      "cumulativeNav": 4.5195,
+      "dailyReturn": -0.129,
+      "marketPrice": 2.745,
+      "premiumDiscount": 0.214,
+      "iopv": 2.7388
+    },
+    {
+      "date": "2026-01-09",
+      "nav": 2.7591,
+      "cumulativeNav": 4.5532,
+      "dailyReturn": 0.747,
+      "marketPrice": 2.751,
+      "premiumDiscount": -0.286,
+      "iopv": 2.7602
+    },
+    {
+      "date": "2026-01-12",
+      "nav": 2.7564,
+      "cumulativeNav": 4.5488,
+      "dailyReturn": -0.097,
+      "marketPrice": 2.754,
+      "premiumDiscount": -0.103,
+      "iopv": 2.7559
+    },
+    {
+      "date": "2026-01-13",
+      "nav": 2.7573,
+      "cumulativeNav": 4.5502,
+      "dailyReturn": 0.031,
+      "marketPrice": 2.758,
+      "premiumDiscount": 0.029,
+      "iopv": 2.7574
+    },
+    {
+      "date": "2026-01-14",
+      "nav": 2.8115,
+      "cumulativeNav": 4.6396,
+      "dailyReturn": 1.965,
+      "marketPrice": 2.816,
+      "premiumDiscount": 0.171,
+      "iopv": 2.8119
+    },
+    {
+      "date": "2026-01-15",
+      "nav": 2.8249,
+      "cumulativeNav": 4.6618,
+      "dailyReturn": 0.478,
+      "marketPrice": 2.818,
+      "premiumDiscount": -0.23,
+      "iopv": 2.8252
+    },
+    {
+      "date": "2026-01-16",
+      "nav": 2.7786,
+      "cumulativeNav": 4.5854,
+      "dailyReturn": -1.638,
+      "marketPrice": 2.786,
+      "premiumDiscount": 0.25,
+      "iopv": 2.7794
+    },
+    {
+      "date": "2026-01-19",
+      "nav": 2.7642,
+      "cumulativeNav": 4.5616,
+      "dailyReturn": -0.52,
+      "marketPrice": 2.768,
+      "premiumDiscount": 0.154,
+      "iopv": 2.7651
+    },
+    {
+      "date": "2026-01-20",
+      "nav": 2.757,
+      "cumulativeNav": 4.5497,
+      "dailyReturn": -0.261,
+      "marketPrice": 2.754,
+      "premiumDiscount": -0.119,
+      "iopv": 2.758
+    },
+    {
+      "date": "2026-01-21",
+      "nav": 2.7803,
+      "cumulativeNav": 4.5882,
+      "dailyReturn": 0.848,
+      "marketPrice": 2.788,
+      "premiumDiscount": 0.258,
+      "iopv": 2.781
+    },
+    {
+      "date": "2026-01-22",
+      "nav": 2.7489,
+      "cumulativeNav": 4.5363,
+      "dailyReturn": -1.131,
+      "marketPrice": 2.745,
+      "premiumDiscount": -0.159,
+      "iopv": 2.75
+    },
+    {
+      "date": "2026-01-23",
+      "nav": 2.7926,
+      "cumulativeNav": 4.6084,
+      "dailyReturn": 1.589,
+      "marketPrice": 2.788,
+      "premiumDiscount": -0.157,
+      "iopv": 2.7923
+    },
+    {
+      "date": "2026-01-26",
+      "nav": 2.8293,
+      "cumulativeNav": 4.6691,
+      "dailyReturn": 1.316,
+      "marketPrice": 2.821,
+      "premiumDiscount": -0.287,
+      "iopv": 2.828
+    },
+    {
+      "date": "2026-01-27",
+      "nav": 2.7868,
+      "cumulativeNav": 4.5989,
+      "dailyReturn": -1.502,
+      "marketPrice": 2.785,
+      "premiumDiscount": -0.061,
+      "iopv": 2.7878
+    },
+    {
+      "date": "2026-01-28",
+      "nav": 2.8195,
+      "cumulativeNav": 4.6528,
+      "dailyReturn": 1.172,
+      "marketPrice": 2.815,
+      "premiumDiscount": -0.175,
+      "iopv": 2.8196
+    },
+    {
+      "date": "2026-01-29",
+      "nav": 2.7984,
+      "cumulativeNav": 4.618,
+      "dailyReturn": -0.748,
+      "marketPrice": 2.806,
+      "premiumDiscount": 0.264,
+      "iopv": 2.7985
+    },
+    {
+      "date": "2026-01-30",
+      "nav": 2.7816,
+      "cumulativeNav": 4.5903,
+      "dailyReturn": -0.6,
+      "marketPrice": 2.789,
+      "premiumDiscount": 0.251,
+      "iopv": 2.7818
+    },
+    {
+      "date": "2026-02-02",
+      "nav": 2.7925,
+      "cumulativeNav": 4.6084,
+      "dailyReturn": 0.395,
+      "marketPrice": 2.785,
+      "premiumDiscount": -0.258,
+      "iopv": 2.7921
+    },
+    {
+      "date": "2026-02-03",
+      "nav": 2.8379,
+      "cumulativeNav": 4.6832,
+      "dailyReturn": 1.624,
+      "marketPrice": 2.846,
+      "premiumDiscount": 0.27,
+      "iopv": 2.8379
+    },
+    {
+      "date": "2026-02-04",
+      "nav": 2.8106,
+      "cumulativeNav": 4.6381,
+      "dailyReturn": -0.963,
+      "marketPrice": 2.812,
+      "premiumDiscount": 0.045,
+      "iopv": 2.8097
+    },
+    {
+      "date": "2026-02-05",
+      "nav": 2.8057,
+      "cumulativeNav": 4.6302,
+      "dailyReturn": -0.172,
+      "marketPrice": 2.807,
+      "premiumDiscount": 0.038,
+      "iopv": 2.807
+    },
+    {
+      "date": "2026-02-06",
+      "nav": 2.8039,
+      "cumulativeNav": 4.6271,
+      "dailyReturn": -0.066,
+      "marketPrice": 2.799,
+      "premiumDiscount": -0.184,
+      "iopv": 2.8041
+    },
+    {
+      "date": "2026-02-09",
+      "nav": 2.8059,
+      "cumulativeNav": 4.6304,
+      "dailyReturn": 0.071,
+      "marketPrice": 2.807,
+      "premiumDiscount": 0.048,
+      "iopv": 2.8055
+    },
+    {
+      "date": "2026-02-10",
+      "nav": 2.8418,
+      "cumulativeNav": 4.6898,
+      "dailyReturn": 1.282,
+      "marketPrice": 2.848,
+      "premiumDiscount": 0.204,
+      "iopv": 2.8415
+    },
+    {
+      "date": "2026-02-11",
+      "nav": 2.8403,
+      "cumulativeNav": 4.6873,
+      "dailyReturn": -0.053,
+      "marketPrice": 2.837,
+      "premiumDiscount": -0.111,
+      "iopv": 2.8413
+    },
+    {
+      "date": "2026-02-12",
+      "nav": 2.7879,
+      "cumulativeNav": 4.6008,
+      "dailyReturn": -1.846,
+      "marketPrice": 2.791,
+      "premiumDiscount": 0.115,
+      "iopv": 2.7889
+    },
+    {
+      "date": "2026-02-13",
+      "nav": 2.7727,
+      "cumulativeNav": 4.5757,
+      "dailyReturn": -0.546,
+      "marketPrice": 2.765,
+      "premiumDiscount": -0.291,
+      "iopv": 2.7715
+    },
+    {
+      "date": "2026-02-24",
+      "nav": 2.7657,
+      "cumulativeNav": 4.5641,
+      "dailyReturn": -0.252,
+      "marketPrice": 2.773,
+      "premiumDiscount": 0.246,
+      "iopv": 2.7648
+    },
+    {
+      "date": "2026-02-25",
+      "nav": 2.7477,
+      "cumulativeNav": 4.5344,
+      "dailyReturn": -0.651,
+      "marketPrice": 2.742,
+      "premiumDiscount": -0.205,
+      "iopv": 2.7479
+    },
+    {
+      "date": "2026-02-26",
+      "nav": 2.6814,
+      "cumulativeNav": 4.425,
+      "dailyReturn": -2.414,
+      "marketPrice": 2.689,
+      "premiumDiscount": 0.279,
+      "iopv": 2.6806
+    },
+    {
+      "date": "2026-02-27",
+      "nav": 2.6962,
+      "cumulativeNav": 4.4494,
+      "dailyReturn": 0.553,
+      "marketPrice": 2.701,
+      "premiumDiscount": 0.19,
+      "iopv": 2.6962
+    },
+    {
+      "date": "2026-03-02",
+      "nav": 2.6906,
+      "cumulativeNav": 4.4403,
+      "dailyReturn": -0.206,
+      "marketPrice": 2.686,
+      "premiumDiscount": -0.18,
+      "iopv": 2.6906
+    },
+    {
+      "date": "2026-03-03",
+      "nav": 2.7004,
+      "cumulativeNav": 4.4563,
+      "dailyReturn": 0.361,
+      "marketPrice": 2.702,
+      "premiumDiscount": 0.079,
+      "iopv": 2.7016
+    },
+    {
+      "date": "2026-03-04",
+      "nav": 2.7269,
+      "cumulativeNav": 4.5001,
+      "dailyReturn": 0.985,
+      "marketPrice": 2.729,
+      "premiumDiscount": 0.075,
+      "iopv": 2.7266
+    },
+    {
+      "date": "2026-03-05",
+      "nav": 2.7185,
+      "cumulativeNav": 4.4863,
+      "dailyReturn": -0.308,
+      "marketPrice": 2.725,
+      "premiumDiscount": 0.246,
+      "iopv": 2.7198
+    },
+    {
+      "date": "2026-03-06",
+      "nav": 2.7777,
+      "cumulativeNav": 4.5839,
+      "dailyReturn": 2.177,
+      "marketPrice": 2.781,
+      "premiumDiscount": 0.102,
+      "iopv": 2.7789
+    },
+    {
+      "date": "2026-03-09",
+      "nav": 2.7483,
+      "cumulativeNav": 4.5353,
+      "dailyReturn": -1.06,
+      "marketPrice": 2.75,
+      "premiumDiscount": 0.059,
+      "iopv": 2.7486
+    },
+    {
+      "date": "2026-03-10",
+      "nav": 2.7755,
+      "cumulativeNav": 4.5802,
+      "dailyReturn": 0.989,
+      "marketPrice": 2.777,
+      "premiumDiscount": 0.07,
+      "iopv": 2.7741
+    },
+    {
+      "date": "2026-03-11",
+      "nav": 2.7877,
+      "cumulativeNav": 4.6005,
+      "dailyReturn": 0.443,
+      "marketPrice": 2.789,
+      "premiumDiscount": 0.031,
+      "iopv": 2.7867
+    },
+    {
+      "date": "2026-03-12",
+      "nav": 2.7915,
+      "cumulativeNav": 4.6067,
+      "dailyReturn": 0.135,
+      "marketPrice": 2.791,
+      "premiumDiscount": -0.029,
+      "iopv": 2.7909
+    },
+    {
+      "date": "2026-03-13",
+      "nav": 2.7966,
+      "cumulativeNav": 4.6151,
+      "dailyReturn": 0.182,
+      "marketPrice": 2.803,
+      "premiumDiscount": 0.239,
+      "iopv": 2.7962
+    },
+    {
+      "date": "2026-03-16",
+      "nav": 2.7739,
+      "cumulativeNav": 4.5776,
+      "dailyReturn": -0.813,
+      "marketPrice": 2.774,
+      "premiumDiscount": 0.005,
+      "iopv": 2.773
+    },
+    {
+      "date": "2026-03-17",
+      "nav": 2.8132,
+      "cumulativeNav": 4.6424,
+      "dailyReturn": 1.417,
+      "marketPrice": 2.808,
+      "premiumDiscount": -0.179,
+      "iopv": 2.8123
+    },
+    {
+      "date": "2026-03-18",
+      "nav": 2.8093,
+      "cumulativeNav": 4.636,
+      "dailyReturn": -0.139,
+      "marketPrice": 2.808,
+      "premiumDiscount": -0.045,
+      "iopv": 2.81
+    },
+    {
+      "date": "2026-03-19",
+      "nav": 2.8488,
+      "cumulativeNav": 4.7012,
+      "dailyReturn": 1.406,
+      "marketPrice": 2.841,
+      "premiumDiscount": -0.282,
+      "iopv": 2.8495
+    },
+    {
+      "date": "2026-03-20",
+      "nav": 2.8642,
+      "cumulativeNav": 4.7267,
+      "dailyReturn": 0.542,
+      "marketPrice": 2.871,
+      "premiumDiscount": 0.25,
+      "iopv": 2.8639
+    },
+    {
+      "date": "2026-03-23",
+      "nav": 2.9092,
+      "cumulativeNav": 4.8009,
+      "dailyReturn": 1.57,
+      "marketPrice": 2.914,
+      "premiumDiscount": 0.158,
+      "iopv": 2.9097
+    },
+    {
+      "date": "2026-03-24",
+      "nav": 2.9416,
+      "cumulativeNav": 4.8544,
+      "dailyReturn": 1.115,
+      "marketPrice": 2.945,
+      "premiumDiscount": 0.115,
+      "iopv": 2.9429
+    },
+    {
+      "date": "2026-03-25",
+      "nav": 3.0111,
+      "cumulativeNav": 4.969,
+      "dailyReturn": 2.361,
+      "marketPrice": 3.017,
+      "premiumDiscount": 0.193,
+      "iopv": 3.0103
+    },
+    {
+      "date": "2026-03-26",
+      "nav": 3.0242,
+      "cumulativeNav": 4.9908,
+      "dailyReturn": 0.438,
+      "marketPrice": 3.029,
+      "premiumDiscount": 0.167,
+      "iopv": 3.0236
+    },
+    {
+      "date": "2026-03-27",
+      "nav": 3.1014,
+      "cumulativeNav": 5.1181,
+      "dailyReturn": 2.552,
+      "marketPrice": 3.109,
+      "premiumDiscount": 0.239,
+      "iopv": 3.0999
+    },
+    {
+      "date": "2026-03-30",
+      "nav": 3.0529,
+      "cumulativeNav": 5.038,
+      "dailyReturn": -1.565,
+      "marketPrice": 3.051,
+      "premiumDiscount": -0.058,
+      "iopv": 3.0542
+    },
+    {
+      "date": "2026-03-31",
+      "nav": 3.0498,
+      "cumulativeNav": 5.0329,
+      "dailyReturn": -0.101,
+      "marketPrice": 3.052,
+      "premiumDiscount": 0.063,
+      "iopv": 3.0484
+    },
+    {
+      "date": "2026-04-01",
+      "nav": 3.0124,
+      "cumulativeNav": 4.9713,
+      "dailyReturn": -1.225,
+      "marketPrice": 3.007,
+      "premiumDiscount": -0.17,
+      "iopv": 3.013
+    },
+    {
+      "date": "2026-04-02",
+      "nav": 2.9945,
+      "cumulativeNav": 4.9416,
+      "dailyReturn": -0.596,
+      "marketPrice": 2.99,
+      "premiumDiscount": -0.143,
+      "iopv": 2.9951
+    },
+    {
+      "date": "2026-04-03",
+      "nav": 3.0209,
+      "cumulativeNav": 4.9853,
+      "dailyReturn": 0.884,
+      "marketPrice": 3.019,
+      "premiumDiscount": -0.049,
+      "iopv": 3.0216
+    },
+    {
+      "date": "2026-04-07",
+      "nav": 3.02,
+      "cumulativeNav": 4.9837,
+      "dailyReturn": -0.032,
+      "marketPrice": 3.021,
+      "premiumDiscount": 0.036,
+      "iopv": 3.0199
+    },
+    {
+      "date": "2026-04-08",
+      "nav": 3.0152,
+      "cumulativeNav": 4.9758,
+      "dailyReturn": -0.158,
+      "marketPrice": 3.007,
+      "premiumDiscount": -0.27,
+      "iopv": 3.0142
+    },
+    {
+      "date": "2026-04-09",
+      "nav": 3.0592,
+      "cumulativeNav": 5.0485,
+      "dailyReturn": 1.46,
+      "marketPrice": 3.06,
+      "premiumDiscount": 0.015,
+      "iopv": 3.0581
+    },
+    {
+      "date": "2026-04-10",
+      "nav": 3.0389,
+      "cumulativeNav": 5.015,
+      "dailyReturn": -0.663,
+      "marketPrice": 3.043,
+      "premiumDiscount": 0.121,
+      "iopv": 3.0382
+    },
+    {
+      "date": "2026-04-13",
+      "nav": 3.0533,
+      "cumulativeNav": 5.0387,
+      "dailyReturn": 0.473,
+      "marketPrice": 3.048,
+      "premiumDiscount": -0.186,
+      "iopv": 3.0547
+    },
+    {
+      "date": "2026-04-14",
+      "nav": 2.967,
+      "cumulativeNav": 4.8963,
+      "dailyReturn": -2.826,
+      "marketPrice": 2.967,
+      "premiumDiscount": -0.001,
+      "iopv": 2.9685
+    },
+    {
+      "date": "2026-04-15",
+      "nav": 3.0162,
+      "cumulativeNav": 4.9774,
+      "dailyReturn": 1.657,
+      "marketPrice": 3.014,
+      "premiumDiscount": -0.076,
+      "iopv": 3.017
+    },
+    {
+      "date": "2026-04-16",
+      "nav": 3.0114,
+      "cumulativeNav": 4.9695,
+      "dailyReturn": -0.159,
+      "marketPrice": 3.009,
+      "premiumDiscount": -0.094,
+      "iopv": 3.0101
+    },
+    {
+      "date": "2026-04-17",
+      "nav": 3.0414,
+      "cumulativeNav": 5.0191,
+      "dailyReturn": 0.998,
+      "marketPrice": 3.044,
+      "premiumDiscount": 0.088,
+      "iopv": 3.0399
+    },
+    {
+      "date": "2026-04-20",
+      "nav": 3.0407,
+      "cumulativeNav": 5.0179,
+      "dailyReturn": -0.024,
+      "marketPrice": 3.047,
+      "premiumDiscount": 0.198,
+      "iopv": 3.0402
+    },
+    {
+      "date": "2026-04-21",
+      "nav": 3.0125,
+      "cumulativeNav": 4.9713,
+      "dailyReturn": -0.929,
+      "marketPrice": 3.011,
+      "premiumDiscount": -0.032,
+      "iopv": 3.0127
+    },
+    {
+      "date": "2026-04-22",
+      "nav": 3.0347,
+      "cumulativeNav": 5.008,
+      "dailyReturn": 0.737,
+      "marketPrice": 3.038,
+      "premiumDiscount": 0.126,
+      "iopv": 3.0344
+    },
+    {
+      "date": "2026-04-23",
+      "nav": 3.0502,
+      "cumulativeNav": 5.0336,
+      "dailyReturn": 0.511,
+      "marketPrice": 3.045,
+      "premiumDiscount": -0.155,
+      "iopv": 3.0502
+    },
+    {
+      "date": "2026-04-24",
+      "nav": 3.016,
+      "cumulativeNav": 4.9772,
+      "dailyReturn": -1.12,
+      "marketPrice": 3.023,
+      "premiumDiscount": 0.238,
+      "iopv": 3.0161
+    },
+    {
+      "date": "2026-04-27",
+      "nav": 3.0404,
+      "cumulativeNav": 5.0174,
+      "dailyReturn": 0.808,
+      "marketPrice": 3.042,
+      "premiumDiscount": 0.048,
+      "iopv": 3.0405
+    },
+    {
+      "date": "2026-04-28",
+      "nav": 3.0795,
+      "cumulativeNav": 5.0819,
+      "dailyReturn": 1.285,
+      "marketPrice": 3.073,
+      "premiumDiscount": -0.224,
+      "iopv": 3.0799
+    },
+    {
+      "date": "2026-04-29",
+      "nav": 3.0801,
+      "cumulativeNav": 5.083,
+      "dailyReturn": 0.021,
+      "marketPrice": 3.089,
+      "premiumDiscount": 0.283,
+      "iopv": 3.0806
+    },
+    {
+      "date": "2026-04-30",
+      "nav": 3.0493,
+      "cumulativeNav": 5.0321,
+      "dailyReturn": -1,
+      "marketPrice": 3.053,
+      "premiumDiscount": 0.126,
+      "iopv": 3.0499
+    },
+    {
+      "date": "2026-05-06",
+      "nav": 3.0209,
+      "cumulativeNav": 4.9852,
+      "dailyReturn": -0.932,
+      "marketPrice": 3.015,
+      "premiumDiscount": -0.208,
+      "iopv": 3.0198
+    },
+    {
+      "date": "2026-05-07",
+      "nav": 2.988,
+      "cumulativeNav": 4.9309,
+      "dailyReturn": -1.09,
+      "marketPrice": 2.984,
+      "premiumDiscount": -0.117,
+      "iopv": 2.9888
+    },
+    {
+      "date": "2026-05-08",
+      "nav": 2.9821,
+      "cumulativeNav": 4.9212,
+      "dailyReturn": -0.197,
+      "marketPrice": 2.991,
+      "premiumDiscount": 0.299,
+      "iopv": 2.9828
+    },
+    {
+      "date": "2026-05-11",
+      "nav": 2.9751,
+      "cumulativeNav": 4.9097,
+      "dailyReturn": -0.234,
+      "marketPrice": 2.967,
+      "premiumDiscount": -0.279,
+      "iopv": 2.9742
+    },
+    {
+      "date": "2026-05-12",
+      "nav": 2.9838,
+      "cumulativeNav": 4.924,
+      "dailyReturn": 0.291,
+      "marketPrice": 2.99,
+      "premiumDiscount": 0.214,
+      "iopv": 2.9841
+    },
+    {
+      "date": "2026-05-13",
+      "nav": 2.9891,
+      "cumulativeNav": 4.9327,
+      "dailyReturn": 0.178,
+      "marketPrice": 2.989,
+      "premiumDiscount": -0.006,
+      "iopv": 2.99
+    },
+    {
+      "date": "2026-05-14",
+      "nav": 3.0012,
+      "cumulativeNav": 4.9528,
+      "dailyReturn": 0.406,
+      "marketPrice": 3.007,
+      "premiumDiscount": 0.207,
+      "iopv": 3.0027
+    },
+    {
+      "date": "2026-05-15",
+      "nav": 2.9859,
+      "cumulativeNav": 4.9275,
+      "dailyReturn": -0.51,
+      "marketPrice": 2.992,
+      "premiumDiscount": 0.196,
+      "iopv": 2.9858
+    },
+    {
+      "date": "2026-05-18",
+      "nav": 2.9876,
+      "cumulativeNav": 4.9302,
+      "dailyReturn": 0.055,
+      "marketPrice": 2.982,
+      "premiumDiscount": -0.179,
+      "iopv": 2.9869
+    },
+    {
+      "date": "2026-05-19",
+      "nav": 2.9965,
+      "cumulativeNav": 4.945,
+      "dailyReturn": 0.299,
+      "marketPrice": 2.999,
+      "premiumDiscount": 0.079,
+      "iopv": 2.9979
+    },
+    {
+      "date": "2026-05-20",
+      "nav": 3.0299,
+      "cumulativeNav": 5.0002,
+      "dailyReturn": 1.116,
+      "marketPrice": 3.022,
+      "premiumDiscount": -0.252,
+      "iopv": 3.0287
+    },
+    {
+      "date": "2026-05-21",
+      "nav": 2.9733,
+      "cumulativeNav": 4.9067,
+      "dailyReturn": -1.87,
+      "marketPrice": 2.979,
+      "premiumDiscount": 0.187,
+      "iopv": 2.9726
+    },
+    {
+      "date": "2026-05-22",
+      "nav": 2.9425,
+      "cumulativeNav": 4.8559,
+      "dailyReturn": -1.035,
+      "marketPrice": 2.944,
+      "premiumDiscount": 0.055,
+      "iopv": 2.9431
+    },
+    {
+      "date": "2026-05-25",
+      "nav": 2.9327,
+      "cumulativeNav": 4.8398,
+      "dailyReturn": -0.332,
+      "marketPrice": 2.924,
+      "premiumDiscount": -0.285,
+      "iopv": 2.9318
+    },
+    {
+      "date": "2026-05-26",
+      "nav": 2.9488,
+      "cumulativeNav": 4.8662,
+      "dailyReturn": 0.547,
+      "marketPrice": 2.956,
+      "premiumDiscount": 0.239,
+      "iopv": 2.9475
+    },
+    {
+      "date": "2026-05-27",
+      "nav": 2.9432,
+      "cumulativeNav": 4.857,
+      "dailyReturn": -0.19,
+      "marketPrice": 2.938,
+      "premiumDiscount": -0.188,
+      "iopv": 2.9429
+    },
+    {
+      "date": "2026-05-28",
+      "nav": 2.9706,
+      "cumulativeNav": 4.9023,
+      "dailyReturn": 0.933,
+      "marketPrice": 2.971,
+      "premiumDiscount": 0.019,
+      "iopv": 2.9704
+    },
+    {
+      "date": "2026-05-29",
+      "nav": 2.9687,
+      "cumulativeNav": 4.8991,
+      "dailyReturn": -0.065,
+      "marketPrice": 2.974,
+      "premiumDiscount": 0.173,
+      "iopv": 2.9678
+    },
+    {
+      "date": "2026-06-01",
+      "nav": 3.0015,
+      "cumulativeNav": 4.9533,
+      "dailyReturn": 1.106,
+      "marketPrice": 2.998,
+      "premiumDiscount": -0.116,
+      "iopv": 3.0004
+    },
+    {
+      "date": "2026-06-02",
+      "nav": 3.0093,
+      "cumulativeNav": 4.9661,
+      "dailyReturn": 0.258,
+      "marketPrice": 3.013,
+      "premiumDiscount": 0.112,
+      "iopv": 3.0107
+    },
+    {
+      "date": "2026-06-03",
+      "nav": 3.0533,
+      "cumulativeNav": 5.0387,
+      "dailyReturn": 1.463,
+      "marketPrice": 3.058,
+      "premiumDiscount": 0.155,
+      "iopv": 3.054
+    },
+    {
+      "date": "2026-06-04",
+      "nav": 3.0777,
+      "cumulativeNav": 5.0789,
+      "dailyReturn": 0.799,
+      "marketPrice": 3.078,
+      "premiumDiscount": 0.013,
+      "iopv": 3.0787
+    },
+    {
+      "date": "2026-06-05",
+      "nav": 3.0771,
+      "cumulativeNav": 5.0779,
+      "dailyReturn": -0.02,
+      "marketPrice": 3.078,
+      "premiumDiscount": 0.019,
+      "iopv": 3.0782
+    },
+    {
+      "date": "2026-06-08",
+      "nav": 3.0957,
+      "cumulativeNav": 5.1087,
+      "dailyReturn": 0.606,
+      "marketPrice": 3.101,
+      "premiumDiscount": 0.164,
+      "iopv": 3.0953
+    },
+    {
+      "date": "2026-06-09",
+      "nav": 3.1549,
+      "cumulativeNav": 5.2064,
+      "dailyReturn": 1.913,
+      "marketPrice": 3.164,
+      "premiumDiscount": 0.292,
+      "iopv": 3.1556
+    },
+    {
+      "date": "2026-06-10",
+      "nav": 3.1685,
+      "cumulativeNav": 5.2288,
+      "dailyReturn": 0.429,
+      "marketPrice": 3.177,
+      "premiumDiscount": 0.257,
+      "iopv": 3.1684
+    },
+    {
+      "date": "2026-06-11",
+      "nav": 3.1844,
+      "cumulativeNav": 5.2551,
+      "dailyReturn": 0.504,
+      "marketPrice": 3.184,
+      "premiumDiscount": 0,
+      "iopv": 3.1849
+    },
+    {
+      "date": "2026-06-12",
+      "nav": 3.1743,
+      "cumulativeNav": 5.2383,
+      "dailyReturn": -0.32,
+      "marketPrice": 3.177,
+      "premiumDiscount": 0.089,
+      "iopv": 3.1727
+    },
+    {
+      "date": "2026-06-15",
+      "nav": 3.1732,
+      "cumulativeNav": 5.2367,
+      "dailyReturn": -0.032,
+      "marketPrice": 3.171,
+      "premiumDiscount": -0.06,
+      "iopv": 3.1727
+    },
+    {
+      "date": "2026-06-16",
+      "nav": 3.1865,
+      "cumulativeNav": 5.2585,
+      "dailyReturn": 0.417,
+      "marketPrice": 3.184,
+      "premiumDiscount": -0.074,
+      "iopv": 3.1852
+    },
+    {
+      "date": "2026-06-17",
+      "nav": 3.1708,
+      "cumulativeNav": 5.2327,
+      "dailyReturn": -0.492,
+      "marketPrice": 3.18,
+      "premiumDiscount": 0.3,
+      "iopv": 3.1711
+    },
+    {
+      "date": "2026-06-18",
+      "nav": 3.1382,
+      "cumulativeNav": 5.1788,
+      "dailyReturn": -1.029,
+      "marketPrice": 3.145,
+      "premiumDiscount": 0.215,
+      "iopv": 3.1368
+    },
+    {
+      "date": "2026-06-22",
+      "nav": 3.1192,
+      "cumulativeNav": 5.1474,
+      "dailyReturn": -0.607,
+      "marketPrice": 3.118,
+      "premiumDiscount": -0.047,
+      "iopv": 3.1177
+    },
+    {
+      "date": "2026-06-23",
+      "nav": 3.1129,
+      "cumulativeNav": 5.1371,
+      "dailyReturn": -0.2,
+      "marketPrice": 3.112,
+      "premiumDiscount": -0.039,
+      "iopv": 3.1134
+    },
+    {
+      "date": "2026-06-24",
+      "nav": 3.1332,
+      "cumulativeNav": 5.1705,
+      "dailyReturn": 0.651,
+      "marketPrice": 3.133,
+      "premiumDiscount": -0.013,
+      "iopv": 3.1344
+    },
+    {
+      "date": "2026-06-25",
+      "nav": 3.1242,
+      "cumulativeNav": 5.1557,
+      "dailyReturn": -0.287,
+      "marketPrice": 3.131,
+      "premiumDiscount": 0.227,
+      "iopv": 3.1228
+    },
+    {
+      "date": "2026-06-26",
+      "nav": 3.1361,
+      "cumulativeNav": 5.1753,
+      "dailyReturn": 0.38,
+      "marketPrice": 3.138,
+      "premiumDiscount": 0.062,
+      "iopv": 3.1357
+    },
+    {
+      "date": "2026-06-29",
+      "nav": 3.1482,
+      "cumulativeNav": 5.1954,
+      "dailyReturn": 0.388,
+      "marketPrice": 3.158,
+      "premiumDiscount": 0.298,
+      "iopv": 3.1471
+    },
+    {
+      "date": "2026-06-30",
+      "nav": 3.1252,
+      "cumulativeNav": 5.1573,
+      "dailyReturn": -0.732,
+      "marketPrice": 3.119,
+      "premiumDiscount": -0.205,
+      "iopv": 3.1256
+    },
+    {
+      "date": "2026-07-01",
+      "nav": 3.1819,
+      "cumulativeNav": 5.251,
+      "dailyReturn": 1.816,
+      "marketPrice": 3.189,
+      "premiumDiscount": 0.207,
+      "iopv": 3.1812
+    },
+    {
+      "date": "2026-07-02",
+      "nav": 3.2023,
+      "cumulativeNav": 5.2846,
+      "dailyReturn": 0.64,
+      "marketPrice": 3.21,
+      "premiumDiscount": 0.236,
+      "iopv": 3.2026
+    },
+    {
+      "date": "2026-07-03",
+      "nav": 3.2187,
+      "cumulativeNav": 5.3117,
+      "dailyReturn": 0.513,
+      "marketPrice": 3.211,
+      "premiumDiscount": -0.254,
+      "iopv": 3.218
+    },
+    {
+      "date": "2026-07-06",
+      "nav": 3.228,
+      "cumulativeNav": 5.327,
+      "dailyReturn": 0.288,
+      "marketPrice": 3.236,
+      "premiumDiscount": 0.26,
+      "iopv": 3.2287
+    },
+    {
+      "date": "2026-07-07",
+      "nav": 3.2234,
+      "cumulativeNav": 5.3194,
+      "dailyReturn": -0.143,
+      "marketPrice": 3.226,
+      "premiumDiscount": 0.088,
+      "iopv": 3.2247
+    },
+    {
+      "date": "2026-07-08",
+      "nav": 3.1946,
+      "cumulativeNav": 5.2718,
+      "dailyReturn": -0.894,
+      "marketPrice": 3.194,
+      "premiumDiscount": -0.015,
+      "iopv": 3.1959
+    },
+    {
+      "date": "2026-07-09",
+      "nav": 3.1814,
+      "cumulativeNav": 5.2502,
+      "dailyReturn": -0.411,
+      "marketPrice": 3.188,
+      "premiumDiscount": 0.215,
+      "iopv": 3.1814
+    },
+    {
+      "date": "2026-07-10",
+      "nav": 3.1876,
+      "cumulativeNav": 5.2604,
+      "dailyReturn": 0.194,
+      "marketPrice": 3.191,
+      "premiumDiscount": 0.091,
+      "iopv": 3.1869
+    },
+    {
+      "date": "2026-07-13",
+      "nav": 3.1602,
+      "cumulativeNav": 5.2152,
+      "dailyReturn": -0.859,
+      "marketPrice": 3.159,
+      "premiumDiscount": -0.053,
+      "iopv": 3.1608
+    },
+    {
+      "date": "2026-07-14",
+      "nav": 3.1435,
+      "cumulativeNav": 5.1876,
+      "dailyReturn": -0.529,
+      "marketPrice": 3.142,
+      "premiumDiscount": -0.048,
+      "iopv": 3.1449
+    },
+    {
+      "date": "2026-07-15",
+      "nav": 3.1485,
+      "cumulativeNav": 5.1958,
+      "dailyReturn": 0.158,
+      "marketPrice": 3.156,
+      "premiumDiscount": 0.239,
+      "iopv": 3.1481
+    },
+    {
+      "date": "2026-07-16",
+      "nav": 3.1361,
+      "cumulativeNav": 5.1754,
+      "dailyReturn": -0.392,
+      "marketPrice": 3.141,
+      "premiumDiscount": 0.156,
+      "iopv": 3.1373
+    },
+    {
+      "date": "2026-07-17",
+      "nav": 3.126,
+      "cumulativeNav": 5.1587,
+      "dailyReturn": -0.323,
+      "marketPrice": 3.123,
+      "premiumDiscount": -0.094,
+      "iopv": 3.1264
+    },
+    {
+      "date": "2026-07-20",
+      "nav": 3.1424,
+      "cumulativeNav": 5.1858,
+      "dailyReturn": 0.524,
+      "marketPrice": 3.139,
+      "premiumDiscount": -0.118,
+      "iopv": 3.1438
+    },
+    {
+      "date": "2026-07-21",
+      "nav": 3.1593,
+      "cumulativeNav": 5.2136,
+      "dailyReturn": 0.537,
+      "marketPrice": 3.163,
+      "premiumDiscount": 0.105,
+      "iopv": 3.158
+    },
+    {
+      "date": "2026-07-22",
+      "nav": 3.1512,
+      "cumulativeNav": 5.2003,
+      "dailyReturn": -0.256,
+      "marketPrice": 3.143,
+      "premiumDiscount": -0.254,
+      "iopv": 3.1522
+    },
+    {
+      "date": "2026-07-23",
+      "nav": 3.1677,
+      "cumulativeNav": 5.2275,
+      "dailyReturn": 0.524,
+      "marketPrice": 3.176,
+      "premiumDiscount": 0.268,
+      "iopv": 3.1682
+    },
+    {
+      "date": "2026-07-24",
+      "nav": 3.1486,
+      "cumulativeNav": 5.196,
+      "dailyReturn": -0.604,
+      "marketPrice": 3.156,
+      "premiumDiscount": 0.238,
+      "iopv": 3.148
+    },
+    {
+      "date": "2026-07-27",
+      "nav": 3.1205,
+      "cumulativeNav": 5.1496,
+      "dailyReturn": -0.893,
+      "marketPrice": 3.126,
+      "premiumDiscount": 0.193,
+      "iopv": 3.121
+    },
+    {
+      "date": "2026-07-28",
+      "nav": 3.1443,
+      "cumulativeNav": 5.1889,
+      "dailyReturn": 0.765,
+      "marketPrice": 3.151,
+      "premiumDiscount": 0.215,
+      "iopv": 3.1437
+    },
+    {
+      "date": "2026-07-29",
+      "nav": 3.1264,
+      "cumulativeNav": 5.1594,
+      "dailyReturn": -0.569,
+      "marketPrice": 3.124,
+      "premiumDiscount": -0.09,
+      "iopv": 3.127
+    },
+    {
+      "date": "2026-07-30",
+      "nav": 3.1027,
+      "cumulativeNav": 5.1202,
+      "dailyReturn": -0.76,
+      "marketPrice": 3.103,
+      "premiumDiscount": 0.021,
+      "iopv": 3.1035
+    },
+    {
+      "date": "2026-07-31",
+      "nav": 3.1203,
+      "cumulativeNav": 5.1492,
+      "dailyReturn": 0.567,
+      "marketPrice": 3.116,
+      "premiumDiscount": -0.145,
+      "iopv": 3.1212
+    },
+    {
+      "date": "2026-08-03",
+      "nav": 3.1134,
+      "cumulativeNav": 5.1379,
+      "dailyReturn": -0.22,
+      "marketPrice": 3.108,
+      "premiumDiscount": -0.186,
+      "iopv": 3.1119
+    },
+    {
+      "date": "2026-08-04",
+      "nav": 3.1297,
+      "cumulativeNav": 5.1649,
+      "dailyReturn": 0.525,
+      "marketPrice": 3.125,
+      "premiumDiscount": -0.139,
+      "iopv": 3.1293
+    },
+    {
+      "date": "2026-08-05",
+      "nav": 3.1287,
+      "cumulativeNav": 5.1632,
+      "dailyReturn": -0.033,
+      "marketPrice": 3.131,
+      "premiumDiscount": 0.061,
+      "iopv": 3.1298
+    },
+    {
+      "date": "2026-08-06",
+      "nav": 3.1201,
+      "cumulativeNav": 5.149,
+      "dailyReturn": -0.275,
+      "marketPrice": 3.116,
+      "premiumDiscount": -0.126,
+      "iopv": 3.1187
+    },
+    {
+      "date": "2026-08-07",
+      "nav": 3.0952,
+      "cumulativeNav": 5.1079,
+      "dailyReturn": -0.798,
+      "marketPrice": 3.097,
+      "premiumDiscount": 0.047,
+      "iopv": 3.0961
+    },
+    {
+      "date": "2026-08-10",
+      "nav": 3.1199,
+      "cumulativeNav": 5.1486,
+      "dailyReturn": 0.796,
+      "marketPrice": 3.128,
+      "premiumDiscount": 0.25,
+      "iopv": 3.1209
+    },
+    {
+      "date": "2026-08-11",
+      "nav": 3.0922,
+      "cumulativeNav": 5.1029,
+      "dailyReturn": -0.886,
+      "marketPrice": 3.1,
+      "premiumDiscount": 0.243,
+      "iopv": 3.0915
+    },
+    {
+      "date": "2026-08-12",
+      "nav": 3.1575,
+      "cumulativeNav": 5.2107,
+      "dailyReturn": 2.113,
+      "marketPrice": 3.156,
+      "premiumDiscount": -0.061,
+      "iopv": 3.1561
+    },
+    {
+      "date": "2026-08-13",
+      "nav": 3.136,
+      "cumulativeNav": 5.1752,
+      "dailyReturn": -0.682,
+      "marketPrice": 3.139,
+      "premiumDiscount": 0.092,
+      "iopv": 3.1346
+    },
+    {
+      "date": "2026-08-14",
+      "nav": 3.164,
+      "cumulativeNav": 5.2214,
+      "dailyReturn": 0.893,
+      "marketPrice": 3.168,
+      "premiumDiscount": 0.122,
+      "iopv": 3.1636
+    }
+  ]
+}

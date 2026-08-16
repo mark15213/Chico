@@ -1,0 +1,171 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "actions": [
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "type": "dividend",
+      "fiscalYear": 2024,
+      "dividendPerShare": 34.98,
+      "currency": "CNY",
+      "recordDate": "2025-06-25",
+      "exDate": "2025-06-26",
+      "payDate": "2025-07-02",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "type": "dividend",
+      "fiscalYear": 2025,
+      "dividendPerShare": 38.52,
+      "currency": "CNY",
+      "recordDate": "2026-06-24",
+      "exDate": "2026-06-25",
+      "payDate": "2026-07-01",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "type": "dividend",
+      "fiscalYear": 2024,
+      "dividendPerShare": 4.85,
+      "currency": "CNY",
+      "recordDate": "2025-06-17",
+      "exDate": "2025-06-18",
+      "payDate": "2025-06-24",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "type": "dividend",
+      "fiscalYear": 2025,
+      "dividendPerShare": 5.6,
+      "currency": "CNY",
+      "recordDate": "2026-06-16",
+      "exDate": "2026-06-17",
+      "payDate": "2026-06-23",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "type": "dividend",
+      "fiscalYear": 2024,
+      "dividendPerShare": 1.972,
+      "currency": "CNY",
+      "recordDate": "2025-07-08",
+      "exDate": "2025-07-09",
+      "payDate": "2025-07-15",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "type": "dividend",
+      "fiscalYear": 2025,
+      "dividendPerShare": 2.011,
+      "currency": "CNY",
+      "recordDate": "2026-07-07",
+      "exDate": "2026-07-08",
+      "payDate": "2026-07-14",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "type": "dividend",
+      "fiscalYear": 2024,
+      "dividendPerShare": 1.21,
+      "currency": "CNY",
+      "recordDate": "2025-06-19",
+      "exDate": "2025-06-20",
+      "payDate": "2025-06-26",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 8
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "type": "dividend",
+      "fiscalYear": 2025,
+      "dividendPerShare": 1.35,
+      "currency": "CNY",
+      "recordDate": "2026-06-18",
+      "exDate": "2026-06-19",
+      "payDate": "2026-06-25",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "type": "dividend",
+      "fiscalYear": 2024,
+      "dividendPerShare": 4.2,
+      "currency": "HKD",
+      "recordDate": "2025-05-21",
+      "exDate": "2025-05-22",
+      "payDate": "2025-05-28",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "type": "dividend",
+      "fiscalYear": 2025,
+      "dividendPerShare": 4.5,
+      "currency": "HKD",
+      "recordDate": "2026-05-20",
+      "exDate": "2026-05-21",
+      "payDate": "2026-05-27",
+      "bonusShareRatio": 0,
+      "transferShareRatio": 0
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "type": "buyback",
+      "announcedOn": "2026-01-08",
+      "amount": 400,
+      "currency": "HKD",
+      "unit": "亿元",
+      "completedPercent": 62.4,
+      "note": "年度回购计划"
+    }
+  ]
+}

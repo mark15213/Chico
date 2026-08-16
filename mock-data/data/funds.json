@@ -1,0 +1,349 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "count": 5,
+  "funds": [
+    {
+      "code": "510050",
+      "market": "SSE",
+      "name": "华夏上证50ETF",
+      "shortName": "上证50ETF",
+      "kind": "etf",
+      "kindLabel": "交易型开放式指数基金",
+      "company": "华夏基金管理有限公司",
+      "inceptionDate": "2004-12-30",
+      "currency": "CNY",
+      "riskLevel": "R4 中高风险",
+      "listed": true,
+      "trackIndex": "000016",
+      "trackIndexName": "上证50",
+      "benchmark": "上证50指数收益率",
+      "trackingErrorAnnualized": 0.0015,
+      "fees": {
+        "management": 0.005,
+        "custody": 0.001,
+        "sales": 0,
+        "subscription": null,
+        "redemption": null
+      },
+      "nav": 3.164,
+      "cumulativeNav": 5.2214,
+      "shares": 23027000000,
+      "netAssets": 728.57,
+      "netAssetsUnit": "亿元",
+      "managers": [
+        {
+          "name": "徐猛",
+          "since": "2016-11-22",
+          "annualizedReturn": 0.0812,
+          "aum": 2860,
+          "funds": 14
+        }
+      ],
+      "peerRanking": {
+        "1M": "62/132",
+        "3M": "52/132",
+        "6M": "37/132",
+        "1Y": "23/132",
+        "2Y": "3/132"
+      },
+      "scaleHistory": [
+        {
+          "period": "2025-09-30",
+          "netAssets": 859.72,
+          "shares": 25329700000
+        },
+        {
+          "period": "2025-12-31",
+          "netAssets": 823.29,
+          "shares": 24638890000
+        },
+        {
+          "period": "2026-03-31",
+          "netAssets": 786.86,
+          "shares": 23948080000
+        },
+        {
+          "period": "2026-06-30",
+          "netAssets": 750.43,
+          "shares": 23257270000
+        }
+      ],
+      "dataSource": "净值 3.0319 @2026-08-15 之前观测（新浪财经，2026-05-15）、份额 230.27 亿份 @2026-03-31、经理徐猛、成立 2004-12-30（华夏基金）；净值外推至锚定日"
+    },
+    {
+      "code": "588000",
+      "market": "SSE",
+      "name": "华夏上证科创板50成份ETF",
+      "shortName": "科创50ETF华夏",
+      "kind": "etf",
+      "kindLabel": "交易型开放式指数基金",
+      "company": "华夏基金管理有限公司",
+      "inceptionDate": "2020-09-28",
+      "currency": "CNY",
+      "riskLevel": "R4 中高风险",
+      "listed": true,
+      "trackIndex": "000688",
+      "trackIndexName": "上证科创板50成份指数",
+      "benchmark": "上证科创板50成份指数收益率",
+      "trackingErrorAnnualized": 0.0022,
+      "fees": {
+        "management": 0.005,
+        "custody": 0.001,
+        "sales": 0,
+        "subscription": null,
+        "redemption": null
+      },
+      "nav": 1.8412,
+      "cumulativeNav": 1.8412,
+      "shares": 49120000000,
+      "netAssets": 904.4,
+      "netAssetsUnit": "亿元",
+      "managers": [
+        {
+          "name": "荣膺",
+          "since": "2020-09-28",
+          "annualizedReturn": 0.1105,
+          "aum": 1520,
+          "funds": 9
+        }
+      ],
+      "peerRanking": {
+        "1M": "23/132",
+        "3M": "64/132",
+        "6M": "47/132",
+        "1Y": "3/132",
+        "2Y": "3/132"
+      },
+      "scaleHistory": [
+        {
+          "period": "2025-09-30",
+          "netAssets": 1067.19,
+          "shares": 54032000000
+        },
+        {
+          "period": "2025-12-31",
+          "netAssets": 1021.97,
+          "shares": 52558400000
+        },
+        {
+          "period": "2026-03-31",
+          "netAssets": 976.75,
+          "shares": 51084800000
+        },
+        {
+          "period": "2026-06-30",
+          "netAssets": 931.53,
+          "shares": 49611200000
+        }
+      ],
+      "dataSource": "场内价 1.82 @2026-08-14、单位净值 1.8338 @2026-08-13、规模约 893–905 亿、近 24 交易日净流入 302.39 亿（界面新闻/新浪财经/东方财富）"
+    },
+    {
+      "code": "161725",
+      "market": "SZSE",
+      "name": "招商中证白酒指数(LOF)A",
+      "shortName": "招商中证白酒A",
+      "kind": "lof",
+      "kindLabel": "上市开放式基金",
+      "company": "招商基金管理有限公司",
+      "inceptionDate": "2015-05-27",
+      "currency": "CNY",
+      "riskLevel": "R4 中高风险",
+      "listed": true,
+      "trackIndex": "399997",
+      "trackIndexName": "中证白酒指数",
+      "benchmark": "中证白酒指数收益率×95% + 银行活期存款利率×5%",
+      "trackingErrorAnnualized": 0.0038,
+      "fees": {
+        "management": 0.01,
+        "custody": 0.002,
+        "sales": 0,
+        "subscription": 0.01,
+        "redemption": 0.005
+      },
+      "nav": 0.5596,
+      "cumulativeNav": 2.2757,
+      "shares": 41100000000,
+      "netAssets": 230,
+      "netAssetsUnit": "亿元",
+      "managers": [
+        {
+          "name": "侯昊",
+          "since": "2015-05-27",
+          "annualizedReturn": 0.0762,
+          "aum": 412,
+          "funds": 11
+        }
+      ],
+      "peerRanking": {
+        "1M": "81/132",
+        "3M": "81/132",
+        "6M": "73/132",
+        "1Y": "115/132",
+        "2Y": "126/132"
+      },
+      "scaleHistory": [
+        {
+          "period": "2025-09-30",
+          "netAssets": 271.39,
+          "shares": 45210000000
+        },
+        {
+          "period": "2025-12-31",
+          "netAssets": 259.9,
+          "shares": 43977000000
+        },
+        {
+          "period": "2026-03-31",
+          "netAssets": 248.4,
+          "shares": 42744000000
+        },
+        {
+          "period": "2026-06-30",
+          "netAssets": 236.9,
+          "shares": 41511000000
+        }
+      ],
+      "dataSource": "净值 0.5742 / 累计 2.2903 @2026-06-02、规模 258.37 亿 @2026-03-31、经理侯昊、成立 2015-05-27（天天基金）；净值外推至锚定日"
+    },
+    {
+      "code": "005827",
+      "market": null,
+      "name": "易方达蓝筹精选混合",
+      "shortName": "易方达蓝筹精选",
+      "kind": "open",
+      "kindLabel": "开放式混合型基金",
+      "company": "易方达基金管理有限公司",
+      "inceptionDate": "2018-09-05",
+      "currency": "CNY",
+      "riskLevel": "R3 中风险",
+      "listed": false,
+      "trackIndex": null,
+      "trackIndexName": null,
+      "benchmark": "沪深300指数收益率×45% + 恒生指数收益率×35% + 中债总指数收益率×20%",
+      "trackingErrorAnnualized": null,
+      "fees": {
+        "management": 0.012,
+        "custody": 0.002,
+        "sales": 0,
+        "subscription": 0.015,
+        "redemption": 0.005
+      },
+      "nav": 1.5218,
+      "cumulativeNav": 1.7618,
+      "shares": 13415000000,
+      "netAssets": 204.15,
+      "netAssetsUnit": "亿元",
+      "managers": [
+        {
+          "name": "张坤",
+          "since": "2018-09-05",
+          "annualizedReturn": 0.0921,
+          "aum": 618,
+          "funds": 4
+        },
+        {
+          "name": "杨思亮",
+          "since": "2026-05-23",
+          "annualizedReturn": 0.1043,
+          "aum": 96,
+          "funds": 3
+        }
+      ],
+      "peerRanking": {
+        "1M": "1789/2841",
+        "3M": "1686/2841",
+        "6M": "1362/2841",
+        "1Y": "1189/2841",
+        "2Y": "878/2841"
+      },
+      "scaleHistory": [
+        {
+          "period": "2025-09-30",
+          "netAssets": 240.9,
+          "shares": 14756500000
+        },
+        {
+          "period": "2025-12-31",
+          "netAssets": 230.69,
+          "shares": 14354050000
+        },
+        {
+          "period": "2026-03-31",
+          "netAssets": 220.48,
+          "shares": 13951600000
+        },
+        {
+          "period": "2026-06-30",
+          "netAssets": 210.27,
+          "shares": 13549150000
+        }
+      ],
+      "dataSource": "单位净值 1.4931、规模 204.16 亿 @2026-07-24；2026-03-31 规模 267.93 亿；张坤 2018-09-05 起、杨思亮 2026-05-23 起任职（天天基金/易方达）；净值外推至锚定日"
+    },
+    {
+      "code": "000198",
+      "market": null,
+      "name": "天弘余额宝货币市场基金",
+      "shortName": "天弘余额宝",
+      "kind": "money",
+      "kindLabel": "货币市场基金",
+      "company": "天弘基金管理有限公司",
+      "inceptionDate": "2013-05-29",
+      "currency": "CNY",
+      "riskLevel": "R1 低风险",
+      "listed": false,
+      "trackIndex": null,
+      "trackIndexName": null,
+      "benchmark": "活期存款利率（税后）",
+      "fees": {
+        "management": 0.002,
+        "custody": 0.0005,
+        "sales": 0.002,
+        "subscription": 0,
+        "redemption": 0
+      },
+      "nav": 1,
+      "cumulativeNav": null,
+      "shares": 701400000000,
+      "netAssets": 7014,
+      "netAssetsUnit": "亿元",
+      "managers": [
+        {
+          "name": "王登峰",
+          "since": "2019-04-24",
+          "annualizedReturn": 0.0198,
+          "aum": 8940,
+          "funds": 6
+        }
+      ],
+      "peerRanking": null,
+      "scaleHistory": [
+        {
+          "period": "2025-09-30",
+          "netAssets": 8276.52,
+          "shares": 771540000000
+        },
+        {
+          "period": "2025-12-31",
+          "netAssets": 7925.82,
+          "shares": 750498000000
+        },
+        {
+          "period": "2026-03-31",
+          "netAssets": 7575.12,
+          "shares": 729456000000
+        },
+        {
+          "period": "2026-06-30",
+          "netAssets": 7224.42,
+          "shares": 708414000000
+        }
+      ],
+      "dataSource": "七日年化 0.8720% @2026-06-30、0.8510% @2026-06-04、规模 7081.52 亿 @2026-03-31、成立 2013-05-29（天天基金）"
+    }
+  ]
+}

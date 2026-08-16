@@ -1,0 +1,380 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "flows": [
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "asOf": "2026-08-14",
+      "northboundHoldingPercent": 9.201,
+      "northboundChange30D": -0.363,
+      "mainCapitalNet5D": 165.87,
+      "orderFlow": {
+        "extraLarge": -59.35,
+        "large": -37.21,
+        "medium": 26.95,
+        "small": -35.69
+      },
+      "marginBalance": 280.56,
+      "marginBalanceToFloatCap": 2.65,
+      "shortBalance": null,
+      "shareholderCount": 421789,
+      "shareholderCountChangeQoQ": -5.74,
+      "institutionalHoldingPercent": 66.37,
+      "topShareholders": [
+        {
+          "rank": 1,
+          "name": "香港中央结算有限公司",
+          "percent": 10.896,
+          "changeShares": 11244664
+        },
+        {
+          "rank": 2,
+          "name": "中国证券金融股份有限公司",
+          "percent": 6.748,
+          "changeShares": 7801871
+        },
+        {
+          "rank": 3,
+          "name": "全国社保基金一一八组合",
+          "percent": 4.964,
+          "changeShares": -3384291
+        },
+        {
+          "rank": 4,
+          "name": "中央汇金资产管理有限责任公司",
+          "percent": 3.33,
+          "changeShares": 3547764
+        },
+        {
+          "rank": 5,
+          "name": "国家集成电路产业投资基金",
+          "percent": 3.228,
+          "changeShares": -10519800
+        }
+      ],
+      "lockupExpiries": [
+        {
+          "date": "2026-11-13",
+          "shares": 17586800,
+          "percentOfFloat": 1.59,
+          "type": "首发原股东限售股"
+        }
+      ]
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "asOf": "2026-08-14",
+      "northboundHoldingPercent": 8.925,
+      "northboundChange30D": -0.5,
+      "mainCapitalNet5D": 37.46,
+      "orderFlow": {
+        "extraLarge": 19.53,
+        "large": -36.73,
+        "medium": -30.64,
+        "small": -17.67
+      },
+      "marginBalance": 579.99,
+      "marginBalanceToFloatCap": 1.91,
+      "shortBalance": null,
+      "shareholderCount": 116335,
+      "shareholderCountChangeQoQ": -4.72,
+      "institutionalHoldingPercent": 40.19,
+      "topShareholders": [
+        {
+          "rank": 1,
+          "name": "香港中央结算有限公司",
+          "percent": 10.49,
+          "changeShares": -8025434
+        },
+        {
+          "rank": 2,
+          "name": "中国证券金融股份有限公司",
+          "percent": 6.416,
+          "changeShares": -10787459
+        },
+        {
+          "rank": 3,
+          "name": "全国社保基金一一八组合",
+          "percent": 4.672,
+          "changeShares": -8404421
+        },
+        {
+          "rank": 4,
+          "name": "中央汇金资产管理有限责任公司",
+          "percent": 3.831,
+          "changeShares": 2408551
+        },
+        {
+          "rank": 5,
+          "name": "国家集成电路产业投资基金",
+          "percent": 3.253,
+          "changeShares": 1823885
+        }
+      ],
+      "lockupExpiries": [
+        {
+          "date": "2026-11-13",
+          "shares": 63840000,
+          "percentOfFloat": 1.84,
+          "type": "首发原股东限售股"
+        }
+      ]
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "asOf": "2026-08-14",
+      "northboundHoldingPercent": 2.087,
+      "northboundChange30D": -0.046,
+      "mainCapitalNet5D": -6.8,
+      "orderFlow": {
+        "extraLarge": 45.34,
+        "large": -21.39,
+        "medium": 18.11,
+        "small": -8.15
+      },
+      "marginBalance": 312.37,
+      "marginBalanceToFloatCap": 3.52,
+      "shortBalance": null,
+      "shareholderCount": 270082,
+      "shareholderCountChangeQoQ": 3.61,
+      "institutionalHoldingPercent": 57.81,
+      "topShareholders": [
+        {
+          "rank": 1,
+          "name": "香港中央结算有限公司",
+          "percent": 10.295,
+          "changeShares": 5651310
+        },
+        {
+          "rank": 2,
+          "name": "中国证券金融股份有限公司",
+          "percent": 6.328,
+          "changeShares": 4915963
+        },
+        {
+          "rank": 3,
+          "name": "全国社保基金一一八组合",
+          "percent": 5.011,
+          "changeShares": 8397697
+        },
+        {
+          "rank": 4,
+          "name": "中央汇金资产管理有限责任公司",
+          "percent": 3.608,
+          "changeShares": -5229410
+        },
+        {
+          "rank": 5,
+          "name": "国家集成电路产业投资基金",
+          "percent": 2.711,
+          "changeShares": 5133615
+        }
+      ],
+      "lockupExpiries": [
+        {
+          "date": "2026-11-13",
+          "shares": 353080000,
+          "percentOfFloat": 1.52,
+          "type": "首发原股东限售股"
+        }
+      ]
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "asOf": "2026-08-14",
+      "northboundHoldingPercent": 8.063,
+      "northboundChange30D": 0.679,
+      "mainCapitalNet5D": 16.36,
+      "orderFlow": {
+        "extraLarge": -10.17,
+        "large": -2.21,
+        "medium": 0.32,
+        "small": 3.4
+      },
+      "marginBalance": 41.86,
+      "marginBalanceToFloatCap": 2.53,
+      "shortBalance": null,
+      "shareholderCount": 326989,
+      "shareholderCountChangeQoQ": -1.89,
+      "institutionalHoldingPercent": 53.48,
+      "topShareholders": [
+        {
+          "rank": 1,
+          "name": "香港中央结算有限公司",
+          "percent": 10.377,
+          "changeShares": -9968257
+        },
+        {
+          "rank": 2,
+          "name": "中国证券金融股份有限公司",
+          "percent": 6.477,
+          "changeShares": 2725613
+        },
+        {
+          "rank": 3,
+          "name": "全国社保基金一一八组合",
+          "percent": 4.539,
+          "changeShares": -2154772
+        },
+        {
+          "rank": 4,
+          "name": "中央汇金资产管理有限责任公司",
+          "percent": 4.008,
+          "changeShares": 3294758
+        },
+        {
+          "rank": 5,
+          "name": "国家集成电路产业投资基金",
+          "percent": 3.308,
+          "changeShares": -3084912
+        }
+      ],
+      "lockupExpiries": [
+        {
+          "date": "2026-11-13",
+          "shares": 111692000,
+          "percentOfFloat": 1.48,
+          "type": "首发原股东限售股"
+        }
+      ]
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "asOf": "2026-08-14",
+      "northboundHoldingPercent": 8.886,
+      "northboundChange30D": 0.693,
+      "mainCapitalNet5D": -42.91,
+      "orderFlow": {
+        "extraLarge": -17.97,
+        "large": -14.46,
+        "medium": -3.61,
+        "small": -3.65
+      },
+      "marginBalance": 153.15,
+      "marginBalanceToFloatCap": 2.79,
+      "shortBalance": null,
+      "shareholderCount": 264759,
+      "shareholderCountChangeQoQ": 5.12,
+      "institutionalHoldingPercent": 36.91,
+      "topShareholders": [
+        {
+          "rank": 1,
+          "name": "香港中央结算有限公司",
+          "percent": 10.684,
+          "changeShares": 5588987
+        },
+        {
+          "rank": 2,
+          "name": "中国证券金融股份有限公司",
+          "percent": 6.719,
+          "changeShares": -2772196
+        },
+        {
+          "rank": 3,
+          "name": "全国社保基金一一八组合",
+          "percent": 4.847,
+          "changeShares": -11289679
+        },
+        {
+          "rank": 4,
+          "name": "中央汇金资产管理有限责任公司",
+          "percent": 3.875,
+          "changeShares": 7871740
+        },
+        {
+          "rank": 5,
+          "name": "国家集成电路产业投资基金",
+          "percent": 3.343,
+          "changeShares": 11408497
+        }
+      ],
+      "lockupExpiries": [
+        {
+          "date": "2026-11-13",
+          "shares": 127680000,
+          "percentOfFloat": 2.23,
+          "type": "首发原股东限售股"
+        }
+      ]
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "asOf": "2026-08-14",
+      "southboundHoldingPercent": 8.847,
+      "southboundChange30D": 0.235,
+      "mainCapitalNet5D": 248.48,
+      "orderFlow": {
+        "extraLarge": -38.78,
+        "large": -187.43,
+        "medium": -15.11,
+        "small": -6.97
+      },
+      "marginBalance": null,
+      "marginBalanceToFloatCap": null,
+      "shortBalance": 168.43,
+      "shareholderCount": 414581,
+      "shareholderCountChangeQoQ": -4.91,
+      "institutionalHoldingPercent": 28.87,
+      "topShareholders": [
+        {
+          "rank": 1,
+          "name": "香港中央结算有限公司",
+          "percent": 10.282,
+          "changeShares": 4981175
+        },
+        {
+          "rank": 2,
+          "name": "中国证券金融股份有限公司",
+          "percent": 6.511,
+          "changeShares": 11962197
+        },
+        {
+          "rank": 3,
+          "name": "全国社保基金一一八组合",
+          "percent": 4.954,
+          "changeShares": -6437365
+        },
+        {
+          "rank": 4,
+          "name": "中央汇金资产管理有限责任公司",
+          "percent": 3.741,
+          "changeShares": 11095411
+        },
+        {
+          "rank": 5,
+          "name": "国家集成电路产业投资基金",
+          "percent": 3.277,
+          "changeShares": -1182697
+        }
+      ],
+      "lockupExpiries": [
+        {
+          "date": "2026-11-13",
+          "shares": 128100000,
+          "percentOfFloat": 2.06,
+          "type": "首发原股东限售股"
+        }
+      ]
+    }
+  ]
+}

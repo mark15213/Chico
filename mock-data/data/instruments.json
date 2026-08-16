@@ -1,0 +1,305 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "count": 11,
+  "instruments": [
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "name": "贵州茅台",
+      "enName": "Kweichow Moutai",
+      "type": "stock",
+      "currency": "CNY",
+      "reportCurrency": "CNY",
+      "board": "主板",
+      "listedOn": "2001-08-27",
+      "priceLimitPercent": 10,
+      "lotSize": 100,
+      "industry": {
+        "l1": "食品饮料",
+        "l2": "白酒Ⅱ",
+        "l3": "白酒Ⅲ"
+      },
+      "tags": [
+        "白酒",
+        "消费龙头",
+        "高股息",
+        "沪股通"
+      ],
+      "totalShares": 1256200000,
+      "floatShares": 1256200000,
+      "connect": "沪股通",
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "name": "宁德时代",
+      "enName": "CATL",
+      "type": "stock",
+      "currency": "CNY",
+      "reportCurrency": "CNY",
+      "board": "创业板",
+      "listedOn": "2018-06-11",
+      "priceLimitPercent": 20,
+      "lotSize": 100,
+      "industry": {
+        "l1": "电力设备",
+        "l2": "电池",
+        "l3": "锂电池"
+      },
+      "tags": [
+        "动力电池",
+        "储能",
+        "深股通",
+        "A+H"
+      ],
+      "totalShares": 4560000000,
+      "floatShares": 3982000000,
+      "connect": "深股通",
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "name": "招商银行",
+      "enName": "China Merchants Bank",
+      "type": "stock",
+      "currency": "CNY",
+      "reportCurrency": "CNY",
+      "board": "主板",
+      "listedOn": "2002-04-09",
+      "priceLimitPercent": 10,
+      "lotSize": 100,
+      "industry": {
+        "l1": "银行",
+        "l2": "股份制银行Ⅱ",
+        "l3": "股份制银行Ⅲ"
+      },
+      "tags": [
+        "银行",
+        "高股息",
+        "零售之王",
+        "沪股通",
+        "A+H"
+      ],
+      "totalShares": 25220000000,
+      "floatShares": 20629000000,
+      "connect": "沪股通",
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "name": "中芯国际",
+      "enName": "SMIC",
+      "type": "stock",
+      "currency": "CNY",
+      "reportCurrency": "CNY",
+      "board": "科创板",
+      "listedOn": "2020-07-16",
+      "priceLimitPercent": 20,
+      "lotSize": 100,
+      "industry": {
+        "l1": "电子",
+        "l2": "半导体",
+        "l3": "集成电路制造"
+      },
+      "tags": [
+        "晶圆代工",
+        "国产替代",
+        "科创50",
+        "A+H"
+      ],
+      "totalShares": 7978000000,
+      "floatShares": 2012000000,
+      "connect": "沪股通",
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "name": "比亚迪",
+      "enName": "BYD",
+      "type": "stock",
+      "currency": "CNY",
+      "reportCurrency": "CNY",
+      "board": "主板",
+      "listedOn": "2011-06-30",
+      "priceLimitPercent": 10,
+      "lotSize": 100,
+      "industry": {
+        "l1": "汽车",
+        "l2": "乘用车",
+        "l3": "综合乘用车"
+      },
+      "tags": [
+        "新能源车",
+        "出海",
+        "深股通",
+        "A+H"
+      ],
+      "totalShares": 9120000000,
+      "floatShares": 5542000000,
+      "connect": "深股通",
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "name": "腾讯控股",
+      "enName": "Tencent Holdings",
+      "type": "stock",
+      "currency": "HKD",
+      "reportCurrency": "CNY",
+      "board": "主板",
+      "listedOn": "2004-06-16",
+      "priceLimitPercent": null,
+      "lotSize": 100,
+      "industry": {
+        "l1": "传媒",
+        "l2": "互联网服务",
+        "l3": "综合互联网"
+      },
+      "tags": [
+        "港股通",
+        "互联网",
+        "游戏",
+        "AI"
+      ],
+      "totalShares": 9150000000,
+      "floatShares": 9150000000,
+      "connect": "港股通",
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "510050"
+      },
+      "name": "华夏上证50ETF",
+      "enName": null,
+      "type": "etf",
+      "currency": "CNY",
+      "board": "基金",
+      "listedOn": "2004-12-30",
+      "priceLimitPercent": 10,
+      "lotSize": 100,
+      "industry": null,
+      "tags": [
+        "交易型开放式指数基金",
+        "华夏基金管理有限公司"
+      ],
+      "totalShares": 23027000000,
+      "floatShares": 23027000000,
+      "connect": null,
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "588000"
+      },
+      "name": "华夏上证科创板50成份ETF",
+      "enName": null,
+      "type": "etf",
+      "currency": "CNY",
+      "board": "基金",
+      "listedOn": "2020-09-28",
+      "priceLimitPercent": 10,
+      "lotSize": 100,
+      "industry": null,
+      "tags": [
+        "交易型开放式指数基金",
+        "华夏基金管理有限公司"
+      ],
+      "totalShares": 49120000000,
+      "floatShares": 49120000000,
+      "connect": null,
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "161725"
+      },
+      "name": "招商中证白酒指数(LOF)A",
+      "enName": null,
+      "type": "lof",
+      "currency": "CNY",
+      "board": "基金",
+      "listedOn": "2015-05-27",
+      "priceLimitPercent": 10,
+      "lotSize": 100,
+      "industry": null,
+      "tags": [
+        "上市开放式基金",
+        "招商基金管理有限公司"
+      ],
+      "totalShares": 41100000000,
+      "floatShares": 41100000000,
+      "connect": null,
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": null,
+        "symbol": "005827"
+      },
+      "name": "易方达蓝筹精选混合",
+      "enName": null,
+      "type": "open-fund",
+      "currency": "CNY",
+      "board": "场外",
+      "listedOn": "2018-09-05",
+      "priceLimitPercent": null,
+      "lotSize": null,
+      "industry": null,
+      "tags": [
+        "开放式混合型基金",
+        "易方达基金管理有限公司"
+      ],
+      "totalShares": 13415000000,
+      "floatShares": 13415000000,
+      "connect": null,
+      "status": "listed"
+    },
+    {
+      "instrument": {
+        "market": null,
+        "symbol": "000198"
+      },
+      "name": "天弘余额宝货币市场基金",
+      "enName": null,
+      "type": "money-fund",
+      "currency": "CNY",
+      "board": "场外",
+      "listedOn": "2013-05-29",
+      "priceLimitPercent": null,
+      "lotSize": null,
+      "industry": null,
+      "tags": [
+        "货币市场基金",
+        "天弘基金管理有限公司"
+      ],
+      "totalShares": 701400000000,
+      "floatShares": 701400000000,
+      "connect": null,
+      "status": "listed"
+    }
+  ]
+}

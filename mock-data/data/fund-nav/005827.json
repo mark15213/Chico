@@ -1,0 +1,3015 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "fund": {
+    "code": "005827",
+    "market": null,
+    "name": "易方达蓝筹精选混合",
+    "kind": "open",
+    "currency": "CNY"
+  },
+  "navs": [
+    {
+      "date": "2024-07-24",
+      "nav": 1.3587,
+      "cumulativeNav": 1.573,
+      "dailyReturn": 0
+    },
+    {
+      "date": "2024-07-25",
+      "nav": 1.3321,
+      "cumulativeNav": 1.5421,
+      "dailyReturn": -1.965
+    },
+    {
+      "date": "2024-07-26",
+      "nav": 1.3181,
+      "cumulativeNav": 1.5259,
+      "dailyReturn": -1.051
+    },
+    {
+      "date": "2024-07-29",
+      "nav": 1.298,
+      "cumulativeNav": 1.5027,
+      "dailyReturn": -1.521
+    },
+    {
+      "date": "2024-07-30",
+      "nav": 1.3008,
+      "cumulativeNav": 1.506,
+      "dailyReturn": 0.216
+    },
+    {
+      "date": "2024-07-31",
+      "nav": 1.3183,
+      "cumulativeNav": 1.5262,
+      "dailyReturn": 1.341
+    },
+    {
+      "date": "2024-08-01",
+      "nav": 1.3146,
+      "cumulativeNav": 1.522,
+      "dailyReturn": -0.274
+    },
+    {
+      "date": "2024-08-02",
+      "nav": 1.3136,
+      "cumulativeNav": 1.5207,
+      "dailyReturn": -0.082
+    },
+    {
+      "date": "2024-08-05",
+      "nav": 1.3007,
+      "cumulativeNav": 1.5058,
+      "dailyReturn": -0.983
+    },
+    {
+      "date": "2024-08-06",
+      "nav": 1.326,
+      "cumulativeNav": 1.5351,
+      "dailyReturn": 1.944
+    },
+    {
+      "date": "2024-08-07",
+      "nav": 1.3405,
+      "cumulativeNav": 1.5519,
+      "dailyReturn": 1.095
+    },
+    {
+      "date": "2024-08-08",
+      "nav": 1.3478,
+      "cumulativeNav": 1.5603,
+      "dailyReturn": 0.544
+    },
+    {
+      "date": "2024-08-09",
+      "nav": 1.3363,
+      "cumulativeNav": 1.5471,
+      "dailyReturn": -0.848
+    },
+    {
+      "date": "2024-08-12",
+      "nav": 1.3306,
+      "cumulativeNav": 1.5405,
+      "dailyReturn": -0.428
+    },
+    {
+      "date": "2024-08-13",
+      "nav": 1.3122,
+      "cumulativeNav": 1.5191,
+      "dailyReturn": -1.384
+    },
+    {
+      "date": "2024-08-14",
+      "nav": 1.3142,
+      "cumulativeNav": 1.5215,
+      "dailyReturn": 0.153
+    },
+    {
+      "date": "2024-08-15",
+      "nav": 1.3468,
+      "cumulativeNav": 1.5592,
+      "dailyReturn": 2.481
+    },
+    {
+      "date": "2024-08-16",
+      "nav": 1.3255,
+      "cumulativeNav": 1.5345,
+      "dailyReturn": -1.584
+    },
+    {
+      "date": "2024-08-19",
+      "nav": 1.3247,
+      "cumulativeNav": 1.5336,
+      "dailyReturn": -0.057
+    },
+    {
+      "date": "2024-08-20",
+      "nav": 1.2841,
+      "cumulativeNav": 1.4867,
+      "dailyReturn": -3.064
+    },
+    {
+      "date": "2024-08-21",
+      "nav": 1.311,
+      "cumulativeNav": 1.5178,
+      "dailyReturn": 2.092
+    },
+    {
+      "date": "2024-08-22",
+      "nav": 1.3153,
+      "cumulativeNav": 1.5228,
+      "dailyReturn": 0.33
+    },
+    {
+      "date": "2024-08-23",
+      "nav": 1.3332,
+      "cumulativeNav": 1.5435,
+      "dailyReturn": 1.363
+    },
+    {
+      "date": "2024-08-26",
+      "nav": 1.3557,
+      "cumulativeNav": 1.5695,
+      "dailyReturn": 1.683
+    },
+    {
+      "date": "2024-08-27",
+      "nav": 1.3513,
+      "cumulativeNav": 1.5644,
+      "dailyReturn": -0.323
+    },
+    {
+      "date": "2024-08-28",
+      "nav": 1.3563,
+      "cumulativeNav": 1.5702,
+      "dailyReturn": 0.367
+    },
+    {
+      "date": "2024-08-29",
+      "nav": 1.3605,
+      "cumulativeNav": 1.5751,
+      "dailyReturn": 0.312
+    },
+    {
+      "date": "2024-08-30",
+      "nav": 1.3667,
+      "cumulativeNav": 1.5822,
+      "dailyReturn": 0.453
+    },
+    {
+      "date": "2024-09-02",
+      "nav": 1.3718,
+      "cumulativeNav": 1.5882,
+      "dailyReturn": 0.379
+    },
+    {
+      "date": "2024-09-03",
+      "nav": 1.3742,
+      "cumulativeNav": 1.591,
+      "dailyReturn": 0.175
+    },
+    {
+      "date": "2024-09-04",
+      "nav": 1.3703,
+      "cumulativeNav": 1.5864,
+      "dailyReturn": -0.288
+    },
+    {
+      "date": "2024-09-05",
+      "nav": 1.3561,
+      "cumulativeNav": 1.5699,
+      "dailyReturn": -1.037
+    },
+    {
+      "date": "2024-09-06",
+      "nav": 1.3605,
+      "cumulativeNav": 1.575,
+      "dailyReturn": 0.325
+    },
+    {
+      "date": "2024-09-09",
+      "nav": 1.3476,
+      "cumulativeNav": 1.5601,
+      "dailyReturn": -0.948
+    },
+    {
+      "date": "2024-09-10",
+      "nav": 1.3516,
+      "cumulativeNav": 1.5647,
+      "dailyReturn": 0.296
+    },
+    {
+      "date": "2024-09-11",
+      "nav": 1.374,
+      "cumulativeNav": 1.5907,
+      "dailyReturn": 1.659
+    },
+    {
+      "date": "2024-09-12",
+      "nav": 1.3474,
+      "cumulativeNav": 1.5599,
+      "dailyReturn": -1.935
+    },
+    {
+      "date": "2024-09-13",
+      "nav": 1.3474,
+      "cumulativeNav": 1.5599,
+      "dailyReturn": -0.001
+    },
+    {
+      "date": "2024-09-18",
+      "nav": 1.3623,
+      "cumulativeNav": 1.5772,
+      "dailyReturn": 1.11
+    },
+    {
+      "date": "2024-09-19",
+      "nav": 1.3969,
+      "cumulativeNav": 1.6172,
+      "dailyReturn": 2.537
+    },
+    {
+      "date": "2024-09-20",
+      "nav": 1.4145,
+      "cumulativeNav": 1.6375,
+      "dailyReturn": 1.258
+    },
+    {
+      "date": "2024-09-23",
+      "nav": 1.413,
+      "cumulativeNav": 1.6358,
+      "dailyReturn": -0.106
+    },
+    {
+      "date": "2024-09-24",
+      "nav": 1.4175,
+      "cumulativeNav": 1.6411,
+      "dailyReturn": 0.323
+    },
+    {
+      "date": "2024-09-25",
+      "nav": 1.4383,
+      "cumulativeNav": 1.6651,
+      "dailyReturn": 1.464
+    },
+    {
+      "date": "2024-09-26",
+      "nav": 1.4478,
+      "cumulativeNav": 1.6761,
+      "dailyReturn": 0.659
+    },
+    {
+      "date": "2024-09-27",
+      "nav": 1.4548,
+      "cumulativeNav": 1.6842,
+      "dailyReturn": 0.484
+    },
+    {
+      "date": "2024-09-30",
+      "nav": 1.4663,
+      "cumulativeNav": 1.6976,
+      "dailyReturn": 0.794
+    },
+    {
+      "date": "2024-10-08",
+      "nav": 1.4602,
+      "cumulativeNav": 1.6905,
+      "dailyReturn": -0.417
+    },
+    {
+      "date": "2024-10-09",
+      "nav": 1.4826,
+      "cumulativeNav": 1.7165,
+      "dailyReturn": 1.536
+    },
+    {
+      "date": "2024-10-10",
+      "nav": 1.4701,
+      "cumulativeNav": 1.7019,
+      "dailyReturn": -0.846
+    },
+    {
+      "date": "2024-10-11",
+      "nav": 1.4736,
+      "cumulativeNav": 1.706,
+      "dailyReturn": 0.241
+    },
+    {
+      "date": "2024-10-14",
+      "nav": 1.49,
+      "cumulativeNav": 1.725,
+      "dailyReturn": 1.109
+    },
+    {
+      "date": "2024-10-15",
+      "nav": 1.5092,
+      "cumulativeNav": 1.7473,
+      "dailyReturn": 1.292
+    },
+    {
+      "date": "2024-10-16",
+      "nav": 1.5179,
+      "cumulativeNav": 1.7572,
+      "dailyReturn": 0.571
+    },
+    {
+      "date": "2024-10-17",
+      "nav": 1.5122,
+      "cumulativeNav": 1.7507,
+      "dailyReturn": -0.374
+    },
+    {
+      "date": "2024-10-18",
+      "nav": 1.5242,
+      "cumulativeNav": 1.7646,
+      "dailyReturn": 0.794
+    },
+    {
+      "date": "2024-10-21",
+      "nav": 1.5229,
+      "cumulativeNav": 1.763,
+      "dailyReturn": -0.086
+    },
+    {
+      "date": "2024-10-22",
+      "nav": 1.555,
+      "cumulativeNav": 1.8003,
+      "dailyReturn": 2.112
+    },
+    {
+      "date": "2024-10-23",
+      "nav": 1.566,
+      "cumulativeNav": 1.813,
+      "dailyReturn": 0.704
+    },
+    {
+      "date": "2024-10-24",
+      "nav": 1.5508,
+      "cumulativeNav": 1.7954,
+      "dailyReturn": -0.969
+    },
+    {
+      "date": "2024-10-25",
+      "nav": 1.5362,
+      "cumulativeNav": 1.7785,
+      "dailyReturn": -0.94
+    },
+    {
+      "date": "2024-10-28",
+      "nav": 1.5578,
+      "cumulativeNav": 1.8034,
+      "dailyReturn": 1.401
+    },
+    {
+      "date": "2024-10-29",
+      "nav": 1.5451,
+      "cumulativeNav": 1.7888,
+      "dailyReturn": -0.813
+    },
+    {
+      "date": "2024-10-30",
+      "nav": 1.5194,
+      "cumulativeNav": 1.759,
+      "dailyReturn": -1.664
+    },
+    {
+      "date": "2024-10-31",
+      "nav": 1.5258,
+      "cumulativeNav": 1.7664,
+      "dailyReturn": 0.421
+    },
+    {
+      "date": "2024-11-01",
+      "nav": 1.5253,
+      "cumulativeNav": 1.7658,
+      "dailyReturn": -0.034
+    },
+    {
+      "date": "2024-11-04",
+      "nav": 1.5283,
+      "cumulativeNav": 1.7693,
+      "dailyReturn": 0.199
+    },
+    {
+      "date": "2024-11-05",
+      "nav": 1.5502,
+      "cumulativeNav": 1.7947,
+      "dailyReturn": 1.436
+    },
+    {
+      "date": "2024-11-06",
+      "nav": 1.5515,
+      "cumulativeNav": 1.7962,
+      "dailyReturn": 0.081
+    },
+    {
+      "date": "2024-11-07",
+      "nav": 1.5585,
+      "cumulativeNav": 1.8043,
+      "dailyReturn": 0.452
+    },
+    {
+      "date": "2024-11-08",
+      "nav": 1.5688,
+      "cumulativeNav": 1.8162,
+      "dailyReturn": 0.66
+    },
+    {
+      "date": "2024-11-11",
+      "nav": 1.5543,
+      "cumulativeNav": 1.7994,
+      "dailyReturn": -0.922
+    },
+    {
+      "date": "2024-11-12",
+      "nav": 1.5484,
+      "cumulativeNav": 1.7926,
+      "dailyReturn": -0.382
+    },
+    {
+      "date": "2024-11-13",
+      "nav": 1.5549,
+      "cumulativeNav": 1.8002,
+      "dailyReturn": 0.424
+    },
+    {
+      "date": "2024-11-14",
+      "nav": 1.5537,
+      "cumulativeNav": 1.7987,
+      "dailyReturn": -0.083
+    },
+    {
+      "date": "2024-11-15",
+      "nav": 1.5659,
+      "cumulativeNav": 1.8128,
+      "dailyReturn": 0.785
+    },
+    {
+      "date": "2024-11-18",
+      "nav": 1.586,
+      "cumulativeNav": 1.8361,
+      "dailyReturn": 1.286
+    },
+    {
+      "date": "2024-11-19",
+      "nav": 1.6088,
+      "cumulativeNav": 1.8625,
+      "dailyReturn": 1.435
+    },
+    {
+      "date": "2024-11-20",
+      "nav": 1.5978,
+      "cumulativeNav": 1.8498,
+      "dailyReturn": -0.679
+    },
+    {
+      "date": "2024-11-21",
+      "nav": 1.5957,
+      "cumulativeNav": 1.8474,
+      "dailyReturn": -0.131
+    },
+    {
+      "date": "2024-11-22",
+      "nav": 1.596,
+      "cumulativeNav": 1.8477,
+      "dailyReturn": 0.019
+    },
+    {
+      "date": "2024-11-25",
+      "nav": 1.5899,
+      "cumulativeNav": 1.8407,
+      "dailyReturn": -0.382
+    },
+    {
+      "date": "2024-11-26",
+      "nav": 1.5732,
+      "cumulativeNav": 1.8214,
+      "dailyReturn": -1.05
+    },
+    {
+      "date": "2024-11-27",
+      "nav": 1.5794,
+      "cumulativeNav": 1.8284,
+      "dailyReturn": 0.389
+    },
+    {
+      "date": "2024-11-28",
+      "nav": 1.5629,
+      "cumulativeNav": 1.8093,
+      "dailyReturn": -1.044
+    },
+    {
+      "date": "2024-11-29",
+      "nav": 1.5516,
+      "cumulativeNav": 1.7964,
+      "dailyReturn": -0.718
+    },
+    {
+      "date": "2024-12-02",
+      "nav": 1.553,
+      "cumulativeNav": 1.7979,
+      "dailyReturn": 0.087
+    },
+    {
+      "date": "2024-12-03",
+      "nav": 1.5044,
+      "cumulativeNav": 1.7416,
+      "dailyReturn": -3.131
+    },
+    {
+      "date": "2024-12-04",
+      "nav": 1.4936,
+      "cumulativeNav": 1.7291,
+      "dailyReturn": -0.718
+    },
+    {
+      "date": "2024-12-05",
+      "nav": 1.4695,
+      "cumulativeNav": 1.7012,
+      "dailyReturn": -1.615
+    },
+    {
+      "date": "2024-12-06",
+      "nav": 1.4729,
+      "cumulativeNav": 1.7052,
+      "dailyReturn": 0.233
+    },
+    {
+      "date": "2024-12-09",
+      "nav": 1.4608,
+      "cumulativeNav": 1.6912,
+      "dailyReturn": -0.817
+    },
+    {
+      "date": "2024-12-10",
+      "nav": 1.4784,
+      "cumulativeNav": 1.7115,
+      "dailyReturn": 1.198
+    },
+    {
+      "date": "2024-12-11",
+      "nav": 1.4623,
+      "cumulativeNav": 1.6929,
+      "dailyReturn": -1.086
+    },
+    {
+      "date": "2024-12-12",
+      "nav": 1.488,
+      "cumulativeNav": 1.7227,
+      "dailyReturn": 1.76
+    },
+    {
+      "date": "2024-12-13",
+      "nav": 1.4579,
+      "cumulativeNav": 1.6878,
+      "dailyReturn": -2.027
+    },
+    {
+      "date": "2024-12-16",
+      "nav": 1.4561,
+      "cumulativeNav": 1.6857,
+      "dailyReturn": -0.124
+    },
+    {
+      "date": "2024-12-17",
+      "nav": 1.4676,
+      "cumulativeNav": 1.6991,
+      "dailyReturn": 0.795
+    },
+    {
+      "date": "2024-12-18",
+      "nav": 1.4352,
+      "cumulativeNav": 1.6616,
+      "dailyReturn": -2.209
+    },
+    {
+      "date": "2024-12-19",
+      "nav": 1.4178,
+      "cumulativeNav": 1.6414,
+      "dailyReturn": -1.216
+    },
+    {
+      "date": "2024-12-20",
+      "nav": 1.3754,
+      "cumulativeNav": 1.5923,
+      "dailyReturn": -2.991
+    },
+    {
+      "date": "2024-12-23",
+      "nav": 1.3991,
+      "cumulativeNav": 1.6197,
+      "dailyReturn": 1.725
+    },
+    {
+      "date": "2024-12-24",
+      "nav": 1.3813,
+      "cumulativeNav": 1.5992,
+      "dailyReturn": -1.271
+    },
+    {
+      "date": "2024-12-25",
+      "nav": 1.3945,
+      "cumulativeNav": 1.6144,
+      "dailyReturn": 0.952
+    },
+    {
+      "date": "2024-12-26",
+      "nav": 1.4128,
+      "cumulativeNav": 1.6356,
+      "dailyReturn": 1.316
+    },
+    {
+      "date": "2024-12-27",
+      "nav": 1.4429,
+      "cumulativeNav": 1.6704,
+      "dailyReturn": 2.127
+    },
+    {
+      "date": "2024-12-30",
+      "nav": 1.4437,
+      "cumulativeNav": 1.6714,
+      "dailyReturn": 0.062
+    },
+    {
+      "date": "2024-12-31",
+      "nav": 1.471,
+      "cumulativeNav": 1.703,
+      "dailyReturn": 1.888
+    },
+    {
+      "date": "2025-01-02",
+      "nav": 1.4925,
+      "cumulativeNav": 1.7278,
+      "dailyReturn": 1.46
+    },
+    {
+      "date": "2025-01-03",
+      "nav": 1.4517,
+      "cumulativeNav": 1.6807,
+      "dailyReturn": -2.73
+    },
+    {
+      "date": "2025-01-06",
+      "nav": 1.4759,
+      "cumulativeNav": 1.7087,
+      "dailyReturn": 1.667
+    },
+    {
+      "date": "2025-01-07",
+      "nav": 1.4985,
+      "cumulativeNav": 1.7349,
+      "dailyReturn": 1.532
+    },
+    {
+      "date": "2025-01-08",
+      "nav": 1.4902,
+      "cumulativeNav": 1.7253,
+      "dailyReturn": -0.554
+    },
+    {
+      "date": "2025-01-09",
+      "nav": 1.5011,
+      "cumulativeNav": 1.7378,
+      "dailyReturn": 0.727
+    },
+    {
+      "date": "2025-01-10",
+      "nav": 1.4769,
+      "cumulativeNav": 1.7098,
+      "dailyReturn": -1.612
+    },
+    {
+      "date": "2025-01-13",
+      "nav": 1.487,
+      "cumulativeNav": 1.7216,
+      "dailyReturn": 0.688
+    },
+    {
+      "date": "2025-01-14",
+      "nav": 1.4812,
+      "cumulativeNav": 1.7147,
+      "dailyReturn": -0.396
+    },
+    {
+      "date": "2025-01-15",
+      "nav": 1.5008,
+      "cumulativeNav": 1.7375,
+      "dailyReturn": 1.325
+    },
+    {
+      "date": "2025-01-16",
+      "nav": 1.5094,
+      "cumulativeNav": 1.7475,
+      "dailyReturn": 0.576
+    },
+    {
+      "date": "2025-01-17",
+      "nav": 1.507,
+      "cumulativeNav": 1.7447,
+      "dailyReturn": -0.162
+    },
+    {
+      "date": "2025-01-20",
+      "nav": 1.4976,
+      "cumulativeNav": 1.7338,
+      "dailyReturn": -0.623
+    },
+    {
+      "date": "2025-01-21",
+      "nav": 1.5163,
+      "cumulativeNav": 1.7555,
+      "dailyReturn": 1.252
+    },
+    {
+      "date": "2025-01-22",
+      "nav": 1.5477,
+      "cumulativeNav": 1.7918,
+      "dailyReturn": 2.07
+    },
+    {
+      "date": "2025-01-23",
+      "nav": 1.5265,
+      "cumulativeNav": 1.7672,
+      "dailyReturn": -1.373
+    },
+    {
+      "date": "2025-01-24",
+      "nav": 1.5668,
+      "cumulativeNav": 1.8139,
+      "dailyReturn": 2.64
+    },
+    {
+      "date": "2025-01-27",
+      "nav": 1.5513,
+      "cumulativeNav": 1.7959,
+      "dailyReturn": -0.989
+    },
+    {
+      "date": "2025-02-05",
+      "nav": 1.5642,
+      "cumulativeNav": 1.8109,
+      "dailyReturn": 0.833
+    },
+    {
+      "date": "2025-02-06",
+      "nav": 1.5731,
+      "cumulativeNav": 1.8212,
+      "dailyReturn": 0.571
+    },
+    {
+      "date": "2025-02-07",
+      "nav": 1.5636,
+      "cumulativeNav": 1.8101,
+      "dailyReturn": -0.609
+    },
+    {
+      "date": "2025-02-10",
+      "nav": 1.6,
+      "cumulativeNav": 1.8524,
+      "dailyReturn": 2.332
+    },
+    {
+      "date": "2025-02-11",
+      "nav": 1.5902,
+      "cumulativeNav": 1.841,
+      "dailyReturn": -0.614
+    },
+    {
+      "date": "2025-02-12",
+      "nav": 1.5709,
+      "cumulativeNav": 1.8187,
+      "dailyReturn": -1.213
+    },
+    {
+      "date": "2025-02-13",
+      "nav": 1.5334,
+      "cumulativeNav": 1.7752,
+      "dailyReturn": -2.39
+    },
+    {
+      "date": "2025-02-14",
+      "nav": 1.5432,
+      "cumulativeNav": 1.7866,
+      "dailyReturn": 0.643
+    },
+    {
+      "date": "2025-02-17",
+      "nav": 1.5463,
+      "cumulativeNav": 1.7902,
+      "dailyReturn": 0.198
+    },
+    {
+      "date": "2025-02-18",
+      "nav": 1.5758,
+      "cumulativeNav": 1.8243,
+      "dailyReturn": 1.908
+    },
+    {
+      "date": "2025-02-19",
+      "nav": 1.5444,
+      "cumulativeNav": 1.788,
+      "dailyReturn": -1.992
+    },
+    {
+      "date": "2025-02-20",
+      "nav": 1.5433,
+      "cumulativeNav": 1.7867,
+      "dailyReturn": -0.069
+    },
+    {
+      "date": "2025-02-21",
+      "nav": 1.5055,
+      "cumulativeNav": 1.7429,
+      "dailyReturn": -2.453
+    },
+    {
+      "date": "2025-02-24",
+      "nav": 1.5341,
+      "cumulativeNav": 1.7761,
+      "dailyReturn": 1.902
+    },
+    {
+      "date": "2025-02-25",
+      "nav": 1.5091,
+      "cumulativeNav": 1.7471,
+      "dailyReturn": -1.63
+    },
+    {
+      "date": "2025-02-26",
+      "nav": 1.5127,
+      "cumulativeNav": 1.7513,
+      "dailyReturn": 0.237
+    },
+    {
+      "date": "2025-02-27",
+      "nav": 1.5094,
+      "cumulativeNav": 1.7475,
+      "dailyReturn": -0.216
+    },
+    {
+      "date": "2025-02-28",
+      "nav": 1.5129,
+      "cumulativeNav": 1.7515,
+      "dailyReturn": 0.231
+    },
+    {
+      "date": "2025-03-03",
+      "nav": 1.5066,
+      "cumulativeNav": 1.7442,
+      "dailyReturn": -0.417
+    },
+    {
+      "date": "2025-03-04",
+      "nav": 1.4982,
+      "cumulativeNav": 1.7345,
+      "dailyReturn": -0.557
+    },
+    {
+      "date": "2025-03-05",
+      "nav": 1.5241,
+      "cumulativeNav": 1.7644,
+      "dailyReturn": 1.725
+    },
+    {
+      "date": "2025-03-06",
+      "nav": 1.4968,
+      "cumulativeNav": 1.7328,
+      "dailyReturn": -1.79
+    },
+    {
+      "date": "2025-03-07",
+      "nav": 1.4859,
+      "cumulativeNav": 1.7202,
+      "dailyReturn": -0.727
+    },
+    {
+      "date": "2025-03-10",
+      "nav": 1.4859,
+      "cumulativeNav": 1.7202,
+      "dailyReturn": 0.001
+    },
+    {
+      "date": "2025-03-11",
+      "nav": 1.4752,
+      "cumulativeNav": 1.7078,
+      "dailyReturn": -0.724
+    },
+    {
+      "date": "2025-03-12",
+      "nav": 1.4616,
+      "cumulativeNav": 1.6921,
+      "dailyReturn": -0.919
+    },
+    {
+      "date": "2025-03-13",
+      "nav": 1.4423,
+      "cumulativeNav": 1.6698,
+      "dailyReturn": -1.317
+    },
+    {
+      "date": "2025-03-14",
+      "nav": 1.43,
+      "cumulativeNav": 1.6556,
+      "dailyReturn": -0.853
+    },
+    {
+      "date": "2025-03-17",
+      "nav": 1.4011,
+      "cumulativeNav": 1.6221,
+      "dailyReturn": -2.023
+    },
+    {
+      "date": "2025-03-18",
+      "nav": 1.4093,
+      "cumulativeNav": 1.6316,
+      "dailyReturn": 0.587
+    },
+    {
+      "date": "2025-03-19",
+      "nav": 1.4305,
+      "cumulativeNav": 1.6561,
+      "dailyReturn": 1.501
+    },
+    {
+      "date": "2025-03-20",
+      "nav": 1.4338,
+      "cumulativeNav": 1.6599,
+      "dailyReturn": 0.227
+    },
+    {
+      "date": "2025-03-21",
+      "nav": 1.4493,
+      "cumulativeNav": 1.6779,
+      "dailyReturn": 1.088
+    },
+    {
+      "date": "2025-03-24",
+      "nav": 1.4524,
+      "cumulativeNav": 1.6815,
+      "dailyReturn": 0.212
+    },
+    {
+      "date": "2025-03-25",
+      "nav": 1.4695,
+      "cumulativeNav": 1.7013,
+      "dailyReturn": 1.179
+    },
+    {
+      "date": "2025-03-26",
+      "nav": 1.4716,
+      "cumulativeNav": 1.7037,
+      "dailyReturn": 0.143
+    },
+    {
+      "date": "2025-03-27",
+      "nav": 1.523,
+      "cumulativeNav": 1.7631,
+      "dailyReturn": 3.487
+    },
+    {
+      "date": "2025-03-28",
+      "nav": 1.5248,
+      "cumulativeNav": 1.7653,
+      "dailyReturn": 0.124
+    },
+    {
+      "date": "2025-03-31",
+      "nav": 1.5171,
+      "cumulativeNav": 1.7564,
+      "dailyReturn": -0.507
+    },
+    {
+      "date": "2025-04-01",
+      "nav": 1.5377,
+      "cumulativeNav": 1.7802,
+      "dailyReturn": 1.357
+    },
+    {
+      "date": "2025-04-02",
+      "nav": 1.5466,
+      "cumulativeNav": 1.7905,
+      "dailyReturn": 0.58
+    },
+    {
+      "date": "2025-04-03",
+      "nav": 1.5363,
+      "cumulativeNav": 1.7786,
+      "dailyReturn": -0.667
+    },
+    {
+      "date": "2025-04-07",
+      "nav": 1.5688,
+      "cumulativeNav": 1.8162,
+      "dailyReturn": 2.114
+    },
+    {
+      "date": "2025-04-08",
+      "nav": 1.5322,
+      "cumulativeNav": 1.7739,
+      "dailyReturn": -2.328
+    },
+    {
+      "date": "2025-04-09",
+      "nav": 1.5009,
+      "cumulativeNav": 1.7376,
+      "dailyReturn": -2.049
+    },
+    {
+      "date": "2025-04-10",
+      "nav": 1.4814,
+      "cumulativeNav": 1.715,
+      "dailyReturn": -1.3
+    },
+    {
+      "date": "2025-04-11",
+      "nav": 1.5047,
+      "cumulativeNav": 1.742,
+      "dailyReturn": 1.573
+    },
+    {
+      "date": "2025-04-14",
+      "nav": 1.477,
+      "cumulativeNav": 1.71,
+      "dailyReturn": -1.835
+    },
+    {
+      "date": "2025-04-15",
+      "nav": 1.4561,
+      "cumulativeNav": 1.6857,
+      "dailyReturn": -1.418
+    },
+    {
+      "date": "2025-04-16",
+      "nav": 1.4768,
+      "cumulativeNav": 1.7097,
+      "dailyReturn": 1.42
+    },
+    {
+      "date": "2025-04-17",
+      "nav": 1.4633,
+      "cumulativeNav": 1.694,
+      "dailyReturn": -0.914
+    },
+    {
+      "date": "2025-04-18",
+      "nav": 1.4726,
+      "cumulativeNav": 1.7049,
+      "dailyReturn": 0.639
+    },
+    {
+      "date": "2025-04-21",
+      "nav": 1.4912,
+      "cumulativeNav": 1.7264,
+      "dailyReturn": 1.262
+    },
+    {
+      "date": "2025-04-22",
+      "nav": 1.492,
+      "cumulativeNav": 1.7273,
+      "dailyReturn": 0.051
+    },
+    {
+      "date": "2025-04-23",
+      "nav": 1.5038,
+      "cumulativeNav": 1.7409,
+      "dailyReturn": 0.792
+    },
+    {
+      "date": "2025-04-24",
+      "nav": 1.5185,
+      "cumulativeNav": 1.758,
+      "dailyReturn": 0.981
+    },
+    {
+      "date": "2025-04-25",
+      "nav": 1.5489,
+      "cumulativeNav": 1.7931,
+      "dailyReturn": 1.998
+    },
+    {
+      "date": "2025-04-28",
+      "nav": 1.5886,
+      "cumulativeNav": 1.8392,
+      "dailyReturn": 2.568
+    },
+    {
+      "date": "2025-04-29",
+      "nav": 1.6142,
+      "cumulativeNav": 1.8688,
+      "dailyReturn": 1.611
+    },
+    {
+      "date": "2025-04-30",
+      "nav": 1.6166,
+      "cumulativeNav": 1.8715,
+      "dailyReturn": 0.145
+    },
+    {
+      "date": "2025-05-06",
+      "nav": 1.6056,
+      "cumulativeNav": 1.8588,
+      "dailyReturn": -0.678
+    },
+    {
+      "date": "2025-05-07",
+      "nav": 1.6246,
+      "cumulativeNav": 1.8808,
+      "dailyReturn": 1.18
+    },
+    {
+      "date": "2025-05-08",
+      "nav": 1.6208,
+      "cumulativeNav": 1.8764,
+      "dailyReturn": -0.231
+    },
+    {
+      "date": "2025-05-09",
+      "nav": 1.619,
+      "cumulativeNav": 1.8744,
+      "dailyReturn": -0.109
+    },
+    {
+      "date": "2025-05-12",
+      "nav": 1.6371,
+      "cumulativeNav": 1.8953,
+      "dailyReturn": 1.118
+    },
+    {
+      "date": "2025-05-13",
+      "nav": 1.6492,
+      "cumulativeNav": 1.9093,
+      "dailyReturn": 0.739
+    },
+    {
+      "date": "2025-05-14",
+      "nav": 1.6372,
+      "cumulativeNav": 1.8954,
+      "dailyReturn": -0.73
+    },
+    {
+      "date": "2025-05-15",
+      "nav": 1.6278,
+      "cumulativeNav": 1.8845,
+      "dailyReturn": -0.575
+    },
+    {
+      "date": "2025-05-16",
+      "nav": 1.628,
+      "cumulativeNav": 1.8848,
+      "dailyReturn": 0.015
+    },
+    {
+      "date": "2025-05-19",
+      "nav": 1.6402,
+      "cumulativeNav": 1.8989,
+      "dailyReturn": 0.75
+    },
+    {
+      "date": "2025-05-20",
+      "nav": 1.6176,
+      "cumulativeNav": 1.8727,
+      "dailyReturn": -1.38
+    },
+    {
+      "date": "2025-05-21",
+      "nav": 1.6106,
+      "cumulativeNav": 1.8646,
+      "dailyReturn": -0.433
+    },
+    {
+      "date": "2025-05-22",
+      "nav": 1.6058,
+      "cumulativeNav": 1.859,
+      "dailyReturn": -0.299
+    },
+    {
+      "date": "2025-05-23",
+      "nav": 1.6206,
+      "cumulativeNav": 1.8761,
+      "dailyReturn": 0.921
+    },
+    {
+      "date": "2025-05-26",
+      "nav": 1.6229,
+      "cumulativeNav": 1.8789,
+      "dailyReturn": 0.148
+    },
+    {
+      "date": "2025-05-27",
+      "nav": 1.6293,
+      "cumulativeNav": 1.8863,
+      "dailyReturn": 0.393
+    },
+    {
+      "date": "2025-05-28",
+      "nav": 1.616,
+      "cumulativeNav": 1.8708,
+      "dailyReturn": -0.82
+    },
+    {
+      "date": "2025-05-29",
+      "nav": 1.5983,
+      "cumulativeNav": 1.8504,
+      "dailyReturn": -1.093
+    },
+    {
+      "date": "2025-05-30",
+      "nav": 1.6194,
+      "cumulativeNav": 1.8748,
+      "dailyReturn": 1.319
+    },
+    {
+      "date": "2025-06-03",
+      "nav": 1.6353,
+      "cumulativeNav": 1.8932,
+      "dailyReturn": 0.982
+    },
+    {
+      "date": "2025-06-04",
+      "nav": 1.6576,
+      "cumulativeNav": 1.919,
+      "dailyReturn": 1.362
+    },
+    {
+      "date": "2025-06-05",
+      "nav": 1.6525,
+      "cumulativeNav": 1.9131,
+      "dailyReturn": -0.307
+    },
+    {
+      "date": "2025-06-06",
+      "nav": 1.6355,
+      "cumulativeNav": 1.8934,
+      "dailyReturn": -1.027
+    },
+    {
+      "date": "2025-06-09",
+      "nav": 1.6659,
+      "cumulativeNav": 1.9287,
+      "dailyReturn": 1.86
+    },
+    {
+      "date": "2025-06-10",
+      "nav": 1.6544,
+      "cumulativeNav": 1.9153,
+      "dailyReturn": -0.692
+    },
+    {
+      "date": "2025-06-11",
+      "nav": 1.6184,
+      "cumulativeNav": 1.8737,
+      "dailyReturn": -2.174
+    },
+    {
+      "date": "2025-06-12",
+      "nav": 1.6295,
+      "cumulativeNav": 1.8865,
+      "dailyReturn": 0.682
+    },
+    {
+      "date": "2025-06-13",
+      "nav": 1.6452,
+      "cumulativeNav": 1.9047,
+      "dailyReturn": 0.965
+    },
+    {
+      "date": "2025-06-16",
+      "nav": 1.6305,
+      "cumulativeNav": 1.8877,
+      "dailyReturn": -0.891
+    },
+    {
+      "date": "2025-06-17",
+      "nav": 1.6256,
+      "cumulativeNav": 1.882,
+      "dailyReturn": -0.303
+    },
+    {
+      "date": "2025-06-18",
+      "nav": 1.6171,
+      "cumulativeNav": 1.8722,
+      "dailyReturn": -0.521
+    },
+    {
+      "date": "2025-06-19",
+      "nav": 1.6113,
+      "cumulativeNav": 1.8654,
+      "dailyReturn": -0.36
+    },
+    {
+      "date": "2025-06-20",
+      "nav": 1.616,
+      "cumulativeNav": 1.8708,
+      "dailyReturn": 0.288
+    },
+    {
+      "date": "2025-06-23",
+      "nav": 1.6182,
+      "cumulativeNav": 1.8734,
+      "dailyReturn": 0.136
+    },
+    {
+      "date": "2025-06-24",
+      "nav": 1.638,
+      "cumulativeNav": 1.8964,
+      "dailyReturn": 1.227
+    },
+    {
+      "date": "2025-06-25",
+      "nav": 1.6398,
+      "cumulativeNav": 1.8985,
+      "dailyReturn": 0.111
+    },
+    {
+      "date": "2025-06-26",
+      "nav": 1.6382,
+      "cumulativeNav": 1.8966,
+      "dailyReturn": -0.1
+    },
+    {
+      "date": "2025-06-27",
+      "nav": 1.5855,
+      "cumulativeNav": 1.8356,
+      "dailyReturn": -3.214
+    },
+    {
+      "date": "2025-06-30",
+      "nav": 1.5799,
+      "cumulativeNav": 1.8291,
+      "dailyReturn": -0.355
+    },
+    {
+      "date": "2025-07-01",
+      "nav": 1.5941,
+      "cumulativeNav": 1.8455,
+      "dailyReturn": 0.898
+    },
+    {
+      "date": "2025-07-02",
+      "nav": 1.594,
+      "cumulativeNav": 1.8454,
+      "dailyReturn": -0.008
+    },
+    {
+      "date": "2025-07-03",
+      "nav": 1.5673,
+      "cumulativeNav": 1.8145,
+      "dailyReturn": -1.672
+    },
+    {
+      "date": "2025-07-04",
+      "nav": 1.5686,
+      "cumulativeNav": 1.816,
+      "dailyReturn": 0.084
+    },
+    {
+      "date": "2025-07-07",
+      "nav": 1.55,
+      "cumulativeNav": 1.7944,
+      "dailyReturn": -1.189
+    },
+    {
+      "date": "2025-07-08",
+      "nav": 1.5442,
+      "cumulativeNav": 1.7877,
+      "dailyReturn": -0.376
+    },
+    {
+      "date": "2025-07-09",
+      "nav": 1.541,
+      "cumulativeNav": 1.784,
+      "dailyReturn": -0.205
+    },
+    {
+      "date": "2025-07-10",
+      "nav": 1.5537,
+      "cumulativeNav": 1.7987,
+      "dailyReturn": 0.825
+    },
+    {
+      "date": "2025-07-11",
+      "nav": 1.5346,
+      "cumulativeNav": 1.7766,
+      "dailyReturn": -1.228
+    },
+    {
+      "date": "2025-07-14",
+      "nav": 1.529,
+      "cumulativeNav": 1.7701,
+      "dailyReturn": -0.368
+    },
+    {
+      "date": "2025-07-15",
+      "nav": 1.5402,
+      "cumulativeNav": 1.7831,
+      "dailyReturn": 0.736
+    },
+    {
+      "date": "2025-07-16",
+      "nav": 1.5378,
+      "cumulativeNav": 1.7803,
+      "dailyReturn": -0.157
+    },
+    {
+      "date": "2025-07-17",
+      "nav": 1.5076,
+      "cumulativeNav": 1.7453,
+      "dailyReturn": -1.967
+    },
+    {
+      "date": "2025-07-18",
+      "nav": 1.504,
+      "cumulativeNav": 1.7411,
+      "dailyReturn": -0.24
+    },
+    {
+      "date": "2025-07-21",
+      "nav": 1.4894,
+      "cumulativeNav": 1.7242,
+      "dailyReturn": -0.97
+    },
+    {
+      "date": "2025-07-22",
+      "nav": 1.5205,
+      "cumulativeNav": 1.7602,
+      "dailyReturn": 2.088
+    },
+    {
+      "date": "2025-07-23",
+      "nav": 1.4881,
+      "cumulativeNav": 1.7228,
+      "dailyReturn": -2.127
+    },
+    {
+      "date": "2025-07-24",
+      "nav": 1.48,
+      "cumulativeNav": 1.7135,
+      "dailyReturn": -0.543
+    },
+    {
+      "date": "2025-07-25",
+      "nav": 1.481,
+      "cumulativeNav": 1.7146,
+      "dailyReturn": 0.066
+    },
+    {
+      "date": "2025-07-28",
+      "nav": 1.5171,
+      "cumulativeNav": 1.7563,
+      "dailyReturn": 2.435
+    },
+    {
+      "date": "2025-07-29",
+      "nav": 1.5143,
+      "cumulativeNav": 1.7531,
+      "dailyReturn": -0.186
+    },
+    {
+      "date": "2025-07-30",
+      "nav": 1.4927,
+      "cumulativeNav": 1.7281,
+      "dailyReturn": -1.426
+    },
+    {
+      "date": "2025-07-31",
+      "nav": 1.5056,
+      "cumulativeNav": 1.7431,
+      "dailyReturn": 0.868
+    },
+    {
+      "date": "2025-08-01",
+      "nav": 1.4784,
+      "cumulativeNav": 1.7115,
+      "dailyReturn": -1.809
+    },
+    {
+      "date": "2025-08-04",
+      "nav": 1.4783,
+      "cumulativeNav": 1.7114,
+      "dailyReturn": -0.007
+    },
+    {
+      "date": "2025-08-05",
+      "nav": 1.4941,
+      "cumulativeNav": 1.7298,
+      "dailyReturn": 1.072
+    },
+    {
+      "date": "2025-08-06",
+      "nav": 1.4868,
+      "cumulativeNav": 1.7213,
+      "dailyReturn": -0.488
+    },
+    {
+      "date": "2025-08-07",
+      "nav": 1.4938,
+      "cumulativeNav": 1.7294,
+      "dailyReturn": 0.471
+    },
+    {
+      "date": "2025-08-08",
+      "nav": 1.4773,
+      "cumulativeNav": 1.7103,
+      "dailyReturn": -1.107
+    },
+    {
+      "date": "2025-08-11",
+      "nav": 1.4815,
+      "cumulativeNav": 1.7151,
+      "dailyReturn": 0.281
+    },
+    {
+      "date": "2025-08-12",
+      "nav": 1.4915,
+      "cumulativeNav": 1.7267,
+      "dailyReturn": 0.678
+    },
+    {
+      "date": "2025-08-13",
+      "nav": 1.4659,
+      "cumulativeNav": 1.697,
+      "dailyReturn": -1.72
+    },
+    {
+      "date": "2025-08-14",
+      "nav": 1.4663,
+      "cumulativeNav": 1.6976,
+      "dailyReturn": 0.031
+    },
+    {
+      "date": "2025-08-15",
+      "nav": 1.4982,
+      "cumulativeNav": 1.7345,
+      "dailyReturn": 2.175
+    },
+    {
+      "date": "2025-08-18",
+      "nav": 1.5265,
+      "cumulativeNav": 1.7673,
+      "dailyReturn": 1.891
+    },
+    {
+      "date": "2025-08-19",
+      "nav": 1.5435,
+      "cumulativeNav": 1.7869,
+      "dailyReturn": 1.109
+    },
+    {
+      "date": "2025-08-20",
+      "nav": 1.5444,
+      "cumulativeNav": 1.788,
+      "dailyReturn": 0.061
+    },
+    {
+      "date": "2025-08-21",
+      "nav": 1.5489,
+      "cumulativeNav": 1.7932,
+      "dailyReturn": 0.293
+    },
+    {
+      "date": "2025-08-22",
+      "nav": 1.5294,
+      "cumulativeNav": 1.7707,
+      "dailyReturn": -1.258
+    },
+    {
+      "date": "2025-08-25",
+      "nav": 1.537,
+      "cumulativeNav": 1.7794,
+      "dailyReturn": 0.495
+    },
+    {
+      "date": "2025-08-26",
+      "nav": 1.5483,
+      "cumulativeNav": 1.7925,
+      "dailyReturn": 0.735
+    },
+    {
+      "date": "2025-08-27",
+      "nav": 1.5554,
+      "cumulativeNav": 1.8007,
+      "dailyReturn": 0.458
+    },
+    {
+      "date": "2025-08-28",
+      "nav": 1.5479,
+      "cumulativeNav": 1.7921,
+      "dailyReturn": -0.479
+    },
+    {
+      "date": "2025-08-29",
+      "nav": 1.568,
+      "cumulativeNav": 1.8152,
+      "dailyReturn": 1.293
+    },
+    {
+      "date": "2025-09-01",
+      "nav": 1.5583,
+      "cumulativeNav": 1.804,
+      "dailyReturn": -0.618
+    },
+    {
+      "date": "2025-09-02",
+      "nav": 1.554,
+      "cumulativeNav": 1.7991,
+      "dailyReturn": -0.271
+    },
+    {
+      "date": "2025-09-03",
+      "nav": 1.5655,
+      "cumulativeNav": 1.8124,
+      "dailyReturn": 0.736
+    },
+    {
+      "date": "2025-09-04",
+      "nav": 1.5889,
+      "cumulativeNav": 1.8394,
+      "dailyReturn": 1.493
+    },
+    {
+      "date": "2025-09-05",
+      "nav": 1.5412,
+      "cumulativeNav": 1.7842,
+      "dailyReturn": -3.003
+    },
+    {
+      "date": "2025-09-08",
+      "nav": 1.5462,
+      "cumulativeNav": 1.7901,
+      "dailyReturn": 0.329
+    },
+    {
+      "date": "2025-09-09",
+      "nav": 1.5499,
+      "cumulativeNav": 1.7943,
+      "dailyReturn": 0.237
+    },
+    {
+      "date": "2025-09-10",
+      "nav": 1.5241,
+      "cumulativeNav": 1.7644,
+      "dailyReturn": -1.666
+    },
+    {
+      "date": "2025-09-11",
+      "nav": 1.5353,
+      "cumulativeNav": 1.7775,
+      "dailyReturn": 0.74
+    },
+    {
+      "date": "2025-09-12",
+      "nav": 1.5292,
+      "cumulativeNav": 1.7703,
+      "dailyReturn": -0.4
+    },
+    {
+      "date": "2025-09-15",
+      "nav": 1.5146,
+      "cumulativeNav": 1.7535,
+      "dailyReturn": -0.951
+    },
+    {
+      "date": "2025-09-16",
+      "nav": 1.502,
+      "cumulativeNav": 1.7388,
+      "dailyReturn": -0.837
+    },
+    {
+      "date": "2025-09-17",
+      "nav": 1.5206,
+      "cumulativeNav": 1.7605,
+      "dailyReturn": 1.244
+    },
+    {
+      "date": "2025-09-18",
+      "nav": 1.5099,
+      "cumulativeNav": 1.748,
+      "dailyReturn": -0.708
+    },
+    {
+      "date": "2025-09-19",
+      "nav": 1.5258,
+      "cumulativeNav": 1.7664,
+      "dailyReturn": 1.054
+    },
+    {
+      "date": "2025-09-22",
+      "nav": 1.517,
+      "cumulativeNav": 1.7562,
+      "dailyReturn": -0.577
+    },
+    {
+      "date": "2025-09-23",
+      "nav": 1.5087,
+      "cumulativeNav": 1.7467,
+      "dailyReturn": -0.545
+    },
+    {
+      "date": "2025-09-24",
+      "nav": 1.4916,
+      "cumulativeNav": 1.7268,
+      "dailyReturn": -1.138
+    },
+    {
+      "date": "2025-09-25",
+      "nav": 1.489,
+      "cumulativeNav": 1.7239,
+      "dailyReturn": -0.169
+    },
+    {
+      "date": "2025-09-26",
+      "nav": 1.4792,
+      "cumulativeNav": 1.7125,
+      "dailyReturn": -0.659
+    },
+    {
+      "date": "2025-09-29",
+      "nav": 1.455,
+      "cumulativeNav": 1.6844,
+      "dailyReturn": -1.638
+    },
+    {
+      "date": "2025-09-30",
+      "nav": 1.4425,
+      "cumulativeNav": 1.67,
+      "dailyReturn": -0.857
+    },
+    {
+      "date": "2025-10-09",
+      "nav": 1.4299,
+      "cumulativeNav": 1.6554,
+      "dailyReturn": -0.873
+    },
+    {
+      "date": "2025-10-10",
+      "nav": 1.4212,
+      "cumulativeNav": 1.6453,
+      "dailyReturn": -0.613
+    },
+    {
+      "date": "2025-10-13",
+      "nav": 1.439,
+      "cumulativeNav": 1.666,
+      "dailyReturn": 1.256
+    },
+    {
+      "date": "2025-10-14",
+      "nav": 1.4609,
+      "cumulativeNav": 1.6913,
+      "dailyReturn": 1.519
+    },
+    {
+      "date": "2025-10-15",
+      "nav": 1.476,
+      "cumulativeNav": 1.7088,
+      "dailyReturn": 1.033
+    },
+    {
+      "date": "2025-10-16",
+      "nav": 1.4777,
+      "cumulativeNav": 1.7108,
+      "dailyReturn": 0.118
+    },
+    {
+      "date": "2025-10-17",
+      "nav": 1.5004,
+      "cumulativeNav": 1.7371,
+      "dailyReturn": 1.536
+    },
+    {
+      "date": "2025-10-20",
+      "nav": 1.4828,
+      "cumulativeNav": 1.7167,
+      "dailyReturn": -1.175
+    },
+    {
+      "date": "2025-10-21",
+      "nav": 1.4865,
+      "cumulativeNav": 1.7209,
+      "dailyReturn": 0.25
+    },
+    {
+      "date": "2025-10-22",
+      "nav": 1.499,
+      "cumulativeNav": 1.7355,
+      "dailyReturn": 0.843
+    },
+    {
+      "date": "2025-10-23",
+      "nav": 1.5064,
+      "cumulativeNav": 1.7439,
+      "dailyReturn": 0.489
+    },
+    {
+      "date": "2025-10-24",
+      "nav": 1.484,
+      "cumulativeNav": 1.7181,
+      "dailyReturn": -1.484
+    },
+    {
+      "date": "2025-10-27",
+      "nav": 1.4762,
+      "cumulativeNav": 1.709,
+      "dailyReturn": -0.526
+    },
+    {
+      "date": "2025-10-28",
+      "nav": 1.4686,
+      "cumulativeNav": 1.7002,
+      "dailyReturn": -0.517
+    },
+    {
+      "date": "2025-10-29",
+      "nav": 1.501,
+      "cumulativeNav": 1.7377,
+      "dailyReturn": 2.207
+    },
+    {
+      "date": "2025-10-30",
+      "nav": 1.5011,
+      "cumulativeNav": 1.7378,
+      "dailyReturn": 0.007
+    },
+    {
+      "date": "2025-10-31",
+      "nav": 1.4835,
+      "cumulativeNav": 1.7175,
+      "dailyReturn": -1.17
+    },
+    {
+      "date": "2025-11-03",
+      "nav": 1.4823,
+      "cumulativeNav": 1.7161,
+      "dailyReturn": -0.082
+    },
+    {
+      "date": "2025-11-04",
+      "nav": 1.4783,
+      "cumulativeNav": 1.7114,
+      "dailyReturn": -0.27
+    },
+    {
+      "date": "2025-11-05",
+      "nav": 1.4616,
+      "cumulativeNav": 1.6921,
+      "dailyReturn": -1.129
+    },
+    {
+      "date": "2025-11-06",
+      "nav": 1.4479,
+      "cumulativeNav": 1.6763,
+      "dailyReturn": -0.936
+    },
+    {
+      "date": "2025-11-07",
+      "nav": 1.4459,
+      "cumulativeNav": 1.6739,
+      "dailyReturn": -0.139
+    },
+    {
+      "date": "2025-11-10",
+      "nav": 1.443,
+      "cumulativeNav": 1.6706,
+      "dailyReturn": -0.199
+    },
+    {
+      "date": "2025-11-11",
+      "nav": 1.4565,
+      "cumulativeNav": 1.6862,
+      "dailyReturn": 0.934
+    },
+    {
+      "date": "2025-11-12",
+      "nav": 1.4654,
+      "cumulativeNav": 1.6965,
+      "dailyReturn": 0.612
+    },
+    {
+      "date": "2025-11-13",
+      "nav": 1.4763,
+      "cumulativeNav": 1.7091,
+      "dailyReturn": 0.741
+    },
+    {
+      "date": "2025-11-14",
+      "nav": 1.4741,
+      "cumulativeNav": 1.7065,
+      "dailyReturn": -0.15
+    },
+    {
+      "date": "2025-11-17",
+      "nav": 1.4567,
+      "cumulativeNav": 1.6864,
+      "dailyReturn": -1.179
+    },
+    {
+      "date": "2025-11-18",
+      "nav": 1.4805,
+      "cumulativeNav": 1.7139,
+      "dailyReturn": 1.632
+    },
+    {
+      "date": "2025-11-19",
+      "nav": 1.4793,
+      "cumulativeNav": 1.7126,
+      "dailyReturn": -0.077
+    },
+    {
+      "date": "2025-11-20",
+      "nav": 1.4868,
+      "cumulativeNav": 1.7212,
+      "dailyReturn": 0.503
+    },
+    {
+      "date": "2025-11-21",
+      "nav": 1.4864,
+      "cumulativeNav": 1.7208,
+      "dailyReturn": -0.025
+    },
+    {
+      "date": "2025-11-24",
+      "nav": 1.4864,
+      "cumulativeNav": 1.7208,
+      "dailyReturn": 0
+    },
+    {
+      "date": "2025-11-25",
+      "nav": 1.4975,
+      "cumulativeNav": 1.7337,
+      "dailyReturn": 0.75
+    },
+    {
+      "date": "2025-11-26",
+      "nav": 1.4919,
+      "cumulativeNav": 1.7272,
+      "dailyReturn": -0.376
+    },
+    {
+      "date": "2025-11-27",
+      "nav": 1.4874,
+      "cumulativeNav": 1.722,
+      "dailyReturn": -0.302
+    },
+    {
+      "date": "2025-11-28",
+      "nav": 1.4819,
+      "cumulativeNav": 1.7156,
+      "dailyReturn": -0.368
+    },
+    {
+      "date": "2025-12-01",
+      "nav": 1.4762,
+      "cumulativeNav": 1.709,
+      "dailyReturn": -0.389
+    },
+    {
+      "date": "2025-12-02",
+      "nav": 1.4524,
+      "cumulativeNav": 1.6814,
+      "dailyReturn": -1.613
+    },
+    {
+      "date": "2025-12-03",
+      "nav": 1.4536,
+      "cumulativeNav": 1.6829,
+      "dailyReturn": 0.087
+    },
+    {
+      "date": "2025-12-04",
+      "nav": 1.4698,
+      "cumulativeNav": 1.7016,
+      "dailyReturn": 1.116
+    },
+    {
+      "date": "2025-12-05",
+      "nav": 1.5022,
+      "cumulativeNav": 1.7391,
+      "dailyReturn": 2.199
+    },
+    {
+      "date": "2025-12-08",
+      "nav": 1.4986,
+      "cumulativeNav": 1.735,
+      "dailyReturn": -0.235
+    },
+    {
+      "date": "2025-12-09",
+      "nav": 1.4827,
+      "cumulativeNav": 1.7166,
+      "dailyReturn": -1.061
+    },
+    {
+      "date": "2025-12-10",
+      "nav": 1.4836,
+      "cumulativeNav": 1.7176,
+      "dailyReturn": 0.06
+    },
+    {
+      "date": "2025-12-11",
+      "nav": 1.4888,
+      "cumulativeNav": 1.7236,
+      "dailyReturn": 0.349
+    },
+    {
+      "date": "2025-12-12",
+      "nav": 1.4947,
+      "cumulativeNav": 1.7304,
+      "dailyReturn": 0.398
+    },
+    {
+      "date": "2025-12-15",
+      "nav": 1.4797,
+      "cumulativeNav": 1.7131,
+      "dailyReturn": -1.002
+    },
+    {
+      "date": "2025-12-16",
+      "nav": 1.481,
+      "cumulativeNav": 1.7146,
+      "dailyReturn": 0.084
+    },
+    {
+      "date": "2025-12-17",
+      "nav": 1.4602,
+      "cumulativeNav": 1.6904,
+      "dailyReturn": -1.406
+    },
+    {
+      "date": "2025-12-18",
+      "nav": 1.4618,
+      "cumulativeNav": 1.6924,
+      "dailyReturn": 0.114
+    },
+    {
+      "date": "2025-12-19",
+      "nav": 1.4607,
+      "cumulativeNav": 1.691,
+      "dailyReturn": -0.081
+    },
+    {
+      "date": "2025-12-22",
+      "nav": 1.4482,
+      "cumulativeNav": 1.6766,
+      "dailyReturn": -0.854
+    },
+    {
+      "date": "2025-12-23",
+      "nav": 1.4348,
+      "cumulativeNav": 1.6611,
+      "dailyReturn": -0.922
+    },
+    {
+      "date": "2025-12-24",
+      "nav": 1.4173,
+      "cumulativeNav": 1.6408,
+      "dailyReturn": -1.224
+    },
+    {
+      "date": "2025-12-25",
+      "nav": 1.4093,
+      "cumulativeNav": 1.6316,
+      "dailyReturn": -0.56
+    },
+    {
+      "date": "2025-12-26",
+      "nav": 1.3925,
+      "cumulativeNav": 1.6121,
+      "dailyReturn": -1.197
+    },
+    {
+      "date": "2025-12-29",
+      "nav": 1.406,
+      "cumulativeNav": 1.6277,
+      "dailyReturn": 0.971
+    },
+    {
+      "date": "2025-12-30",
+      "nav": 1.3814,
+      "cumulativeNav": 1.5992,
+      "dailyReturn": -1.752
+    },
+    {
+      "date": "2025-12-31",
+      "nav": 1.3613,
+      "cumulativeNav": 1.576,
+      "dailyReturn": -1.449
+    },
+    {
+      "date": "2026-01-05",
+      "nav": 1.3819,
+      "cumulativeNav": 1.5999,
+      "dailyReturn": 1.512
+    },
+    {
+      "date": "2026-01-06",
+      "nav": 1.3851,
+      "cumulativeNav": 1.6036,
+      "dailyReturn": 0.234
+    },
+    {
+      "date": "2026-01-07",
+      "nav": 1.3786,
+      "cumulativeNav": 1.596,
+      "dailyReturn": -0.471
+    },
+    {
+      "date": "2026-01-08",
+      "nav": 1.3735,
+      "cumulativeNav": 1.5902,
+      "dailyReturn": -0.369
+    },
+    {
+      "date": "2026-01-09",
+      "nav": 1.396,
+      "cumulativeNav": 1.6162,
+      "dailyReturn": 1.639
+    },
+    {
+      "date": "2026-01-12",
+      "nav": 1.3965,
+      "cumulativeNav": 1.6168,
+      "dailyReturn": 0.035
+    },
+    {
+      "date": "2026-01-13",
+      "nav": 1.4019,
+      "cumulativeNav": 1.623,
+      "dailyReturn": 0.385
+    },
+    {
+      "date": "2026-01-14",
+      "nav": 1.4318,
+      "cumulativeNav": 1.6576,
+      "dailyReturn": 2.136
+    },
+    {
+      "date": "2026-01-15",
+      "nav": 1.4504,
+      "cumulativeNav": 1.6791,
+      "dailyReturn": 1.297
+    },
+    {
+      "date": "2026-01-16",
+      "nav": 1.4214,
+      "cumulativeNav": 1.6456,
+      "dailyReturn": -2
+    },
+    {
+      "date": "2026-01-19",
+      "nav": 1.4131,
+      "cumulativeNav": 1.6359,
+      "dailyReturn": -0.586
+    },
+    {
+      "date": "2026-01-20",
+      "nav": 1.4267,
+      "cumulativeNav": 1.6516,
+      "dailyReturn": 0.962
+    },
+    {
+      "date": "2026-01-21",
+      "nav": 1.428,
+      "cumulativeNav": 1.6532,
+      "dailyReturn": 0.096
+    },
+    {
+      "date": "2026-01-22",
+      "nav": 1.3982,
+      "cumulativeNav": 1.6187,
+      "dailyReturn": -2.089
+    },
+    {
+      "date": "2026-01-23",
+      "nav": 1.4272,
+      "cumulativeNav": 1.6523,
+      "dailyReturn": 2.076
+    },
+    {
+      "date": "2026-01-26",
+      "nav": 1.4588,
+      "cumulativeNav": 1.6889,
+      "dailyReturn": 2.213
+    },
+    {
+      "date": "2026-01-27",
+      "nav": 1.4511,
+      "cumulativeNav": 1.6799,
+      "dailyReturn": -0.531
+    },
+    {
+      "date": "2026-01-28",
+      "nav": 1.4815,
+      "cumulativeNav": 1.7152,
+      "dailyReturn": 2.099
+    },
+    {
+      "date": "2026-01-29",
+      "nav": 1.4964,
+      "cumulativeNav": 1.7323,
+      "dailyReturn": 1
+    },
+    {
+      "date": "2026-01-30",
+      "nav": 1.4921,
+      "cumulativeNav": 1.7275,
+      "dailyReturn": -0.282
+    },
+    {
+      "date": "2026-02-02",
+      "nav": 1.4865,
+      "cumulativeNav": 1.7209,
+      "dailyReturn": -0.381
+    },
+    {
+      "date": "2026-02-03",
+      "nav": 1.4845,
+      "cumulativeNav": 1.7186,
+      "dailyReturn": -0.13
+    },
+    {
+      "date": "2026-02-04",
+      "nav": 1.4951,
+      "cumulativeNav": 1.7309,
+      "dailyReturn": 0.712
+    },
+    {
+      "date": "2026-02-05",
+      "nav": 1.4824,
+      "cumulativeNav": 1.7162,
+      "dailyReturn": -0.848
+    },
+    {
+      "date": "2026-02-06",
+      "nav": 1.4898,
+      "cumulativeNav": 1.7248,
+      "dailyReturn": 0.499
+    },
+    {
+      "date": "2026-02-09",
+      "nav": 1.5011,
+      "cumulativeNav": 1.7378,
+      "dailyReturn": 0.757
+    },
+    {
+      "date": "2026-02-10",
+      "nav": 1.4927,
+      "cumulativeNav": 1.7282,
+      "dailyReturn": -0.556
+    },
+    {
+      "date": "2026-02-11",
+      "nav": 1.4911,
+      "cumulativeNav": 1.7263,
+      "dailyReturn": -0.108
+    },
+    {
+      "date": "2026-02-12",
+      "nav": 1.4487,
+      "cumulativeNav": 1.6772,
+      "dailyReturn": -2.845
+    },
+    {
+      "date": "2026-02-13",
+      "nav": 1.4541,
+      "cumulativeNav": 1.6834,
+      "dailyReturn": 0.371
+    },
+    {
+      "date": "2026-02-24",
+      "nav": 1.4487,
+      "cumulativeNav": 1.6771,
+      "dailyReturn": -0.372
+    },
+    {
+      "date": "2026-02-25",
+      "nav": 1.4438,
+      "cumulativeNav": 1.6715,
+      "dailyReturn": -0.335
+    },
+    {
+      "date": "2026-02-26",
+      "nav": 1.3986,
+      "cumulativeNav": 1.6191,
+      "dailyReturn": -3.134
+    },
+    {
+      "date": "2026-02-27",
+      "nav": 1.4148,
+      "cumulativeNav": 1.638,
+      "dailyReturn": 1.162
+    },
+    {
+      "date": "2026-03-02",
+      "nav": 1.4195,
+      "cumulativeNav": 1.6434,
+      "dailyReturn": 0.331
+    },
+    {
+      "date": "2026-03-03",
+      "nav": 1.4329,
+      "cumulativeNav": 1.6589,
+      "dailyReturn": 0.942
+    },
+    {
+      "date": "2026-03-04",
+      "nav": 1.4333,
+      "cumulativeNav": 1.6594,
+      "dailyReturn": 0.032
+    },
+    {
+      "date": "2026-03-05",
+      "nav": 1.4438,
+      "cumulativeNav": 1.6715,
+      "dailyReturn": 0.731
+    },
+    {
+      "date": "2026-03-06",
+      "nav": 1.4637,
+      "cumulativeNav": 1.6945,
+      "dailyReturn": 1.377
+    },
+    {
+      "date": "2026-03-09",
+      "nav": 1.4453,
+      "cumulativeNav": 1.6732,
+      "dailyReturn": -1.257
+    },
+    {
+      "date": "2026-03-10",
+      "nav": 1.4468,
+      "cumulativeNav": 1.675,
+      "dailyReturn": 0.106
+    },
+    {
+      "date": "2026-03-11",
+      "nav": 1.4474,
+      "cumulativeNav": 1.6757,
+      "dailyReturn": 0.04
+    },
+    {
+      "date": "2026-03-12",
+      "nav": 1.4434,
+      "cumulativeNav": 1.671,
+      "dailyReturn": -0.279
+    },
+    {
+      "date": "2026-03-13",
+      "nav": 1.4446,
+      "cumulativeNav": 1.6724,
+      "dailyReturn": 0.083
+    },
+    {
+      "date": "2026-03-16",
+      "nav": 1.4569,
+      "cumulativeNav": 1.6867,
+      "dailyReturn": 0.857
+    },
+    {
+      "date": "2026-03-17",
+      "nav": 1.4678,
+      "cumulativeNav": 1.6993,
+      "dailyReturn": 0.746
+    },
+    {
+      "date": "2026-03-18",
+      "nav": 1.4465,
+      "cumulativeNav": 1.6746,
+      "dailyReturn": -1.454
+    },
+    {
+      "date": "2026-03-19",
+      "nav": 1.458,
+      "cumulativeNav": 1.6879,
+      "dailyReturn": 0.795
+    },
+    {
+      "date": "2026-03-20",
+      "nav": 1.4516,
+      "cumulativeNav": 1.6806,
+      "dailyReturn": -0.435
+    },
+    {
+      "date": "2026-03-23",
+      "nav": 1.4713,
+      "cumulativeNav": 1.7034,
+      "dailyReturn": 1.357
+    },
+    {
+      "date": "2026-03-24",
+      "nav": 1.492,
+      "cumulativeNav": 1.7273,
+      "dailyReturn": 1.403
+    },
+    {
+      "date": "2026-03-25",
+      "nav": 1.5166,
+      "cumulativeNav": 1.7558,
+      "dailyReturn": 1.653
+    },
+    {
+      "date": "2026-03-26",
+      "nav": 1.5419,
+      "cumulativeNav": 1.7851,
+      "dailyReturn": 1.667
+    },
+    {
+      "date": "2026-03-27",
+      "nav": 1.587,
+      "cumulativeNav": 1.8372,
+      "dailyReturn": 2.922
+    },
+    {
+      "date": "2026-03-30",
+      "nav": 1.5754,
+      "cumulativeNav": 1.8239,
+      "dailyReturn": -0.729
+    },
+    {
+      "date": "2026-03-31",
+      "nav": 1.5901,
+      "cumulativeNav": 1.8409,
+      "dailyReturn": 0.935
+    },
+    {
+      "date": "2026-04-01",
+      "nav": 1.5897,
+      "cumulativeNav": 1.8405,
+      "dailyReturn": -0.024
+    },
+    {
+      "date": "2026-04-02",
+      "nav": 1.581,
+      "cumulativeNav": 1.8303,
+      "dailyReturn": -0.552
+    },
+    {
+      "date": "2026-04-03",
+      "nav": 1.5912,
+      "cumulativeNav": 1.8421,
+      "dailyReturn": 0.646
+    },
+    {
+      "date": "2026-04-07",
+      "nav": 1.6026,
+      "cumulativeNav": 1.8553,
+      "dailyReturn": 0.715
+    },
+    {
+      "date": "2026-04-08",
+      "nav": 1.5955,
+      "cumulativeNav": 1.8472,
+      "dailyReturn": -0.438
+    },
+    {
+      "date": "2026-04-09",
+      "nav": 1.6393,
+      "cumulativeNav": 1.8978,
+      "dailyReturn": 2.744
+    },
+    {
+      "date": "2026-04-10",
+      "nav": 1.6392,
+      "cumulativeNav": 1.8977,
+      "dailyReturn": -0.008
+    },
+    {
+      "date": "2026-04-13",
+      "nav": 1.6357,
+      "cumulativeNav": 1.8936,
+      "dailyReturn": -0.214
+    },
+    {
+      "date": "2026-04-14",
+      "nav": 1.5791,
+      "cumulativeNav": 1.8281,
+      "dailyReturn": -3.46
+    },
+    {
+      "date": "2026-04-15",
+      "nav": 1.5872,
+      "cumulativeNav": 1.8375,
+      "dailyReturn": 0.512
+    },
+    {
+      "date": "2026-04-16",
+      "nav": 1.5823,
+      "cumulativeNav": 1.8318,
+      "dailyReturn": -0.308
+    },
+    {
+      "date": "2026-04-17",
+      "nav": 1.6017,
+      "cumulativeNav": 1.8543,
+      "dailyReturn": 1.228
+    },
+    {
+      "date": "2026-04-20",
+      "nav": 1.5961,
+      "cumulativeNav": 1.8478,
+      "dailyReturn": -0.349
+    },
+    {
+      "date": "2026-04-21",
+      "nav": 1.5751,
+      "cumulativeNav": 1.8235,
+      "dailyReturn": -1.314
+    },
+    {
+      "date": "2026-04-22",
+      "nav": 1.5656,
+      "cumulativeNav": 1.8125,
+      "dailyReturn": -0.606
+    },
+    {
+      "date": "2026-04-23",
+      "nav": 1.5692,
+      "cumulativeNav": 1.8167,
+      "dailyReturn": 0.233
+    },
+    {
+      "date": "2026-04-24",
+      "nav": 1.562,
+      "cumulativeNav": 1.8083,
+      "dailyReturn": -0.461
+    },
+    {
+      "date": "2026-04-27",
+      "nav": 1.5932,
+      "cumulativeNav": 1.8444,
+      "dailyReturn": 1.996
+    },
+    {
+      "date": "2026-04-28",
+      "nav": 1.6302,
+      "cumulativeNav": 1.8873,
+      "dailyReturn": 2.326
+    },
+    {
+      "date": "2026-04-29",
+      "nav": 1.6285,
+      "cumulativeNav": 1.8854,
+      "dailyReturn": -0.103
+    },
+    {
+      "date": "2026-04-30",
+      "nav": 1.6062,
+      "cumulativeNav": 1.8595,
+      "dailyReturn": -1.372
+    },
+    {
+      "date": "2026-05-06",
+      "nav": 1.595,
+      "cumulativeNav": 1.8465,
+      "dailyReturn": -0.698
+    },
+    {
+      "date": "2026-05-07",
+      "nav": 1.5813,
+      "cumulativeNav": 1.8307,
+      "dailyReturn": -0.856
+    },
+    {
+      "date": "2026-05-08",
+      "nav": 1.5836,
+      "cumulativeNav": 1.8333,
+      "dailyReturn": 0.143
+    },
+    {
+      "date": "2026-05-11",
+      "nav": 1.592,
+      "cumulativeNav": 1.8431,
+      "dailyReturn": 0.533
+    },
+    {
+      "date": "2026-05-12",
+      "nav": 1.6061,
+      "cumulativeNav": 1.8594,
+      "dailyReturn": 0.884
+    },
+    {
+      "date": "2026-05-13",
+      "nav": 1.5937,
+      "cumulativeNav": 1.8451,
+      "dailyReturn": -0.77
+    },
+    {
+      "date": "2026-05-14",
+      "nav": 1.5927,
+      "cumulativeNav": 1.8439,
+      "dailyReturn": -0.066
+    },
+    {
+      "date": "2026-05-15",
+      "nav": 1.5867,
+      "cumulativeNav": 1.8369,
+      "dailyReturn": -0.376
+    },
+    {
+      "date": "2026-05-18",
+      "nav": 1.5637,
+      "cumulativeNav": 1.8103,
+      "dailyReturn": -1.451
+    },
+    {
+      "date": "2026-05-19",
+      "nav": 1.5695,
+      "cumulativeNav": 1.817,
+      "dailyReturn": 0.37
+    },
+    {
+      "date": "2026-05-20",
+      "nav": 1.5943,
+      "cumulativeNav": 1.8457,
+      "dailyReturn": 1.581
+    },
+    {
+      "date": "2026-05-21",
+      "nav": 1.5512,
+      "cumulativeNav": 1.7958,
+      "dailyReturn": -2.704
+    },
+    {
+      "date": "2026-05-22",
+      "nav": 1.5373,
+      "cumulativeNav": 1.7797,
+      "dailyReturn": -0.896
+    },
+    {
+      "date": "2026-05-25",
+      "nav": 1.5392,
+      "cumulativeNav": 1.782,
+      "dailyReturn": 0.129
+    },
+    {
+      "date": "2026-05-26",
+      "nav": 1.5548,
+      "cumulativeNav": 1.8,
+      "dailyReturn": 1.008
+    },
+    {
+      "date": "2026-05-27",
+      "nav": 1.5571,
+      "cumulativeNav": 1.8027,
+      "dailyReturn": 0.15
+    },
+    {
+      "date": "2026-05-28",
+      "nav": 1.5657,
+      "cumulativeNav": 1.8126,
+      "dailyReturn": 0.553
+    },
+    {
+      "date": "2026-05-29",
+      "nav": 1.5634,
+      "cumulativeNav": 1.81,
+      "dailyReturn": -0.144
+    },
+    {
+      "date": "2026-06-01",
+      "nav": 1.568,
+      "cumulativeNav": 1.8152,
+      "dailyReturn": 0.288
+    },
+    {
+      "date": "2026-06-02",
+      "nav": 1.5892,
+      "cumulativeNav": 1.8398,
+      "dailyReturn": 1.355
+    },
+    {
+      "date": "2026-06-03",
+      "nav": 1.6199,
+      "cumulativeNav": 1.8754,
+      "dailyReturn": 1.933
+    },
+    {
+      "date": "2026-06-04",
+      "nav": 1.6292,
+      "cumulativeNav": 1.8861,
+      "dailyReturn": 0.572
+    },
+    {
+      "date": "2026-06-05",
+      "nav": 1.6436,
+      "cumulativeNav": 1.9028,
+      "dailyReturn": 0.887
+    },
+    {
+      "date": "2026-06-08",
+      "nav": 1.6596,
+      "cumulativeNav": 1.9213,
+      "dailyReturn": 0.971
+    },
+    {
+      "date": "2026-06-09",
+      "nav": 1.6662,
+      "cumulativeNav": 1.929,
+      "dailyReturn": 0.398
+    },
+    {
+      "date": "2026-06-10",
+      "nav": 1.6484,
+      "cumulativeNav": 1.9083,
+      "dailyReturn": -1.07
+    },
+    {
+      "date": "2026-06-11",
+      "nav": 1.6567,
+      "cumulativeNav": 1.9179,
+      "dailyReturn": 0.503
+    },
+    {
+      "date": "2026-06-12",
+      "nav": 1.653,
+      "cumulativeNav": 1.9137,
+      "dailyReturn": -0.22
+    },
+    {
+      "date": "2026-06-15",
+      "nav": 1.6673,
+      "cumulativeNav": 1.9302,
+      "dailyReturn": 0.863
+    },
+    {
+      "date": "2026-06-16",
+      "nav": 1.6626,
+      "cumulativeNav": 1.9248,
+      "dailyReturn": -0.28
+    },
+    {
+      "date": "2026-06-17",
+      "nav": 1.6538,
+      "cumulativeNav": 1.9147,
+      "dailyReturn": -0.528
+    },
+    {
+      "date": "2026-06-18",
+      "nav": 1.646,
+      "cumulativeNav": 1.9056,
+      "dailyReturn": -0.472
+    },
+    {
+      "date": "2026-06-22",
+      "nav": 1.6327,
+      "cumulativeNav": 1.8902,
+      "dailyReturn": -0.81
+    },
+    {
+      "date": "2026-06-23",
+      "nav": 1.6211,
+      "cumulativeNav": 1.8768,
+      "dailyReturn": -0.708
+    },
+    {
+      "date": "2026-06-24",
+      "nav": 1.6357,
+      "cumulativeNav": 1.8937,
+      "dailyReturn": 0.901
+    },
+    {
+      "date": "2026-06-25",
+      "nav": 1.6212,
+      "cumulativeNav": 1.8769,
+      "dailyReturn": -0.888
+    },
+    {
+      "date": "2026-06-26",
+      "nav": 1.6228,
+      "cumulativeNav": 1.8787,
+      "dailyReturn": 0.095
+    },
+    {
+      "date": "2026-06-29",
+      "nav": 1.6211,
+      "cumulativeNav": 1.8768,
+      "dailyReturn": -0.102
+    },
+    {
+      "date": "2026-06-30",
+      "nav": 1.616,
+      "cumulativeNav": 1.8708,
+      "dailyReturn": -0.316
+    },
+    {
+      "date": "2026-07-01",
+      "nav": 1.6324,
+      "cumulativeNav": 1.8898,
+      "dailyReturn": 1.013
+    },
+    {
+      "date": "2026-07-02",
+      "nav": 1.6374,
+      "cumulativeNav": 1.8956,
+      "dailyReturn": 0.307
+    },
+    {
+      "date": "2026-07-03",
+      "nav": 1.6521,
+      "cumulativeNav": 1.9126,
+      "dailyReturn": 0.898
+    },
+    {
+      "date": "2026-07-06",
+      "nav": 1.6649,
+      "cumulativeNav": 1.9275,
+      "dailyReturn": 0.777
+    },
+    {
+      "date": "2026-07-07",
+      "nav": 1.6503,
+      "cumulativeNav": 1.9105,
+      "dailyReturn": -0.879
+    },
+    {
+      "date": "2026-07-08",
+      "nav": 1.642,
+      "cumulativeNav": 1.9009,
+      "dailyReturn": -0.502
+    },
+    {
+      "date": "2026-07-09",
+      "nav": 1.6308,
+      "cumulativeNav": 1.888,
+      "dailyReturn": -0.683
+    },
+    {
+      "date": "2026-07-10",
+      "nav": 1.6143,
+      "cumulativeNav": 1.8689,
+      "dailyReturn": -1.01
+    },
+    {
+      "date": "2026-07-13",
+      "nav": 1.6037,
+      "cumulativeNav": 1.8567,
+      "dailyReturn": -0.653
+    },
+    {
+      "date": "2026-07-14",
+      "nav": 1.5841,
+      "cumulativeNav": 1.8339,
+      "dailyReturn": -1.228
+    },
+    {
+      "date": "2026-07-15",
+      "nav": 1.5956,
+      "cumulativeNav": 1.8473,
+      "dailyReturn": 0.731
+    },
+    {
+      "date": "2026-07-16",
+      "nav": 1.5963,
+      "cumulativeNav": 1.8481,
+      "dailyReturn": 0.043
+    },
+    {
+      "date": "2026-07-17",
+      "nav": 1.5838,
+      "cumulativeNav": 1.8335,
+      "dailyReturn": -0.786
+    },
+    {
+      "date": "2026-07-20",
+      "nav": 1.5681,
+      "cumulativeNav": 1.8154,
+      "dailyReturn": -0.99
+    },
+    {
+      "date": "2026-07-21",
+      "nav": 1.5761,
+      "cumulativeNav": 1.8246,
+      "dailyReturn": 0.509
+    },
+    {
+      "date": "2026-07-22",
+      "nav": 1.5631,
+      "cumulativeNav": 1.8096,
+      "dailyReturn": -0.822
+    },
+    {
+      "date": "2026-07-23",
+      "nav": 1.587,
+      "cumulativeNav": 1.8373,
+      "dailyReturn": 1.528
+    },
+    {
+      "date": "2026-07-24",
+      "nav": 1.5793,
+      "cumulativeNav": 1.8283,
+      "dailyReturn": -0.488
+    },
+    {
+      "date": "2026-07-27",
+      "nav": 1.5665,
+      "cumulativeNav": 1.8135,
+      "dailyReturn": -0.811
+    },
+    {
+      "date": "2026-07-28",
+      "nav": 1.5686,
+      "cumulativeNav": 1.816,
+      "dailyReturn": 0.137
+    },
+    {
+      "date": "2026-07-29",
+      "nav": 1.5334,
+      "cumulativeNav": 1.7752,
+      "dailyReturn": -2.244
+    },
+    {
+      "date": "2026-07-30",
+      "nav": 1.5308,
+      "cumulativeNav": 1.7722,
+      "dailyReturn": -0.169
+    },
+    {
+      "date": "2026-07-31",
+      "nav": 1.5597,
+      "cumulativeNav": 1.8056,
+      "dailyReturn": 1.885
+    },
+    {
+      "date": "2026-08-03",
+      "nav": 1.5775,
+      "cumulativeNav": 1.8262,
+      "dailyReturn": 1.14
+    },
+    {
+      "date": "2026-08-04",
+      "nav": 1.5866,
+      "cumulativeNav": 1.8368,
+      "dailyReturn": 0.579
+    },
+    {
+      "date": "2026-08-05",
+      "nav": 1.582,
+      "cumulativeNav": 1.8315,
+      "dailyReturn": -0.288
+    },
+    {
+      "date": "2026-08-06",
+      "nav": 1.5801,
+      "cumulativeNav": 1.8293,
+      "dailyReturn": -0.119
+    },
+    {
+      "date": "2026-08-07",
+      "nav": 1.559,
+      "cumulativeNav": 1.8048,
+      "dailyReturn": -1.341
+    },
+    {
+      "date": "2026-08-10",
+      "nav": 1.5592,
+      "cumulativeNav": 1.8051,
+      "dailyReturn": 0.017
+    },
+    {
+      "date": "2026-08-11",
+      "nav": 1.5277,
+      "cumulativeNav": 1.7687,
+      "dailyReturn": -2.02
+    },
+    {
+      "date": "2026-08-12",
+      "nav": 1.5431,
+      "cumulativeNav": 1.7864,
+      "dailyReturn": 1.004
+    },
+    {
+      "date": "2026-08-13",
+      "nav": 1.5191,
+      "cumulativeNav": 1.7586,
+      "dailyReturn": -1.556
+    },
+    {
+      "date": "2026-08-14",
+      "nav": 1.5218,
+      "cumulativeNav": 1.7618,
+      "dailyReturn": 0.181
+    }
+  ]
+}

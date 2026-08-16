@@ -1,0 +1,146 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "valuations": [
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600519"
+      },
+      "asOf": "2026-08-14",
+      "peTtm": 18.66,
+      "peStatic": 17.73,
+      "pb": 6.751,
+      "psTtm": 8.86,
+      "pcfTtm": 14.18,
+      "evToEbitda": 12.49,
+      "dividendYieldTtm": 2.87,
+      "dividendPayoutRatio": 50.88,
+      "marketCap": 16858.08,
+      "floatMarketCap": 16858.08,
+      "pePercentile2Y": 13.8,
+      "pbPercentile2Y": 7.4,
+      "peRangeLow2Y": 15.87,
+      "peRangeHigh2Y": 27.09,
+      "industryMedianPe": 17.17,
+      "industryName": "白酒Ⅱ"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "300750"
+      },
+      "asOf": "2026-08-14",
+      "peTtm": 27.4,
+      "peStatic": 27.6,
+      "pb": 6.317,
+      "psTtm": 4.74,
+      "pcfTtm": 22.08,
+      "evToEbitda": 19.48,
+      "dividendYieldTtm": 1.417,
+      "dividendPayoutRatio": 39.11,
+      "marketCap": 18025.68,
+      "floatMarketCap": 15740.85,
+      "pePercentile2Y": 91.4,
+      "pbPercentile2Y": 92.6,
+      "peRangeLow2Y": 11.06,
+      "peRangeHigh2Y": 30.01,
+      "industryMedianPe": 29.59,
+      "industryName": "电池"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "600036"
+      },
+      "asOf": "2026-08-14",
+      "peTtm": 6.4,
+      "peStatic": 6.55,
+      "pb": 0.931,
+      "psTtm": 2.88,
+      "pcfTtm": 5.24,
+      "evToEbitda": null,
+      "dividendYieldTtm": 5.16,
+      "dividendPayoutRatio": 33.81,
+      "marketCap": 9828.23,
+      "floatMarketCap": 8039.12,
+      "pePercentile2Y": 38.2,
+      "pbPercentile2Y": 45.6,
+      "peRangeLow2Y": 5.6,
+      "peRangeHigh2Y": 7.99,
+      "industryMedianPe": 6.4,
+      "industryName": "股份制银行Ⅱ"
+    },
+    {
+      "instrument": {
+        "market": "SSE",
+        "symbol": "688981"
+      },
+      "asOf": "2026-08-14",
+      "peTtm": 169.53,
+      "peStatic": 182.59,
+      "pb": 5.7,
+      "psTtm": 12.76,
+      "pcfTtm": 146.07,
+      "evToEbitda": 129.16,
+      "dividendYieldTtm": 0,
+      "dividendPayoutRatio": 0,
+      "marketCap": 8179.84,
+      "floatMarketCap": 2062.9,
+      "pePercentile2Y": 58.4,
+      "pbPercentile2Y": 81,
+      "peRangeLow2Y": 111.27,
+      "peRangeHigh2Y": 300.42,
+      "industryMedianPe": 171.23,
+      "industryName": "半导体"
+    },
+    {
+      "instrument": {
+        "market": "SZSE",
+        "symbol": "002594"
+      },
+      "asOf": "2026-08-14",
+      "peTtm": 18.06,
+      "peStatic": 20.45,
+      "pb": 3.758,
+      "psTtm": 0.95,
+      "pcfTtm": 16.36,
+      "evToEbitda": 14.65,
+      "dividendYieldTtm": 1.498,
+      "dividendPayoutRatio": 30.63,
+      "marketCap": 8218.94,
+      "floatMarketCap": 4994.45,
+      "pePercentile2Y": 17.4,
+      "pbPercentile2Y": 61.2,
+      "peRangeLow2Y": 15.55,
+      "peRangeHigh2Y": 44.01,
+      "industryMedianPe": 17.15,
+      "industryName": "乘用车"
+    },
+    {
+      "instrument": {
+        "market": "HKEX",
+        "symbol": "00700"
+      },
+      "asOf": "2026-08-14",
+      "peTtm": 17.4,
+      "peStatic": 18.59,
+      "pb": 4.352,
+      "psTtm": 5.86,
+      "pcfTtm": 14.87,
+      "evToEbitda": 13.25,
+      "dividendYieldTtm": 0.978,
+      "dividendPayoutRatio": 18.18,
+      "marketCap": 42108.3,
+      "floatMarketCap": 42108.3,
+      "pePercentile2Y": 12.6,
+      "pbPercentile2Y": 27.4,
+      "peRangeLow2Y": 14.69,
+      "peRangeHigh2Y": 25.23,
+      "industryMedianPe": 15.31,
+      "industryName": "互联网服务"
+    }
+  ]
+}

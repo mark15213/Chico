@@ -1,0 +1,44 @@
+{
+  "$schema": "https://deepseek-harness.local/chico-mock/v1",
+  "datasetVersion": 1,
+  "synthetic": true,
+  "anchorDate": "2026-08-14",
+  "indexes": [
+    {
+      "code": "000300",
+      "market": "SSE",
+      "name": "沪深300",
+      "currency": "CNY",
+      "close": 4580,
+      "asOf": "2026-08-14",
+      "dataSource": "4543.18 @2026-08-03（东方财富大盘复盘），外推至锚定日"
+    },
+    {
+      "code": "000001",
+      "market": "SSE",
+      "name": "上证指数",
+      "currency": "CNY",
+      "close": 3851,
+      "asOf": "2026-08-14",
+      "dataSource": "3822.28 @2026-08-04（东方财富大盘复盘），外推至锚定日"
+    },
+    {
+      "code": "399006",
+      "market": "SZSE",
+      "name": "创业板指",
+      "currency": "CNY",
+      "close": 3512,
+      "asOf": "2026-08-14",
+      "dataSource": "3488.97 @2026-08-04（东方财富大盘复盘），外推至锚定日"
+    },
+    {
+      "code": "HSI",
+      "market": "HKEX",
+      "name": "恒生指数",
+      "currency": "HKD",
+      "close": 27480,
+      "asOf": "2026-08-14",
+      "dataSource": "2026 年区间量级估计，未取得当日点位"
+    }
+  ]
+}
