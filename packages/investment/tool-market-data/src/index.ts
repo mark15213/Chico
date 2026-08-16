@@ -12,7 +12,7 @@ import { defineTool } from '@deepseek-ai/dsh-tools'
 import type {
   GenericCallView, GenericResultView, JsonValue, PriceSeriesBar, PriceSeriesResultView, ToolResult,
 } from '@deepseek-ai/dsh-tools'
-import type { Market, PriceHistory, Quote } from '@deepseek-ai/dsh-market-data'
+import type { Market, ObservationSource, PriceHistory, Quote } from '@deepseek-ai/dsh-market-data'
 import type {} from '@deepseek-ai/dsh-system-prompt'
 
 /** Cordis plugin name used by loader diagnostics. */
@@ -49,6 +49,27 @@ export const Config: z<Config> = z.object({
   timeoutMs: z.natural().min(1).default(DEFAULT_MARKET_TOOL_TIMEOUT_MS),
 })
 
+/**
+ * Shared output fragment naming where an observation came from. Both tools
+ * report it, because a figure a reader cannot trace is a figure they have to
+ * take on faith.
+ */
+const SOURCE_PROPERTY = {
+  type: 'object',
+  required: true,
+  additionalProperties: false,
+  description: 'Which feed served these values, which of its datasets they were read from, and when.',
+  properties: {
+    providerId: { type: 'string', required: true },
+    datasets: { type: 'array', required: true, items: { type: 'string' } },
+    retrievedAt: {
+      required: true,
+      oneOf: [{ type: 'string' }, { type: 'null' }],
+      description: 'When the feed was read, or null when the values were computed rather than acquired.',
+    },
+  },
+} as const
+
 /** Shared instrument parameters; both tools address one instrument the same way. */
 const INSTRUMENT_PARAMETERS = {
   market: {
@@ -75,11 +96,51 @@ export function parseSymbol(symbol: string): string {
   return trimmed
 }
 
+/**
+ * Provenance as both tools report it. Structurally the seam's
+ * {@link ObservationSource}; declared here because the output schema, not the
+ * seam, is what a consumer of a tool result reads it back through.
+ */
+export interface SourceValue {
+  /** Registry id of the feed that served the values. */
+  readonly providerId: string
+  /** The feed's own datasets the values were read from. */
+  readonly datasets: readonly string[]
+  /** When the feed was read (ISO-8601), or null when the values were computed rather than acquired. */
+  readonly retrievedAt: string | null
+}
+
 /** Canonical `market_quote` output: the seam's quote minus its instrument echo. */
-export type QuoteValue = Omit<Quote, 'instrument'>
+export type QuoteValue = Omit<Quote, 'instrument' | 'source'> & { readonly source: SourceValue }
 
 /** Canonical `market_history` output: the seam's history minus its instrument echo. */
-export type HistoryValue = Omit<PriceHistory, 'instrument'>
+export type HistoryValue = Omit<PriceHistory, 'instrument' | 'source'> & { readonly source: SourceValue }
+
+/**
+ * Project one seam source into the tool's own output value. The arrays are
+ * copied because the output value is plain JSON the harness may mutate on its
+ * way to the model, and the seam's record is shared with other callers.
+ * @param source - the observation's provenance as the seam recorded it.
+ * @returns the value the output schema declares.
+ */
+function sourceValue(source: ObservationSource): { providerId: string; datasets: string[]; retrievedAt: string | null } {
+  return { providerId: source.providerId, datasets: [...source.datasets], retrievedAt: source.retrievedAt }
+}
+
+/**
+ * Format an observation's provenance as one model-facing line. The retrieval
+ * absence is spelled out rather than left blank: a value computed in process is
+ * a different claim from one whose fetch time went unrecorded.
+ * @param value - the provenance carried by the tool output.
+ * @returns the formatted source line.
+ */
+export function formatSource(value: SourceValue): string {
+  const datasets = value.datasets.length === 0 ? 'an unnamed dataset' : value.datasets.join(', ')
+  const retrieval = value.retrievedAt === null
+    ? 'computed in process, so there is no retrieval time'
+    : `retrieved ${value.retrievedAt}`
+  return `Source ${value.providerId} via ${datasets}; ${retrieval}.`
+}
 
 /**
  * Format a quote as one model-facing text block. The as-of instant and the
@@ -96,6 +157,7 @@ export function formatQuote(instrument: { market: string; symbol: string }, valu
     `Last ${value.last} ${value.currency} (${direction}${value.changePercent}% vs previous close ${value.previousClose})`,
     `Volume ${value.volume}`,
     `As of ${value.asOf}; venue ${value.session}.`,
+    formatSource(value.source),
   ].join('\n')
 }
 
@@ -109,11 +171,12 @@ export function formatQuote(instrument: { market: string; symbol: string }, valu
  */
 export function formatHistory(instrument: { market: string; symbol: string }, value: HistoryValue): string {
   const header = `${instrument.market}:${instrument.symbol} — ${value.bars.length} sessions, ${value.adjustment} adjustment`
-  if (value.bars.length === 0) return `${header}\n(no sessions returned)`
+  const source = formatSource(value.source)
+  if (value.bars.length === 0) return `${header}\n(no sessions returned)\n${source}`
   const rows = value.bars.map(
     bar => `${bar.date}  open ${bar.open}  high ${bar.high}  low ${bar.low}  close ${bar.close}  volume ${bar.volume}`,
   )
-  return `${header}\ndate        open / high / low / close / volume\n${rows.join('\n')}`
+  return `${header}\n${source}\ndate        open / high / low / close / volume\n${rows.join('\n')}`
 }
 
 /**
@@ -144,6 +207,23 @@ function presentInstrumentResult(title: string, args: { market: string; symbol: 
   return { card: 'generic', title: `${title} ${args.market}:${args.symbol}` }
 }
 
+/**
+ * Where one completed call's numbers came from, carried as replayable result
+ * metadata by both tools. The rendered text states the same facts, but a
+ * surface that lists what an answer rests on has to read them back as data
+ * rather than re-parse prose, and it is the metadata — not the output value —
+ * that the session log keeps.
+ */
+export interface ObservationMeta {
+  /** Which feed served the values and when they were read. */
+  source: SourceValue
+  /**
+   * Event time of the observation: the quote's own instant, or the trading date
+   * of the last session a history returned. Null when a history returned none.
+   */
+  asOf: string | null
+}
+
 /** Replayable presentation state for one completed `market_history` call. */
 export interface HistoryMeta {
   /** Session bars in ascending date order. */
@@ -153,14 +233,67 @@ export interface HistoryMeta {
 }
 
 /**
+ * Project provenance into the metadata shape both tools persist.
+ * @param source - the observation's provenance.
+ * @param asOf - the observation's event time, or null when it has none.
+ * @returns the provenance as plain JSON data.
+ */
+function observationMetaValue(
+  source: SourceValue,
+  asOf: string | null,
+): { source: { providerId: string; datasets: string[]; retrievedAt: string | null }; asOf: string | null } {
+  return { source: sourceValue(source), asOf }
+}
+
+/**
+ * Project a validated `market_quote` output into replayable presentation meta.
+ * The quote's card is generic, so this metadata exists for provenance alone.
+ * @param value - the canonical `market_quote` output value.
+ * @returns the provenance as opaque JSON.
+ */
+export function quoteMetaFromValue(value: QuoteValue): JsonValue {
+  return observationMetaValue(value.source, value.asOf)
+}
+
+/**
  * Project a validated `market_history` output into replayable presentation
  * meta. The card cannot be rebuilt from the rendered text, so the bars travel
- * as durable result metadata the same way the web card's sources do.
+ * as durable result metadata the same way the web card's sources do, and the
+ * provenance travels with them.
  * @param value - the canonical `market_history` output value.
- * @returns the bars and adjustment as opaque JSON.
+ * @returns the bars, adjustment, and provenance as opaque JSON.
  */
 export function historyMetaFromValue(value: HistoryValue): JsonValue {
-  return { bars: value.bars.map(bar => ({ ...bar })), adjustment: value.adjustment }
+  return {
+    bars: value.bars.map(bar => ({ ...bar })),
+    adjustment: value.adjustment,
+    ...observationMetaValue(value.source, value.bars.at(-1)?.date ?? null),
+  }
+}
+
+/** Whether `value` is a valid {@link SourceValue} (defensive narrowing from opaque `meta`). */
+function isSourceValue(value: unknown): value is SourceValue {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false
+  const { providerId, datasets, retrievedAt } = value as Record<string, unknown>
+  return typeof providerId === 'string'
+    && Array.isArray(datasets) && datasets.every(entry => typeof entry === 'string')
+    && (retrievedAt === null || typeof retrievedAt === 'string')
+}
+
+/**
+ * Narrow opaque live or replayed result metadata to an {@link ObservationMeta}.
+ * Metadata written before either tool carried provenance narrows to
+ * `undefined`, so a surface reading it degrades to naming the tool instead of
+ * inventing a feed.
+ * @param meta - result metadata.
+ * @returns the validated provenance, or `undefined` for absent or malformed data.
+ */
+export function observationMetaFromResult(meta: unknown): ObservationMeta | undefined {
+  if (typeof meta !== 'object' || meta === null || Array.isArray(meta)) return undefined
+  const { source, asOf } = meta as Record<string, unknown>
+  if (!isSourceValue(source)) return undefined
+  if (asOf !== null && typeof asOf !== 'string') return undefined
+  return { source, asOf }
 }
 
 /** Whether `value` is a valid {@link PriceSeriesBar} (defensive narrowing from opaque `meta`). */
@@ -226,7 +359,7 @@ export function apply(ctx: Context, config: Config): void {
   ctx.systemPrompt.section({
     name: 'tool:market_data',
     order: 112,
-    text: 'Use market_quote for one instrument\'s latest price and market_history for its recent daily sessions. Both report the observation time and, for history, the corporate-action adjustment; state those when the answer depends on them, and never compare prices across different adjustments.',
+    text: 'Use market_quote for one instrument\'s latest price and market_history for its recent daily sessions. Both report the observation time, the feed and datasets the values came from, and, for history, the corporate-action adjustment; state those when the answer depends on them, and never compare prices across different adjustments.',
   })
 
   if (resolved.quote) {
@@ -247,9 +380,11 @@ export function apply(ctx: Context, config: Config): void {
             volume: { type: 'number', required: true },
             asOf: { type: 'string', required: true },
             session: { type: 'string', required: true, enum: ['open', 'closed'] },
+            source: SOURCE_PROPERTY,
           },
         },
         render: (args, value) => [{ type: 'text', text: formatQuote(args, value) }],
+        presentationMeta: (_args, value) => quoteMetaFromValue(value),
       },
       timeoutMs: resolved.timeoutMs,
       // Provider reads do not mutate parent-agent state.
@@ -268,6 +403,7 @@ export function apply(ctx: Context, config: Config): void {
           volume: quote.volume,
           asOf: quote.asOf,
           session: quote.session,
+          source: sourceValue(quote.source),
         }
       },
       presentCall: args => presentInstrumentCall('Quote', args),
@@ -292,6 +428,7 @@ export function apply(ctx: Context, config: Config): void {
           additionalProperties: false,
           properties: {
             adjustment: { type: 'string', required: true, enum: ['none', 'backward', 'forward'] },
+            source: SOURCE_PROPERTY,
             bars: {
               type: 'array',
               required: true,
@@ -323,7 +460,11 @@ export function apply(ctx: Context, config: Config): void {
           },
           exec.signal,
         )
-        return { adjustment: history.adjustment, bars: history.bars.map(bar => ({ ...bar })) }
+        return {
+          adjustment: history.adjustment,
+          bars: history.bars.map(bar => ({ ...bar })),
+          source: sourceValue(history.source),
+        }
       },
       presentCall: args => presentInstrumentCall('History', args),
       presentResult: (args, result) => presentHistoryResult(args, result),

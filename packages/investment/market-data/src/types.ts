@@ -26,6 +26,33 @@ export interface InstrumentRef {
 }
 
 /**
+ * Where one observation came from and when it was acquired.
+ *
+ * An observation's own event time says when the venue priced the instrument and
+ * nothing about how that value reached this process. A reader deciding whether
+ * to act on a figure needs both, so every observation carries this beside its
+ * numbers: the feed that served it, the datasets inside that feed the values
+ * were read from, and the instant they were read.
+ */
+export interface ObservationSource {
+  /** Registry id of the provider that served the observation ({@link MarketDataProvider.id}). */
+  readonly providerId: string
+  /**
+   * The provider's own datasets the values were read from, in the order the
+   * provider consulted them — an endpoint, a table, or whatever that feed calls
+   * its addressable unit of data.
+   */
+  readonly datasets: readonly string[]
+  /**
+   * When the provider acquired the values (ISO-8601 instant), or null when
+   * there was no acquisition. A provider that computes its values in-process
+   * has no retrieval to report, and stamping the clock there would present a
+   * generated number as a fetched one.
+   */
+  readonly retrievedAt: string | null
+}
+
+/**
  * One instrument's latest observed price and the session context needed to
  * read it. Every field is as of {@link Quote.asOf}; a consumer that needs a
  * different instant asks again rather than extrapolating.
@@ -55,6 +82,8 @@ export interface Quote {
    * still a valid observation; it just will not change until the next session.
    */
   readonly session: 'open' | 'closed'
+  /** Which feed served these numbers and when they were read. */
+  readonly source: ObservationSource
 }
 
 /**
@@ -133,6 +162,11 @@ export interface PriceHistory {
    * the first bar's basis.
    */
   readonly adjustment: 'none' | 'backward' | 'forward'
+  /**
+   * Which feed served these bars and when they were read. Restatement reads a
+   * second dataset, so a provider that restated lists both.
+   */
+  readonly source: ObservationSource
 }
 
 /**

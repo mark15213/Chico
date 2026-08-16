@@ -6,12 +6,16 @@ Model-facing `market_quote` and `market_history` tools over [`ctx.marketData`](.
 
 ## Shape
 
-- **`market_quote`** — `market` (venue enum) and `symbol`. Returns name, currency, last, previous close, change percent, volume, the observation instant, and the venue session state.
-- **`market_history`** — the same instrument arguments plus optional `sessions` (default 60). Returns the corporate-action adjustment and the session bars, oldest first.
+- **`market_quote`** — `market` (venue enum) and `symbol`. Returns name, currency, last, previous close, change percent, volume, the observation instant, the venue session state, and the source the numbers came from.
+- **`market_history`** — the same instrument arguments plus optional `sessions` (default 60). Returns the corporate-action adjustment, the session bars oldest first, and the same source.
 
 Instrument arguments are flat rather than a nested object: a model produces `market` and `symbol` more reliably as two named strings, and `market` is an enum mirroring the seam's closed `Market` union so an unknown venue is rejected by schema validation rather than by the provider.
 
 Enablement controls registration. An enabled tool stays visible when no provider is usable and fails at execution time with the seam's structured error, so a composition never advertises a capability that silently returns nothing.
+
+## Provenance travels as result metadata
+
+The rendered text states where an answer came from, and both tools also project it through `output.presentationMeta`, which is what the session log keeps. A surface that lists what a conversation rests on reads that metadata rather than re-parsing prose; `observationMetaFromResult` narrows it and returns `undefined` for metadata written before either tool carried provenance, so such a reader degrades to naming the tool instead of inventing a feed.
 
 ## Model Experience
 
@@ -19,12 +23,12 @@ Enablement controls registration. An enabled tool stays visible when no provider
 
 #### What the model sees
 
-The generated [`market_quote` and `market_history` schemas](../../../docs/tool-catalog.md#deepseek-aidsh-tool-market-data), plus one standing prompt section. Session bounds and timeout budgets are deployment settings, not model arguments. Quote results always state the as-of instant and whether the venue was open, because a price the model cannot date is a price it cannot reason about; a positive change carries an explicit `+` so the sign is never ambiguous; and history results lead with the session count and the adjustment before the rows.
+The generated [`market_quote` and `market_history` schemas](../../../docs/tool-catalog.md#deepseek-aidsh-tool-market-data), plus one standing prompt section. Session bounds and timeout budgets are deployment settings, not model arguments. Quote results always state the as-of instant and whether the venue was open, because a price the model cannot date is a price it cannot reason about; a positive change carries an explicit `+` so the sign is never ambiguous; and history results lead with the session count and the adjustment before the rows. Both close with one source line naming the feed, its datasets, and the retrieval instant — or saying outright that the values were computed in process, which is a different claim from a fetch whose time went unrecorded.
 
 ##### Market-data guidance
 
 ```markdown
-Use market_quote for one instrument's latest price and market_history for its recent daily sessions. Both report the observation time and, for history, the corporate-action adjustment; state those when the answer depends on them, and never compare prices across different adjustments.
+Use market_quote for one instrument's latest price and market_history for its recent daily sessions. Both report the observation time, the feed and datasets the values came from, and, for history, the corporate-action adjustment; state those when the answer depends on them, and never compare prices across different adjustments.
 ```
 
 #### Token effect
@@ -37,6 +41,6 @@ The prompt section is static for the lifetime of the package mount, so it stays 
 
 ## Known Limitations and Deferred Work
 
-- **Presentation is a generic card.** Bars render as text rather than as a chart, because the render-intent union has no chart member. Adding one is a change to the shared tool vocabulary and its client renderer, not to this package.
+- **Provenance stops at the feed.** The source names the provider, its datasets, and the retrieval instant. Content version and licence scope, which [Chico's data-source control](../../../products/chico/controls/data-provenance.md) also asks for, need a seam that carries them.
 - **One instrument per call.** A watchlist refresh issues one call per name. A batch operation needs its own partial-failure semantics and belongs to the seam first.
 - **No fundamentals, filings, or corporate actions.** Those are separate capabilities; this package covers prices only.

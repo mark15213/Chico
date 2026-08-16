@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write docs/subsystems/market-data.md
-market-data.md: e66bae1de42ebc7e8faad11d44f020af9888b3c3
-market-data.zh.md: 24057c8afe0b93dcf2f1fc08f21ce273cfe59a72
+market-data.md: e5194803b33141c28fc8688a8827620cefd8ea28
+market-data.zh.md: 53fc0872bba2f50c4079aca58925914c5d04a5f4

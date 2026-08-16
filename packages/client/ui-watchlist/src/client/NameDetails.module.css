@@ -1,0 +1,45 @@
+/* The investing frame's right column: one tab strip over two bodies. The strip
+   is column chrome and never scrolls; each body owns its own scrollport, so
+   switching tabs does not carry the other side's scroll position. */
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  flex: none;
+  padding: 8px 14px 0;
+}
+
+.tab {
+  font: inherit;
+  font-size: 11.5px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: none;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  cursor: pointer;
+}
+
+.tab[data-on] {
+  border-color: var(--ds-color-border, #e2e0dc);
+  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 5%));
+  color: var(--ds-color-text-primary, inherit);
+  font-weight: 600;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.body[hidden] {
+  display: none;
+}

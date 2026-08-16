@@ -6,7 +6,9 @@ import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it } from 'vitest'
 import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import MarketDataRuntime from '@deepseek-ai/dsh-market-data'
-import { apply, Config, createFixtureProvider, DEFAULT_ANCHOR_DATE, inject, PROVIDER_ID } from '../src/index.ts'
+import {
+  apply, Config, createFixtureProvider, DEFAULT_ANCHOR_DATE, FIXTURE_DATASET, inject, PROVIDER_ID,
+} from '../src/index.ts'
 import * as FixtureInvariant from '../src/invariant.ts'
 
 const known = { market: 'SZSE', symbol: '300750' } as const
@@ -73,6 +75,14 @@ describe('fixture provider values', () => {
       .toThrow(expect.objectContaining({ code: 'MARKET_DATA_UNKNOWN_INSTRUMENT' }))
     await expect(provider.priceHistory({ instrument: unknown, sessions: 5 })).rejects
       .toThrow(expect.objectContaining({ code: 'MARKET_DATA_UNKNOWN_INSTRUMENT' }))
+  })
+
+  it('attributes its values to itself and records that nothing was retrieved', async () => {
+    const provider = createFixtureProvider(DEFAULT_ANCHOR_DATE)
+    const source = { providerId: PROVIDER_ID, datasets: [FIXTURE_DATASET], retrievedAt: null }
+
+    expect((await provider.quote({ instrument: known })).source).toEqual(source)
+    expect((await provider.priceHistory({ instrument: known, sessions: 2 })).source).toEqual(source)
   })
 
   it('is always usable, having no credential to lose', async () => {

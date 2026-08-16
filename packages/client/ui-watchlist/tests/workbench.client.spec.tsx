@@ -21,6 +21,7 @@ import {
 } from '../src/client/watchlist-model.ts'
 import { InvestingHero } from '../src/client/InvestingHero.tsx'
 import { NamesFrame } from '../src/client/NamesFrame.tsx'
+import { NameDetails } from '../src/client/NameDetails.tsx'
 import { RecordPanel } from '../src/client/RecordPanel.tsx'
 import { WatchlistFeed } from '../src/client/watchlist-store.ts'
 import { WorkbenchFocus } from '../src/client/workbench-store.ts'
@@ -46,6 +47,7 @@ function quote(over?: Partial<Quote>): Quote {
     volume: 1_000,
     asOf: '2026-08-14T07:00:00.000Z',
     session: 'closed',
+    source: { providerId: 'fixture', datasets: ['fixture-table'], retrievedAt: null },
     ...over,
   }
 }
@@ -740,7 +742,7 @@ describe('workbench registration', () => {
     expect(opening?.component).toBe(InvestingHero)
   })
 
-  it('registers the names frame and the record panel under one frame id', async () => {
+  it('registers the names frame and the details column under one frame id', async () => {
     const b = await bench()
     const fiber = b.ctx.plugin({ inject: [...workbench.inject], apply: workbench.apply })
     await fiber.await()
@@ -749,7 +751,7 @@ describe('workbench registration', () => {
     expect(frame?.component).toBe(NamesFrame)
     expect(frame?.options).toMatchObject({ id: 'names', order: 20 })
     const panel = b.slots.entries('details').find(entry => entry.options.key === workbench.NAMES_MODE)
-    expect(panel?.component).toBe(RecordPanel)
+    expect(panel?.component).toBe(NameDetails)
     // Registration must not read anything: each column reads when it mounts.
     expect(b.list).not.toHaveBeenCalled()
   })

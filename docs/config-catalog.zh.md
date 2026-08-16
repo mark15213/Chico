@@ -1260,7 +1260,7 @@ export interface MarketDataRuntimeConfig {
 }
 ```
 
-来源：[`packages/investment/market-data/src/index.ts:63`](../packages/investment/market-data/src/index.ts)
+来源：[`packages/investment/market-data/src/index.ts:64`](../packages/investment/market-data/src/index.ts)
 
 <a id="deepseek-aidsh-market-data-fixture"></a>
 
@@ -1276,7 +1276,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/investment/market-data-fixture/src/index.ts:126`](../packages/investment/market-data-fixture/src/index.ts)
+来源：[`packages/investment/market-data-fixture/src/index.ts:142`](../packages/investment/market-data-fixture/src/index.ts)
 
 <a id="deepseek-aidsh-market-data-tushare"></a>
 
@@ -1306,7 +1306,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/investment/market-data-tushare/src/index.ts:110`](../packages/investment/market-data-tushare/src/index.ts)
+来源：[`packages/investment/market-data-tushare/src/index.ts:120`](../packages/investment/market-data-tushare/src/index.ts)
 
 <a id="deepseek-aidsh-mcp-client"></a>
 

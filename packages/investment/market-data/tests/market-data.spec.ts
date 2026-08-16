@@ -12,6 +12,8 @@ import * as MarketDataInvariant from '../src/invariant.ts'
 
 const instrument = { market: 'SZSE', symbol: '300750' } as const
 
+const source = { providerId: 'stub', datasets: ['bars'], retrievedAt: '2026-08-14T09:00:00.000Z' }
+
 const quote: Quote = {
   instrument,
   name: '宁德时代',
@@ -22,6 +24,7 @@ const quote: Quote = {
   volume: 41_200_000,
   asOf: '2026-08-14T07:00:00.000Z',
   session: 'closed',
+  source,
 }
 
 const searchResult: InstrumentSearchResult = {
@@ -32,6 +35,7 @@ const history: PriceHistory = {
   instrument,
   bars: [{ date: '2026-08-13', open: 226, high: 231, low: 225, close: 228.28, volume: 30_100_000 }],
   adjustment: 'backward',
+  source,
 }
 
 /**

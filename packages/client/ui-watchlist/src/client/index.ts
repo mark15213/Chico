@@ -2,12 +2,13 @@
  * The investing frame: what Chico adds to the harness frame.
  *
  * It registers one navigation frame in the sidebar (`sidebar.mode`, id
- * `names`), one detail panel keyed to that frame (`details`), and that
+ * `names`), one detail column keyed to that frame (`details`), and that
  * frame's own blank-conversation opening (`conversation.hero`). Switching to
  * the frame swaps the left column to the followed names, the right column to
- * the open name's record, and the centre column's opening to the name being
- * discussed — which is what keeps a conversation about a stock out of the
- * Workspace flow. The conversation body itself stays ui-conversation's.
+ * what the conversation rests on and the open name's record, and the centre
+ * column's opening to the name being discussed — which is what keeps a
+ * conversation about a stock out of the Workspace flow. The conversation body
+ * itself stays ui-conversation's.
  *
  * Both columns share two plugin-owned observables — the rows and the open
  * name. Neither can be a slot store handle: a handle carries one scope, the
@@ -27,7 +28,8 @@ import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import { InvestingHero, type InvestingHeroInjected } from './InvestingHero.tsx'
 import { NamesFrame, type NamesFrameInjected } from './NamesFrame.tsx'
-import { RecordPanel, type RecordPanelInjected } from './RecordPanel.tsx'
+import { NameDetails } from './NameDetails.tsx'
+import type { RecordPanelInjected } from './RecordPanel.tsx'
 import { WatchlistFeed } from './watchlist-store.ts'
 import { WorkbenchFocus } from './workbench-store.ts'
 import { WorkbenchSessions } from './workbench-sessions.ts'
@@ -36,6 +38,14 @@ import { en, NS, zh, type WatchlistLocaleKey } from './locales.ts'
 export type { InvestingHeroInjected, InvestingHeroProps } from './InvestingHero.tsx'
 export { InvestingHero } from './InvestingHero.tsx'
 export type { NamesFrameInjected, NamesFrameProps } from './NamesFrame.tsx'
+export type { NameDetailsProps } from './NameDetails.tsx'
+export { NameDetails } from './NameDetails.tsx'
+export type { AttributionPanelProps } from './AttributionPanel.tsx'
+export { AttributionPanel } from './AttributionPanel.tsx'
+export type {
+  AttributedExchange, CitationReference, SourceCitation, SourceKind,
+} from './attribution-model.ts'
+export { attributionModel, compactStamp, sameAttribution } from './attribution-model.ts'
 export type { RecordPanelInjected, RecordPanelProps } from './RecordPanel.tsx'
 export type { WatchlistSource, WatchlistState } from './watchlist-store.ts'
 export { useWatchlist, WatchlistFeed } from './watchlist-store.ts'
@@ -159,5 +169,5 @@ export function apply(ctx: ClientContext): void {
     key: NAMES_MODE,
     locale: NS,
     inject: (): RecordPanelInjected => ({ focus, read, dossier, append }),
-  }, RecordPanel))
+  }, NameDetails))
 }

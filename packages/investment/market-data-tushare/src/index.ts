@@ -26,6 +26,7 @@ import type {
   InstrumentSearchResult,
   Market,
   MarketDataProvider,
+  ObservationSource,
   PriceBar,
   PriceHistory,
   PriceHistoryRequest,
@@ -96,6 +97,15 @@ const WINDOW_FLOOR_DAYS = 14
 
 /** Tushare reports volume in lots; a mainland lot is 100 shares. */
 const SHARES_PER_LOT = 100
+
+/** The bar interface, which is also the dataset a price is attributed to. */
+const DATASET_BARS = 'daily'
+
+/** The listing interface, which is also the dataset a display name is attributed to. */
+const DATASET_ROSTER = 'stock_basic'
+
+/** The restatement interface, which is also the dataset a restated price is attributed to. */
+const DATASET_FACTORS = 'adj_factor'
 
 /** The `daily` columns this provider reads. */
 const DAILY_FIELDS = ['trade_date', 'open', 'high', 'low', 'close', 'pre_close', 'pct_chg', 'vol'] as const
@@ -233,6 +243,15 @@ function dateWindow(sessions: number): { start_date: string; end_date: string } 
   return { start_date: daysBefore(end, days), end_date: end }
 }
 
+/**
+ * Provenance for an answer whose feed reads have just completed.
+ * @param datasets - the Tushare interfaces the returned values came from.
+ * @returns the source, stamped with the instant the reads finished.
+ */
+function sourceOf(datasets: readonly string[]): ObservationSource {
+  return { providerId: PROVIDER_ID, datasets, retrievedAt: new Date().toISOString() }
+}
+
 /** Round to four decimals; enough for a restated price without float noise. */
 function round4(value: number): number {
   return Math.round(value * 10_000) / 10_000
@@ -365,7 +384,7 @@ export function createTushareProvider(options: TushareProviderOptions): MarketDa
   const roster = new InstrumentRoster(async () => {
     const rows = await callTushare(
       await endpoint(),
-      { apiName: 'stock_basic', params: { list_status: 'L' }, fields: [...ROSTER_FIELDS] },
+      { apiName: DATASET_ROSTER, params: { list_status: 'L' }, fields: [...ROSTER_FIELDS] },
     )
     return rows.flatMap((row) => {
       const instrument = instrumentOf(text(row, 'ts_code'))
@@ -381,7 +400,7 @@ export function createTushareProvider(options: TushareProviderOptions): MarketDa
   ): Promise<TushareRow[]> => {
     const rows = await callTushare(
       await endpoint(),
-      { apiName: 'daily', params: { ts_code: code, ...window }, fields: [...DAILY_FIELDS] },
+      { apiName: DATASET_BARS, params: { ts_code: code, ...window }, fields: [...DAILY_FIELDS] },
       signal,
     )
     // Tushare returns newest first; the seam's order is the venue's own, and
@@ -434,6 +453,10 @@ export function createTushareProvider(options: TushareProviderOptions): MarketDa
         asOf: `${date}${VENUE_CLOSE_SUFFIX}`,
         // End-of-day data is never a live session, whatever the wall clock says.
         session: 'closed',
+        // The roster is listed because the display name comes from it. Its rows
+        // may have been held for up to the configured TTL, so `retrievedAt`
+        // dates the price read, which is the fact a reader acts on.
+        source: sourceOf([DATASET_BARS, DATASET_ROSTER]),
       }
     },
     priceHistory: async (request: PriceHistoryRequest, signal?: AbortSignal): Promise<PriceHistory> => {
@@ -442,15 +465,20 @@ export function createTushareProvider(options: TushareProviderOptions): MarketDa
       const window = dateWindow(sessions)
       const asTraded = (await dailyRows(code, window, signal)).map(barOf).slice(-sessions)
       if (options.adjustment === 'none') {
-        return { instrument, bars: asTraded, adjustment: 'none' }
+        return { instrument, bars: asTraded, adjustment: 'none', source: sourceOf([DATASET_BARS]) }
       }
       const rows = await callTushare(
         await endpoint(),
-        { apiName: 'adj_factor', params: { ts_code: code, ...window }, fields: [...FACTOR_FIELDS] },
+        { apiName: DATASET_FACTORS, params: { ts_code: code, ...window }, fields: [...FACTOR_FIELDS] },
         signal,
       )
       const factors = new Map(rows.map(row => [isoDate(text(row, 'trade_date')), figure(row, 'adj_factor')]))
-      return { instrument, bars: restate(asTraded, factors, options.adjustment), adjustment: options.adjustment }
+      return {
+        instrument,
+        bars: restate(asTraded, factors, options.adjustment),
+        adjustment: options.adjustment,
+        source: sourceOf([DATASET_BARS, DATASET_FACTORS]),
+      }
     },
   }
 }

@@ -1,0 +1,154 @@
+/* The evidence column. Families are told apart by a word in the badge as well
+   as by its border, so the list survives grayscale; a failed call carries a
+   left rule rather than colour alone for the same reason. Stamps use tabular
+   numerals so two rows' times line up under each other. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.summary {
+  margin: 0;
+  font-size: 11px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.exchanges,
+.citations,
+.references {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.exchanges {
+  gap: 14px;
+}
+
+.exchange {
+  min-width: 0;
+}
+
+.question {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 620;
+  overflow-wrap: anywhere;
+}
+
+.citations {
+  gap: 6px;
+}
+
+.citation {
+  padding: 7px 8px;
+  border: 1px solid var(--ds-color-border, #e2e0dc);
+  border-radius: 6px;
+  min-width: 0;
+}
+
+.citation[data-failed] {
+  border-inline-start: 3px solid var(--ds-color-error, #c0392b);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.kind {
+  flex: none;
+  font-size: 9.5px;
+  padding: 0 4px;
+  border: 1px solid var(--ds-color-border, #e2e0dc);
+  border-radius: 3px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}
+
+.citation[data-kind='market'] .kind { color: var(--ds-color-primary, #3b5f7a); }
+
+.subject {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.failed {
+  flex: none;
+  font-size: 10px;
+  color: var(--ds-color-error, #c0392b);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+  margin: 3px 0 0;
+  font-size: 10.5px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.provider {
+  color: var(--ds-color-text-primary, inherit);
+}
+
+.absent {
+  color: var(--ds-color-text-quaternary, #9aa1ac);
+  font-style: italic;
+}
+
+.references {
+  gap: 2px;
+  margin-top: 5px;
+  font-size: 10.5px;
+}
+
+.references a {
+  color: var(--ds-color-primary, #3b5f7a);
+  overflow-wrap: anywhere;
+}
+
+.published {
+  color: var(--ds-color-text-tertiary, #6b7686);
+  font-variant-numeric: tabular-nums;
+}
+
+.disclose {
+  margin-top: 5px;
+  font: inherit;
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border: 1px solid var(--ds-color-border, #e2e0dc);
+  border-radius: 4px;
+  background: none;
+  color: var(--ds-color-text-tertiary, #6b7686);
+  cursor: pointer;
+}
+
+.original {
+  margin-top: 5px;
+  max-height: 320px;
+  overflow: auto;
+  font-size: 11px;
+}
+
+.note {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--ds-color-text-tertiary, #6b7686);
+}

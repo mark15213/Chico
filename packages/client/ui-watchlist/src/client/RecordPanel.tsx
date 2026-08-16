@@ -7,12 +7,16 @@ import type {
   NameRecordView,
 } from '@deepseek-ai/dsh-api-remotes/client'
 import { PriceSeriesBlock, priceSeriesModel } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import { directionOf, formatChange, formatLast, instrumentLabel } from './watchlist-model.ts'
 import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
 import css from './RecordPanel.module.css'
 
-/** Registration-side face the record panel calls through. */
+/**
+ * Registration-side face the record panel calls through. The registration is
+ * the column ({@link NameDetails}), which passes this face down, so the shape
+ * is declared here beside its one consumer.
+ */
 export interface RecordPanelInjected {
   /** Which name the workbench is showing. */
   focus: WorkbenchSelection
@@ -24,11 +28,8 @@ export interface RecordPanelInjected {
   append: (instrument: InstrumentRef, request: ChainEntryRequest) => Promise<ChainEntry>
 }
 
-/** Full props of the workbench's right column. */
-export type RecordPanelProps =
-  PropsRuntime<'details'>
-  & PropsLocale<'watchlist'>
-  & RecordPanelInjected
+/** Full props of the record tab. */
+export type RecordPanelProps = RecordPanelInjected & PropsLocale<'watchlist'>
 
 /** Sessions of history the header chart draws; the seam bounds anything larger. */
 const HISTORY_SESSIONS = 60
@@ -39,17 +40,17 @@ const WRITABLE = ['thesis', 'decision', 'event'] as const
 type Loaded = { readonly record: NameRecordView; readonly dossier: NameDossier | null }
 
 /**
- * The workbench's right column: what the market says about the open name, and
- * everything the user has said about it. The decision chain is the product's
- * own surface — a general agent neither keeps a claim nor comes back to score
- * it — so the panel leads with the stance and the entries still waiting.
+ * The record tab of the workbench's right column: what the market says about
+ * the open name, and everything the user has said about it. The decision chain
+ * is the product's own surface — a general agent neither keeps a claim nor
+ * comes back to score it — so the tab leads with the stance and the entries
+ * still waiting.
  *
  * It carries the name's figures too. The design puts those above the
  * conversation, which belongs to another package; until the centre column can
- * take them, the panel is where the name's numbers and its record stay
- * together.
+ * take them, this is where the name's numbers and its record stay together.
  * @param props - the focus, the two reads, the write, and the locale seat.
- * @returns the column, or the empty state before a name is opened.
+ * @returns the tab body, or the empty state before a name is opened.
  */
 export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProps): ReactNode {
   const { instrument } = useWorkbenchFocus(focus)

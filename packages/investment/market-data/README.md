@@ -25,6 +25,8 @@ A `search` is identity resolution, not pricing: `InstrumentMatch` carries the in
 
 `PriceBar.date` is the venue's trading date rather than a timestamp, because a bar covers a session. `PriceHistory.adjustment` is required, not assumed: a consumer comparing a bar against a price recorded earlier must know whether corporate actions were restated onto today's basis (`backward`), onto the first bar's basis (`forward`), or not at all (`none`).
 
+Every observation also carries an `ObservationSource`: the provider that served it, the datasets inside that feed the values were read from, and `retrievedAt`, the instant of the read. The event time and the acquisition time are different facts, and a consumer deciding whether to act on a figure needs both. `retrievedAt` is null when a provider computed its values rather than acquiring them — the absence is recorded rather than filled from the clock, which would present a generated number as a fetched one.
+
 `InstrumentRef` is a `{ market, symbol }` pair rather than an opaque id, because both halves are meaningful to consumers and the same code under two venues is two instruments. `Market` is a closed union: settlement calendar, price limits, and lot size differ per venue, so every consumer switches on a known member instead of parsing a free string.
 
 ## Model Experience
