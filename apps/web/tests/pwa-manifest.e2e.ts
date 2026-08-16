@@ -28,7 +28,7 @@ it('ships install metadata with the built web application', async () => {
 
 it('ships an ant favicon that switches to a light mark under dark color scheme', async () => {
   const favicon = await readFile(join(DIST_ROOT, 'favicon.svg'), 'utf8')
-  expect(favicon).toContain('<ellipse')
+  expect(favicon).toContain('fill-rule="evenodd"')
   expect(favicon).toMatch(/:root\s*{\s*color:\s*#111/i)
   expect(favicon).toMatch(/@media \(prefers-color-scheme: dark\)\s*{\s*:root\s*{[^}]*color:\s*#fff/i)
 })

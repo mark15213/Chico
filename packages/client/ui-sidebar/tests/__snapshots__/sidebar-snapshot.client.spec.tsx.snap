@@ -20,7 +20,7 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
         <svg
           aria-hidden="true"
           class="railMark"
-          data-content="a1b083a4"
+          data-content="3d3ff93e"
           fill="none"
           height="24"
           viewBox="0 0 24 24"
@@ -102,7 +102,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       >
         <svg
           aria-hidden="true"
-          data-content="ca089de6"
+          data-content="a78fda14"
           fill="none"
           height="24"
           viewBox="0 0 174 24"
@@ -195,7 +195,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       >
         <svg
           aria-hidden="true"
-          data-content="ca089de6"
+          data-content="a78fda14"
           fill="none"
           height="24"
           viewBox="0 0 174 24"

@@ -63,7 +63,7 @@ describe('AntLogo', () => {
     expect(svg.getAttribute('viewBox')).toBe('0 0 24 24')
     expect(container.querySelectorAll('path')).toHaveLength(2)
     expect(container.querySelectorAll('circle')).toHaveLength(2)
-    expect(container.querySelectorAll('ellipse')).toHaveLength(1)
+    expect(container.querySelector('[fill-rule="evenodd"]')).not.toBeNull()
     expect(container.innerHTML).toContain('currentColor')
   })
 })
