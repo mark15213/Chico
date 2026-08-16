@@ -1,30 +1,123 @@
-/* The workbench's left column: followed names in follow order, with the price
-   and the marker for a thesis still waiting. Denser than a reading surface —
-   this is scanned — and the same red-up, green-down convention as every other
-   figure in the product, through the same theme tokens. */
+/* The investing frame's left column. The book is scanned more often than it
+   is edited, so identity and price stay aligned while actions recede until
+   hover or focus. Cards use the sidebar's own elevated layer rather than
+   introducing a second product surface. */
 
 .frame {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   min-width: 0;
   min-height: 0;
-  padding-inline-end: var(--dsh-sidebar-inline-padding, 8px);
+  padding: 2px var(--dsh-sidebar-inline-padding, 12px) 12px 0;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px 4px 0;
+}
+
+.overviewCopy {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 650;
+  color: var(--dsw-alias-label-primary);
+}
+
+.count {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+}
+
+.iconButton:hover:not(:disabled) {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .field {
+  position: relative;
   display: flex;
-  min-width: 0;
+  align-items: center;
   flex: 0 0 auto;
+  min-width: 0;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 10px;
+  background: var(--dsw-alias-button-elevated-fill);
+  color: var(--dsw-alias-label-tertiary);
+  transition:
+    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    box-shadow var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    background var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+}
+
+.field:hover {
+  background: var(--dsw-alias-button-floating-hover);
+}
+
+.field:focus-within {
+  border-color: var(--dsw-alias-state-business-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dsw-alias-state-business-primary) 18%, transparent);
+  background: var(--dsw-alias-bg-layer-1);
+}
+
+.searchIcon {
+  flex: 0 0 auto;
+  margin-inline-end: 7px;
 }
 
 .input {
-  font: inherit;
-  font-size: 12px;
-  padding: 4px 8px;
   width: 100%;
   min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.input::placeholder {
+  color: var(--dsw-alias-label-caption);
 }
 
 .visuallyHidden {
@@ -38,19 +131,23 @@
   white-space: nowrap;
 }
 
-/* The picker sits above the list rather than over it, so a match can be read
-   against what is already followed without dismissing anything. */
+/* Search results stay in the column so the reader can compare them with the
+   followed book. Elevation and a tighter internal rhythm distinguish this
+   transient picker from the durable rows below it. */
 .picker {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--ds-color-border, #e2e0dc);
+  gap: 3px;
+  padding: 6px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 12px;
+  background: var(--dsw-alias-bg-layer-2);
+  box-shadow: var(--dsw-shadow-lv1);
 }
 
 .match {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   min-width: 0;
 }
@@ -59,175 +156,312 @@
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 4px 6px;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 8px;
   border: 0;
-  border-radius: 4px;
-  background: none;
+  border-radius: 8px;
+  background: transparent;
   color: inherit;
   font: inherit;
   font-size: 12px;
+  line-height: 17px;
   text-align: start;
   cursor: pointer;
 }
 
 .matchOpen:hover {
-  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+  background: var(--dsw-alias-interactive-bg-hover);
 }
 
 .add {
   flex: 0 0 auto;
+  min-height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 13px;
+  background: var(--dsw-alias-button-elevated-fill);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
   font-size: 11px;
+  cursor: pointer;
+}
+
+.add:hover {
+  background: var(--dsw-alias-button-floating-hover);
 }
 
 .followedTag {
   flex: 0 0 auto;
-  font-size: 11px;
-  color: var(--ds-color-text-tertiary, #6b7686);
+  padding: 3px 7px;
+  border-radius: 9px;
+  background: var(--dsw-alias-interactive-bg-active);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 10px;
+  line-height: 14px;
 }
 
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  list-style: none;
+  gap: 5px;
+  min-width: 0;
   margin: 0;
   padding: 0;
-  min-width: 0;
+  list-style: none;
 }
 
 .row {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto 14px;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   min-width: 0;
-  padding: 5px 6px;
-  border: 0;
-  border-inline-start: 2px solid transparent;
-  border-radius: 4px;
-  background: none;
+  min-height: 52px;
+  box-sizing: border-box;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
   color: inherit;
   font: inherit;
   font-size: 12px;
+  line-height: 17px;
   text-align: start;
   cursor: pointer;
+  transition:
+    background var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    box-shadow var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .row:hover {
-  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+  background: var(--dsw-alias-interactive-bg-hover);
 }
 
 .row[data-open] {
-  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 6%));
-  border-inline-start-color: var(--ds-color-primary, #3b5f7a);
+  border-color: var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-1);
+  box-shadow: var(--dsw-shadow-lv1);
 }
 
-/* The marker's shape carries the meaning; color only reinforces it, so the
-   column survives grayscale and colour vision deficiency. */
+/* The count carries the unsettled-thesis meaning in text and form. A quiet
+   followed name keeps the same grid geometry with a neutral inset dot. */
 .mark {
-  flex: 0 0 auto;
-  width: 8px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: var(--ds-color-text-quaternary, #9aa1ac);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 10px;
+  line-height: 14px;
+  font-variant-numeric: tabular-nums;
 }
 
 .mark[data-mark='unverified'] {
-  color: var(--ds-color-warning, #a86a1c);
+  background: var(--dsw-alias-state-warn-tertiary);
+  color: var(--dsw-alias-state-warn-label);
+  font-weight: 650;
+}
+
+.quietMark {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dsw-alias-label-dimmed);
 }
 
 .identity {
-  flex: 1 1 auto;
-  min-width: 0;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .name {
   overflow: hidden;
+  color: var(--dsw-alias-label-primary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.row[data-open] .name {
+  font-weight: 600;
+}
+
 .code {
-  font-size: 10px;
-  color: var(--ds-color-text-tertiary, #6b7686);
+  color: var(--dsw-alias-label-tertiary);
+  font-family: var(--ds-font-family-code);
+  font-size: 9.5px;
+  line-height: 14px;
   font-variant-numeric: tabular-nums;
 }
 
 .figures {
-  flex: 0 0 auto;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   align-items: flex-end;
+  color: var(--dsw-alias-label-primary);
+  font-family: var(--ds-font-family-code);
+  font-size: 10.5px;
+  line-height: 15px;
   font-variant-numeric: tabular-nums;
-  font-size: 11px;
 }
 
-.change[data-direction='up'] { color: var(--ds-color-error, #c0392b); }
-.change[data-direction='down'] { color: var(--ds-color-success, #2f6f5e); }
-.change[data-direction='flat'] { color: var(--ds-color-text-tertiary, #6b7686); }
+.change[data-direction='up'] { color: var(--dsw-alias-state-error-primary); }
+.change[data-direction='down'] { color: var(--dsw-alias-state-success-primary); }
+.change[data-direction='flat'] { color: var(--dsw-alias-label-tertiary); }
+
+.rowArrow {
+  color: var(--dsw-alias-label-caption);
+  opacity: 0;
+  transform: translateX(-2px);
+  transition:
+    opacity var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    transform var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+}
+
+.row:hover .rowArrow,
+.row:focus-visible .rowArrow,
+.row[data-open] .rowArrow {
+  opacity: 1;
+  transform: translateX(0);
+}
 
 .noQuote,
 .note {
-  font-size: 11px;
-  color: var(--ds-color-text-tertiary, #6b7686);
   margin: 0;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .failure {
-  font-size: 11px;
-  color: var(--ds-color-error, #c0392b);
   margin: 0;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: var(--dsw-alias-interactive-bg-hover-danger);
+  color: var(--dsw-alias-state-error-primary);
+  font-size: 11px;
+  line-height: 16px;
 }
 
 .empty {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+  padding: 18px 14px;
+  border: 1px dashed var(--dsw-alias-border-l3);
+  border-radius: 12px;
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-secondary);
   font-size: 12px;
+  line-height: 18px;
+  text-align: center;
 }
 
 .empty p {
   margin: 0;
 }
 
-/* The open name's conversations, indented under its row. "What did I say
-   about this one last week" is answered beside the name rather than in a
-   global list sorted by time. */
+/* The open name's conversations read as a child group of its card. A single
+   rail and small current marker preserve the name/session hierarchy without
+   turning the sidebar into a second transcript. */
 .conversations {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  margin: 4px 4px 8px 19px;
+  padding: 2px 0 2px 12px;
+  border-inline-start: 1px solid var(--dsw-alias-border-l2);
   list-style: none;
-  margin: 0 0 4px;
-  padding: 0 0 0 16px;
+}
+
+.conversationHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 7px 4px;
+  color: var(--dsw-alias-label-caption);
+  font-size: 9.5px;
+  line-height: 14px;
 }
 
 .conversation,
 .newConversation {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   width: 100%;
   min-width: 0;
-  padding: 2px 6px;
+  min-height: 27px;
+  padding: 4px 7px;
   border: 0;
-  border-radius: 4px;
-  background: none;
-  color: var(--ds-color-text-tertiary, #6b7686);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
   font: inherit;
-  font-size: 11px;
+  font-size: 10.5px;
+  line-height: 16px;
   text-align: start;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   cursor: pointer;
 }
 
 .conversation:hover,
 .newConversation:hover {
-  background: var(--ds-color-fill-secondary, rgb(0 0 0 / 4%));
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
 }
 
 .conversation[data-current] {
-  color: var(--ds-color-text-primary, inherit);
+  background: var(--dsw-alias-interactive-bg-active);
+  color: var(--dsw-alias-label-primary);
   font-weight: 600;
+}
+
+.conversationDot {
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dsw-alias-label-dimmed);
+}
+
+.conversation[data-current] .conversationDot {
+  background: var(--dsw-alias-state-business-primary);
+}
+
+.conversationTitle {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newConversation {
+  color: var(--dsw-alias-label-secondary);
+}
+
+.iconButton:focus-visible,
+.matchOpen:focus-visible,
+.add:focus-visible,
+.row:focus-visible,
+.conversation:focus-visible,
+.newConversation:focus-visible {
+  outline: 2px solid var(--dsw-alias-state-business-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field,
+  .row,
+  .rowArrow {
+    transition: none;
+  }
 }

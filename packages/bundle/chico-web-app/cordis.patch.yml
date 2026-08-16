@@ -6,12 +6,12 @@
 # A patch replaces the targeted row's whole `config`, so each row below
 # restates every key it owns.
 #
-# This layer adds capability and the one surface that capability exists for:
-# the market-data seam, one venue feed, the model-facing tools, the watchlist
-# projection, and the browser tab that reads it. The price-series card needs no
-# roster row — it is part of the shared render-intent union, so
-# dsh-client-ui-tool already renders it. Everything else about the browser
-# surface stays exactly as dsh-web-app left it.
+# This layer adds the investment capability and its browser consumer: the
+# market-data seam, one feed, the model-facing tools, durable followed-name and
+# name-record state, the watchlist projection, and the investing frame. The
+# shared price-series card needs no Chico row because dsh-client-ui-tool already
+# renders it; ui-watchlist supplies the richer chart only for name-bound
+# conversations.
 
 - insert:
     # The followed-names registry and the one archive directory Chico's own

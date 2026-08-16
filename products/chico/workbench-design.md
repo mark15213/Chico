@@ -12,17 +12,17 @@ Chico is not a new application shell. The DSH web GUI already ships the frame, a
 
 | Existing surface | What it already does | Owner |
 |---|---|---|
-| Three-column AppFrame | Sidebar, conversation, and a details column that opens and closes; declares `sidebar`, `conversation`, `details`, and `conversation.empty` | `client/ui-layout` |
+| Three-column AppFrame | Sidebar, conversation, and a details column that opens and closes; one layout mode selects the sidebar and keyed details occupants together | `client/ui-layout` |
 | Workspace and session browser | Workspaces as durable groups of sessions, with grouping, manual and recency ordering, drag reorder, metadata and content search, rename, fork, archive | `client/ui-workspace` |
-| Sidebar shell | Wordmark, new session, collapse rail, and the seats the browser and settings render into | `client/ui-sidebar` |
-| Conversation | The active conversation and its input, a `conversation.view` tab ring, and a per-turn tail hole | `client/ui-conversation` |
+| Sidebar shell | Wordmark, new session, collapse rail, and a `sidebar.mode` list whose entries each own the main sidebar region | `client/ui-sidebar` |
+| Conversation | The active conversation and its input, a frame-keyed `conversation.hero`, a `conversation.view` tab ring, and a per-turn tail hole | `client/ui-conversation` |
 | Produced files | The files a turn created or changed, listed at the turn tail and linked from the closing prose | `client/ui-deliverables` |
 | Background jobs | This session's long-running work, listed in the conversation header | `client/ui-jobs` |
 | Tool views | Tool call trees plus keyed per-tool views, driven by each tool's declared render intent | `client/ui-tool` |
 | Settings | The settings surface and its section extension points | `client/ui-settings` |
 | Slot system | Every feature contributes by registering into a declared slot and declaring its own children | `client/ui-slots` |
 
-Two of these are worth more to Chico than they look. **Produced files plus tool render intents** mean a research run already has a place to land and a way to be presented. **The `conversation.view` ring** means an alternate view of the same session is an established pattern, not a new one — trajectory already occupies it.
+Two of these are worth more to Chico than they look. **Produced files plus tool render intents** mean a research run already has a place to land and a way to be presented. **Layout modes plus a frame-keyed conversation opening** let Chico change the unit of navigation without copying the conversation body or displacing the ordinary session browser and tool inspector.
 
 ## The integration decision
 
@@ -30,13 +30,13 @@ Two of these are worth more to Chico than they look. **Produced files plus tool 
 
 A workspace is bound to a real directory: `create` rejects a non-directory path, and session membership is enforced by the session's canonical cwd equalling the workspace path rather than by convention ([evidence](analysis/harness/component-inventory.md#专项分析标的能否使用-workspace-实体)). Making each followed name a workspace therefore means a folder per name — a heavy, irreversible side effect for the lightest action in the product. Following a name is a glance; it must not put 200 directories on disk, and unfollowing would not remove them, because deleting a workspace registration deliberately never deletes its directory.
 
-So Chico keeps **one** archive directory. Every Chico session runs with it as cwd, which buys the things the directory was wanted for: notes, models, and research output are real files, and the existing produced-files surface lists and links them unchanged.
+So Chico keeps **one** archive directory. Every conversation created under a name runs with it as cwd, which buys the things the directory was wanted for: notes, models, and research output are real files, and the existing produced-files surface lists and links them unchanged. Ordinary sessions keep the Workspace flow.
 
 **The archive is deliberately not registered as a Workspace.** The registry only adopts historical sessions during its one-time bootstrap; after that, `Later cwd-only sessions remain Ungrouped`. A directory that is never registered therefore produces no workspace row at all — which is exactly the requirement that the user must never see a workspace they did not create. No hiding mechanism, no session-origin change, and no durable format change is needed to get it.
 
-**Names are Chico-owned records, and Chico's own surfaces own their navigation.** The watchlist is a view in the conversation ring, the name page is a Chico surface, and a session's association to a name is a Chico record rather than workspace membership. The sidebar keeps doing what it already does for ordinary sessions; it is not the navigation for names.
+**Names are Chico-owned records, and the investing frame owns their navigation.** The sidebar switches between the ordinary session frame and the names frame. The names frame lists followed instruments and their conversations, the centre keeps the shared conversation body, and the keyed details column shows the open name's record. A session's association to a name remains a Chico record rather than Workspace membership.
 
-What this gives up is the reuse the earlier draft was chasing: grouping, ordering, drag reorder, search, rename, fork, and archive come free for workspaces and have to be built for names. That is the price of not putting a folder on disk for every glance, and it is worth paying. It also means the workspace row needs no extension point — an earlier `sidebar.workspaces.rowDecoration` slot was built for the per-name arrangement and reverted with it, because an extension point with no consumer is one the next reader has to wonder about.
+Workspace grouping, ordering, drag reorder, search, rename, fork, and archive therefore do not apply to names automatically; Chico implements only the name operations its product requires. That is the price of keeping a glance from creating a directory and of making the name, rather than a project, the unit that owns the conversation.
 
 ## The increment
 
@@ -44,23 +44,23 @@ Categories are the ones in [`architecture/change-map.md`](architecture/change-ma
 
 | Product need | Existing surface | Chico's increment | Category |
 |---|---|---|---|
-| Followed names, navigation and search | Nothing reusable | Chico's own name records, watchlist view, and name page over one archive directory | Plugin extension |
-| The name dossier | Details column | A Chico panel: overview, financials, disclosure, ownership, my record | Plugin extension |
-| Ask scoped to a name | Sessions belong to a workspace | Nothing | Direct reuse |
+| Followed names, navigation and search | `sidebar.mode` frame list | Chico's names frame over durable records and one archive directory | Plugin extension |
+| The name dossier | Mode-keyed details column | A Chico panel: overview, financials, disclosure, ownership, my record | Plugin extension |
+| Ask scoped to a name | Shared conversation body, frame-keyed hero, and `sessions.startAt(cwd)` | A name-specific opening plus binding at session creation | Plugin extension |
 | Investment data in answers | Tool call views and render intents | New investment tools declaring chart and table render intents | Plugin extension |
 | Research runs | Background jobs plus produced files | Investment research templates, and a run presented as a difference against its previous run | Plugin extension |
 | Today | The `conversation.empty` hero | A Chico surface that opens on what moved and what is due, and starts a session from any item | Plugin extension |
-| Watchlist table | The `conversation.view` ring | A Chico view in the ring, alongside chat and trajectory | Plugin extension |
+| Watchlist table | `sidebar.mode` frame region | The followed-name list as the investing frame's left column | Plugin extension |
 | Data sources and entitlements | Settings section slots | A Chico settings section | Plugin extension |
-| Product entry and branding | `apps/web`, `bundle/web-app` | `apps/chico-web`, `bundle/chico-web-app` | Product replacement |
+| Product entry and branding | Profile and bundle layering | A `chico` profile selecting `bundle/chico-web-app`; a dedicated launcher may hide the profile mechanism | Configuration reuse |
 
-Nothing above requires changing `core/`, `api/`, or the agent loop. The one open shared-modification risk is the workspace question, and it is the first thing to settle.
+The design leaves `core/`, `api/`, and the agent loop unchanged. Its shared additions are product-neutral layout modes, keyed details and conversation openings, and starting a session at a directory without a Workspace; the [frame decision](../../.agents/notes/implemented/architecture/2026-08-15-frame-modes-and-name-workbench.md) and [conversation-opening decision](../../.agents/notes/implemented/architecture/2026-08-15-frame-owned-conversation-opening.md) own those framework contracts.
 
 ## MVP
 
 The working surfaces are cut to what a professional will open daily, and no further.
 
-**1. Names.** Followed names in the sidebar, a watchlist view in the ring, and the dossier in the details column. This is the core object; without it nothing about the product is different.
+**1. Names.** The investing frame puts followed names and their conversations on the left, the active conversation in the centre, and the dossier in the details column. This is the core object; without it nothing about the product is different.
 
 **2. Investment tools with real render intents.** Quotes and price behavior, financial statements, filings and announcements, ownership and flow. A chart or a statement rendered as a card the user can read, not as prose describing numbers. Without this the agent cannot do the work at all.
 
@@ -100,11 +100,11 @@ Pre-open and post-close are where a workbench is won. Intraday, a professional a
 
 Chico keeps the three-column frame rather than replacing it.
 
-The **sidebar** lists followed names in place of plain workspace rows, carrying last price, change, and a status marker. The **center column** holds the conversation, with the watchlist as another tab in the same ring that trajectory already uses, and Today occupying the empty-session surface. The **details column** holds the dossier for the name in focus.
+The **sidebar** switches between two frames. Sessions keeps the ordinary Workspace and session browser; Investing lists followed names in stable follow order, carrying last price, change, and a status marker. The open name expands to its own conversations.
 
-The details column is currently occupied by the tool inspector from `client/ui-conversation`. Whether the dossier competes for that seat, and how focus moves between a tool detail and a name detail, is the first concrete question the implementation has to answer, and it belongs in analysis before it becomes a decision.
+The **centre column** keeps the shared conversation body. Opening a name navigates it to that name's newest conversation or starts one in the archive, and the frame-specific opening replaces the Workspace prerequisite with the instrument being discussed. Today occupies the no-session surface rather than becoming another view of one conversation.
 
-Until it is answered, the shipped dossier opens inside the watchlist tab and replaces the list, which leaves the column question open at the cost of not being able to read a name beside the rest of the book.
+The **details column** is keyed by frame. Sessions shows the tool inspector; Investing shows the open name's dossier. The two do not compete for one seat because switching frames changes the left and right occupants together, while opening a name reveals the dossier beside its conversation.
 
 Presentation follows the existing theme system rather than introducing a second visual language. Figures use aligned tabular numerals, state is encoded in form as well as color so it survives grayscale and color vision deficiency, and price direction follows local convention, red for up and green for down.
 
@@ -116,8 +116,6 @@ This is an MVP concern rather than a later one, because a fund investor with no 
 
 ## Open questions
 
-- Where does the archive directory live by default, and which user boundary owns it under a remote deployment? A configuration value rather than a design decision, but it needs an answer before the first release.
-- Does a followed name keep its recorded material after unfollowing, or is unfollowing a delete? The archive is one directory either way, so this is a product choice about the name record rather than about files.
-- Does the dossier share the details column with the tool inspector, or does one of them move?
+- Which user or tenant owns the archive directory under a remote deployment, and which configuration layer chooses its path?
 - Does release one target a professional working alone, or a small team sharing a book? Sharing changes the name browser, notes, and permissions, and is cheaper to decide now than to retrofit.
 - Which market data licenses cover the disclosure and ownership content, and which permit derived computation and export?

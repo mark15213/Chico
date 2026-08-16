@@ -165,7 +165,13 @@ export function apply(ctx: ClientContext): void {
     name: 'details',
     key: NAMES_MODE,
     locale: NS,
-    inject: (): RecordPanelInjected => ({ focus, read, dossier, append }),
+    inject: (): RecordPanelInjected => ({
+      focus,
+      read,
+      dossier,
+      append,
+      closeDetails: () => { ctx.layout.closeDetails() },
+    }),
   }, RecordPanel))
 
   // The workbench chart on the price-series row's chart seat. Taking the seat

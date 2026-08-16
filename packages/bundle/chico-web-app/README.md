@@ -8,11 +8,15 @@ The Chico investment-surface bundle: a patch layer over [`dsh-web-app`](../web-a
 
 | Row | Package | Why |
 |---|---|---|
+| `followed-names` | `dsh-followed-names` | The durable followed list and its shared investment archive directory |
 | `market-data` | `dsh-market-data` | The capability seam quotes and bars resolve through |
 | `market-data-mock` | `dsh-market-data-mock` | The feed: a dataset compiled into the package, served with no credential and no network |
 | `tool-market-data` | `dsh-tool-market-data` | `market_quote` and `market_history` |
+| `name-record` | `dsh-name-record` | The stance, decision chain, and conversations bound to one instrument |
+| `watchlist` | `dsh-watchlist` | The Host-side Remote projection joining followed names, records, and market data |
+| `ui-watchlist` | `dsh-client-ui-watchlist` | The investing frame: followed names, name-specific conversation opening, record panel, and workbench chart |
 
-The browser roster needs no row. The price-series card is part of the shared render-intent union, so `dsh-client-ui-tool` already renders a completed history call as a candle chart — every composition that has the web surface gets the chart with the tools.
+`ui-watchlist` registers the `names` frame beside the ordinary `sessions` frame. It replaces the left and right column occupants together, while the centre keeps the shared conversation body and receives a name-specific opening. The price-series card itself remains part of the shared render-intent union, so `dsh-client-ui-tool` renders a completed history call even without Chico; the workbench row supplies the richer chart for conversations bound to an open name.
 
 `market-data` pins no `provider`. Selection therefore resolves to the single usable one, and a deployment with a second feed adds its provider row and pins the id in a later patch layer instead of editing this one.
 
@@ -30,7 +34,7 @@ Quotes carry `session: 'closed'` and bars carry `adjustment: none`: the dataset 
 
 The layer adds capability and never removes surface: it disables no row from the layer below, because that would be surface policy `dsh-web-app` already decided. It also carries no runtime glue — the plugin body is empty. A Chico-specific service belongs in its own package, where a composition that patches differently can still see it.
 
-Without the browser roster entry the history tool still works and renders its bar table through the generic card, which is what the price-series render intent promises an incapable UI. The row is an improvement, not a requirement.
+Without `ui-watchlist`, the market-data tools still work and `dsh-client-ui-tool` renders `market_history` through the shared `PriceSeriesBlock`. A client that does not understand the `price-series` intent still receives the tool's model-facing bar table. The Chico row adds the investing frame and its richer chart; it is a Consumer of the capability rather than a prerequisite for it.
 
 ## Model Experience
 
@@ -42,6 +46,7 @@ None; the bundle itself neither assembles nor sends a provider request.
 
 ## Known Limitations and Deferred Work
 
-- **Mainland venues only.** The shipped feed serves Shanghai, Shenzhen, and Beijing. A followed name listed in Hong Kong or the US is refused per instrument, so its row appears without a price rather than failing the page.
+- **Synthetic prices are not marked where they appear.** The bundle documentation identifies the feed, but `Quote` and `PriceBar` carry no provenance field, so a rendered quote or chart looks the same as one backed by a venue.
+- **The roster is fixed.** The feed serves six equities and four benchmark indices across Shanghai, Shenzhen, and Hong Kong. Every other instrument is refused rather than synthesized.
 - **End-of-day only.** No row here can show an intraday price, and nothing in the surface currently marks a quote as a session close at the point of display.
-- **No investment-specific surface beyond the chart.** Followed names, the dossier panel, and Today are designed but unbuilt; see [the Chico workbench design](../../../products/chico/workbench-design.md).
+- **The investment loop is manual and price-only.** The frame lists names and conversations and the record panel writes and settles decision-chain entries, but it does not extract entries from conversation, attribute moves, or show fundamentals, filings, ownership, or Today; see the [workbench design](../../../products/chico/workbench-design.md).

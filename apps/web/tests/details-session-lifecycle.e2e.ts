@@ -8,7 +8,7 @@ import type { Browser, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it, onTestFailed } from 'vitest'
 import {
-  acknowledgeReloadConnectionLoss, assertFixtureInventory, compareOrRefreshGolden,
+  acknowledgeReloadConnectionLoss, assertFixtureInventory, captureStableAria, compareOrRefreshGolden,
   fixtureUserPrompts, launchWebScaffold, seedSession, watchConsole, webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
@@ -18,6 +18,11 @@ const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/details-session-lifecycl
 const HANDLES_EXPECTED = join(SNAPSHOT_DIR, 'handles.expected.md')
 const FIXTURE = fileURLToPath(new URL('./snapshots/lifecycle-chrome/session.jsonl', import.meta.url))
 const SEED_FIXTURE = fileURLToPath(new URL('./snapshots/seeded-history/seed.jsonl', import.meta.url))
+const CHICO_SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/chico-investment-workbench', import.meta.url))
+const CHICO_WORKBENCH_EXPECTED = join(CHICO_SNAPSHOT_DIR, 'workbench.expected.md')
+const CHICO_OVERLAY = fileURLToPath(
+  new URL('../../../packages/bundle/chico-web-app/cordis.patch.yml', import.meta.url),
+)
 const PROMPT = 'Reply with the single word LIGHTHOUSE and stop.'
 const MODE = webSnapshotMode()
 
@@ -62,6 +67,23 @@ async function handleSnapshot(page: Page): Promise<string> {
       '',
     ]),
   ].join('\n').trimEnd()
+}
+
+/** Stable Chico workbench projection after the selected name has reopened its details. */
+async function chicoWorkbenchSnapshot(page: Page, workspaceCwd: string): Promise<string> {
+  const watchlist = await captureStableAria(page, '[class*="regionArea"]', workspaceCwd)
+  const details = await captureStableAria(page, '[class*="detailsCol"]', workspaceCwd)
+  return [
+    '# Chico investment workbench',
+    '',
+    '## Watchlist',
+    '',
+    watchlist,
+    '',
+    '## Stock details',
+    '',
+    details,
+  ].join('\n')
 }
 
 describe.skipIf(MODE === 'record')('web e2e: details panel follows the current Session lifecycle', () => {
@@ -148,5 +170,86 @@ describe.skipIf(MODE === 'record')('web e2e: details panel follows the current S
     expect(tripwire.pageErrors).toEqual([])
     expect(tripwire.warnings).toEqual([])
     await assertFixtureInventory(SNAPSHOT_DIR, ['handles.expected.md'])
+  }, 90_000)
+})
+
+describe.skipIf(MODE === 'record')('web e2e: Chico investment workbench', () => {
+  let scaffold: WebScaffold
+  let browser: Browser
+  let page: Page
+  let tripwire: ReturnType<typeof watchConsole>
+
+  beforeAll(async () => {
+    scaffold = await launchWebScaffold({ extraOverlayPath: CHICO_OVERLAY })
+    const executablePath = process.env.DSH_PLAYWRIGHT_EXECUTABLE_PATH
+    browser = await chromium.launch(executablePath === undefined ? {} : { executablePath })
+    page = await newEnglishPage(browser)
+    tripwire = watchConsole(page)
+    await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
+    await appFrame(page).waitFor({ timeout: 30_000 })
+    await page.getByRole('tab', { name: 'Investing', exact: true }).waitFor({ timeout: 30_000 })
+  }, 120_000)
+
+  afterAll(async () => {
+    const failures: unknown[] = []
+    try {
+      expect(tripwire?.pageErrors ?? []).toEqual([])
+      expect(tripwire?.warnings ?? []).toEqual([])
+    } catch (error) {
+      failures.push(error)
+    }
+    await browser?.close().catch((error: unknown) => failures.push(error))
+    await scaffold?.close().catch((error: unknown) => failures.push(error))
+    if (failures.length === 1) throw failures[0]
+    if (failures.length > 1) throw new AggregateError(failures, 'Chico workbench cleanup failed')
+  })
+
+  it('opens, collapses, and reopens one stock record', async () => {
+    onTestFailed(() => saveFailureShot(page, 'web-e2e-chico-investment-workbench'))
+
+    await page.getByRole('tab', { name: 'Investing', exact: true }).click()
+    await page.getByRole('heading', { name: 'Watchlist', exact: true }).waitFor()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
+
+    const search = page.getByRole('searchbox', { name: 'Search instruments' })
+    await search.fill('300750')
+    const follow = page.getByRole('button', { name: 'Follow 宁德时代', exact: true })
+    await follow.waitFor({ timeout: 15_000 })
+    await follow.click()
+
+    const stock = page.getByRole('button', {
+      name: 'Open investment record 宁德时代',
+      exact: true,
+    })
+    await stock.waitFor({ timeout: 15_000 })
+    await search.fill('')
+    await stock.click()
+
+    const details = page.locator('[class*="detailsCol"]').first()
+    const collapse = details.getByRole('button', {
+      name: 'Collapse investment record',
+      exact: true,
+    })
+    await collapse.waitFor({ timeout: 15_000 })
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(360)
+    await details.getByRole('heading', { name: '宁德时代', exact: true }).waitFor()
+    await details.getByRole('region', { name: 'Price trend', exact: true }).waitFor({ timeout: 15_000 })
+    await details.getByRole('heading', { name: 'Investment rationale and record', exact: true }).waitFor()
+
+    await collapse.click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
+    expect(await appFrame(page).getAttribute('data-details-collapsed')).toBe('true')
+
+    await stock.click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(360)
+    expect(await appFrame(page).getAttribute('data-details-collapsed')).toBeNull()
+    await collapse.waitFor()
+
+    await compareOrRefreshGolden(
+      CHICO_WORKBENCH_EXPECTED,
+      await chicoWorkbenchSnapshot(page, scaffold.workspaceCwd),
+      MODE,
+    )
+    await assertFixtureInventory(CHICO_SNAPSHOT_DIR, ['workbench.expected.md'])
   }, 90_000)
 })

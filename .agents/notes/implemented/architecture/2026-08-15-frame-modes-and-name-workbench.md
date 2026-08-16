@@ -34,7 +34,7 @@ This is what finally answers the open question the workbench design left: *does 
 
 ### Opening a name opens the column it lands in
 
-The first build set the selection and stopped. A details panel starts closed and its column renders at zero width, so clicking a name moved a column nobody could see — indistinguishable, from the reader's seat, from a dead control. The names frame now asks the layout to reveal the record column as it opens a name: a selection that does not surface its own result is not navigation.
+The names frame asks the layout to reveal the record column whenever a name opens. The record panel can collapse itself without clearing the selection; selecting or re-selecting a name reveals it again. A selection that does not surface its own result is not navigation, while returning width to the conversation must not discard the reader's place.
 
 The session gate went with it. The details column was gated on a live non-blank session, which is right for the harness's own detail — a call inside one conversation — and wrong for a name, which outlives every session and exists before the first one opens. The gate now applies to the default frame alone.
 
@@ -84,9 +84,9 @@ Nothing extracts chain entries from a conversation, so in practice the user writ
 
 `packages/client/ui-layout/tests` covers the mode in the store, including that switching closes the details panel and that re-selecting the current frame leaves it alone, and the service forwarding plus its unwired fail-loud.
 
-`packages/client/ui-watchlist/tests` covers the pure derivations, the names frame (rows, the unverified marker and its absence, opening a name, the empty state, the rail's silence, the unpriceable row) and its lookup (trimmed query with limit, no request for an empty field, opening an unfollowed match without following it, following on request, the already-followed marker); the record panel (the no-name state, the figures and chart, both reads, the empty-chain explanation, an entry's date and provenance, the calibration figure, the session link, settling only an open thesis, the verdict the settlement sends, a hand-written entry of the picked kind, the refused empty entry, the record surviving unreadable figures, the failed read); both observables; and the two registrations with fiber teardown proving removal.
+`packages/client/ui-watchlist/tests` covers the pure derivations, the names frame (rows, the unverified marker and its absence, opening a name, the empty state, the rail's silence, the unpriceable row) and its lookup (trimmed query with limit, no request for an empty field, opening an unfollowed match without following it, following on request, the already-followed marker); the record panel (the no-name state, the figures and chart, both reads, collapsing without clearing focus, the empty-chain explanation, an entry's date and provenance, the calibration figure, the session link, settling only an open thesis, the verdict the settlement sends, a hand-written entry of the picked kind, the refused empty entry, the record surviving unreadable figures, the failed read); both observables; and the two registrations with open/close forwarding and fiber teardown proving removal.
 
-`packages/client/runtime/tests` covers `startAt`: the create carries `cwd` and no `workspaceId`, a blank conversation at that directory is reused, and a different directory gets its own.
+`packages/client/runtime/tests` covers `startAt`: every call creates a session carrying `cwd` and no `workspaceId`; per-name blank-session reuse belongs to the workbench, which reads only that name's bound conversations.
 
 `packages/investment/watchlist/tests` covers `archive` reporting the registry's own directory.
 

@@ -6,6 +6,11 @@ import type {
   NameDossier,
   NameRecordView,
 } from '@deepseek-ai/dsh-api-remotes/client'
+import {
+  IconChevronRightOutline14,
+  IconListPenOutline16,
+  IconPlusOutline16,
+} from '@deepseek-ai/dsh-client-ui-primitives'
 import { ProChart } from './chart/ProChart.tsx'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { directionOf, formatChange, formatLast, instrumentLabel } from './watchlist-model.ts'
@@ -22,6 +27,8 @@ export interface RecordPanelInjected {
   dossier: (instrument: InstrumentRef, sessions: number) => Promise<NameDossier>
   /** Record one chain entry. */
   append: (instrument: InstrumentRef, request: ChainEntryRequest) => Promise<ChainEntry>
+  /** Collapse the details column without changing the open name. */
+  closeDetails: () => void
 }
 
 /** Full props of the workbench's right column. */
@@ -48,11 +55,11 @@ type Loaded = { readonly record: NameRecordView; readonly dossier: NameDossier |
  * conversation, which belongs to another package; until the centre column can
  * take them, the panel is where the name's numbers and its record stay
  * together.
- * @param props - the focus, the two reads, the write, and the locale seat.
+ * @param props - the focus, reads, write, collapse action, and locale seat.
  * @returns the column, or the empty state before a name is opened.
  */
-export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProps): ReactNode {
-  const { instrument } = useWorkbenchFocus(focus)
+export function RecordPanel({ focus, read, dossier, append, closeDetails, t }: RecordPanelProps): ReactNode {
+  const { instrument, displayName } = useWorkbenchFocus(focus)
   const [state, setState] = useState<Loaded | 'loading' | 'error'>('loading')
   const [kind, setKind] = useState<(typeof WRITABLE)[number]>('thesis')
   const [body, setBody] = useState('')
@@ -77,7 +84,22 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
   if (instrument === null) {
     return (
       <div className={css.panel}>
-        <p className={css.note}>{t('record.noName')}</p>
+        <header className={css.emptyHead}>
+          <span className={css.eyebrow}>{t('record.dossier')}</span>
+          <button
+            type="button"
+            className={css.collapse}
+            aria-label={t('record.collapse')}
+            title={t('record.collapse')}
+            onClick={closeDetails}
+          >
+            <IconChevronRightOutline14 size={14} />
+          </button>
+        </header>
+        <div className={css.emptyRecord}>
+          <span className={css.emptyIcon}><IconListPenOutline16 size={16} /></span>
+          <p>{t('record.noName')}</p>
+        </div>
       </div>
     )
   }
@@ -86,6 +108,7 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
   const loaded = typeof state === 'object' ? state : null
   const quote = loaded?.dossier?.quote ?? null
   const bars = loaded?.dossier?.bars ?? []
+  const name = displayName === null || displayName === '' ? label : displayName
 
   const submit = (event: FormEvent): void => {
     event.preventDefault()
@@ -115,7 +138,26 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
   return (
     <div className={css.panel} aria-busy={state === 'loading'}>
       <header className={css.head}>
-        <h2 className={css.title}>{label}</h2>
+        <div className={css.security}>
+          <span className={css.eyebrow}>{t('record.dossier')}</span>
+          <div className={css.titleLine}>
+            <h2 className={css.title}>{name}</h2>
+            <span className={css.ticker}>{label}</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          className={css.collapse}
+          aria-label={t('record.collapse')}
+          title={t('record.collapse')}
+          onClick={closeDetails}
+        >
+          <IconChevronRightOutline14 size={14} />
+        </button>
+      </header>
+
+      <div className={css.market}>
+        <span className={css.marketLabel}>{t('record.latest')}</span>
         {quote === null ? (
           <span className={css.noQuote}>{t('noQuote')}</span>
         ) : (
@@ -126,10 +168,11 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
             </span>
           </span>
         )}
-      </header>
+      </div>
 
       {bars.length === 0 ? null : (
-        <div className={css.chart}>
+        <section className={css.chartCard} aria-label={t('record.trend')}>
+          <div className={css.sectionKicker}>{t('record.trend')}</div>
           <ProChart
             label={label}
             bars={bars}
@@ -138,10 +181,11 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
             showLabel={false}
             t={t}
           />
-        </div>
+        </section>
       )}
 
       {state === 'error' ? <p className={css.failure} role="alert">{t('record.failed')}</p> : null}
+      {state === 'loading' ? <p className={css.loading}>{t('page.loading')}</p> : null}
 
       {loaded !== null ? (
         <>
@@ -162,71 +206,92 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
             </div>
           </dl>
 
-          <form className={css.compose} onSubmit={submit}>
-            <div className={css.kinds}>
-              {WRITABLE.map(option => (
-                <button
-                  key={option}
-                  type="button"
-                  className={css.kind}
-                  data-on={option === kind ? 'true' : undefined}
-                  onClick={() => { setKind(option) }}
-                >
-                  {t(`record.kind.${option}`)}
-                </button>
-              ))}
-            </div>
-            <textarea
-              className={css.body}
-              rows={2}
-              value={body}
-              placeholder={t('record.placeholder')}
-              aria-label={t('record.placeholder')}
-              onChange={(event) => { setBody(event.currentTarget.value) }}
-            />
-            <button type="submit" className={css.save} disabled={saving || body.trim().length === 0}>
-              {t('record.save')}
-            </button>
-          </form>
+          <section className={css.recordSection}>
+            <header className={css.recordHead}>
+              <div>
+                <div className={css.sectionKicker}>{t('record.archive')}</div>
+                <h3 className={css.recordTitle}>{t('record.chainTitle')}</h3>
+              </div>
+              <span className={css.entryCount}>{t('record.entryCount', { count: loaded.record.chain.length })}</span>
+            </header>
 
-          {loaded.record.chain.length === 0 ? (
-            <p className={css.note}>{t('record.emptyChain')}</p>
-          ) : (
-            <ol className={css.chain}>
-              {loaded.record.chain.map(entry => (
-                <li className={css.entry} key={entry.id} data-kind={entry.kind}>
-                  <div className={css.when}>
-                    <span className={css.date}>{entry.recordedAt.slice(0, 10)}</span>
-                    <span className={css.kindTag}>{t(`record.kind.${entry.kind}`)}</span>
-                    {entry.kind === 'thesis' && entry.resolution !== 'open' ? (
-                      <span className={css.kindTag} data-verdict={entry.resolution}>
-                        {t(`record.resolution.${entry.resolution}`)}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className={css.text}>{entry.body}</p>
-                  {entry.kind === 'verification' ? (
-                    <p className={css.meta}>{t('record.elapsed', { days: entry.elapsedDays })}</p>
-                  ) : null}
-                  <p className={css.meta}>
-                    {entry.source.kind === 'manual'
-                      ? t('record.fromManual')
-                      : t('record.fromSession', { turn: entry.source.turn })}
-                  </p>
-                  {entry.kind === 'thesis' && entry.resolution === 'open' ? (
-                    <div className={css.settle}>
-                      <button type="button" onClick={() => { settle(entry, 'confirmed') }}>
-                        {t('record.confirm')}
-                      </button>
-                      <button type="button" onClick={() => { settle(entry, 'refuted') }}>
-                        {t('record.refute')}
-                      </button>
+            <form className={css.compose} onSubmit={submit}>
+              <div className={css.composeHead}>
+                <span className={css.composeTitle}>{t('record.composeTitle')}</span>
+                <span className={css.composeHint}>{t('record.composeHint')}</span>
+              </div>
+              <div className={css.kinds}>
+                {WRITABLE.map(option => (
+                  <button
+                    key={option}
+                    type="button"
+                    className={css.kind}
+                    data-on={option === kind ? 'true' : undefined}
+                    aria-pressed={option === kind}
+                    onClick={() => { setKind(option) }}
+                  >
+                    {t(`record.kind.${option}`)}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                className={css.body}
+                rows={2}
+                value={body}
+                placeholder={t('record.placeholder')}
+                aria-label={t('record.placeholder')}
+                onChange={(event) => { setBody(event.currentTarget.value) }}
+              />
+              <button type="submit" className={css.save} disabled={saving || body.trim().length === 0}>
+                <IconPlusOutline16 size={13} />
+                {t('record.save')}
+              </button>
+            </form>
+
+            {loaded.record.chain.length === 0 ? (
+              <div className={css.emptyChain}>
+                <span className={css.emptyIcon}><IconListPenOutline16 size={16} /></span>
+                <p>{t('record.emptyChain')}</p>
+              </div>
+            ) : (
+              <ol className={css.chain}>
+                {loaded.record.chain.map(entry => (
+                  <li className={css.entry} key={entry.id} data-kind={entry.kind}>
+                    <div className={css.when}>
+                      <span className={css.date}>{entry.recordedAt.slice(0, 10)}</span>
+                      <span className={css.kindTag}>{t(`record.kind.${entry.kind}`)}</span>
+                      {entry.kind === 'thesis' && entry.resolution !== 'open' ? (
+                        <span className={css.kindTag} data-verdict={entry.resolution}>
+                          {t(`record.resolution.${entry.resolution}`)}
+                        </span>
+                      ) : null}
                     </div>
-                  ) : null}
-                </li>
-              ))}
-            </ol>
-          )}
+                    <p className={css.text}>{entry.body}</p>
+                    {entry.kind === 'verification' ? (
+                      <p className={css.meta}>{t('record.elapsed', { days: entry.elapsedDays })}</p>
+                    ) : null}
+                    <footer className={css.entryFoot}>
+                      <span className={css.meta}>
+                        {entry.source.kind === 'manual'
+                          ? t('record.fromManual')
+                          : t('record.fromSession', { turn: entry.source.turn })}
+                      </span>
+                      {entry.kind === 'thesis' && entry.resolution === 'open' ? (
+                        <div className={css.settle}>
+                          <button type="button" data-verdict="confirmed" onClick={() => { settle(entry, 'confirmed') }}>
+                            {t('record.confirm')}
+                          </button>
+                          <button type="button" data-verdict="refuted" onClick={() => { settle(entry, 'refuted') }}>
+                            {t('record.refute')}
+                          </button>
+                        </div>
+                      ) : null}
+                    </footer>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
         </>
       ) : null}
     </div>

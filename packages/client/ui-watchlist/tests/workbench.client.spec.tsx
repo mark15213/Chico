@@ -20,8 +20,8 @@ import {
   directionOf, formatChange, formatLast, instrumentLabel, normalizeQuery, rowFigures, sameInstrument,
 } from '../src/client/watchlist-model.ts'
 import { InvestingHero } from '../src/client/InvestingHero.tsx'
-import { NamesFrame } from '../src/client/NamesFrame.tsx'
-import { RecordPanel } from '../src/client/RecordPanel.tsx'
+import { NamesFrame, type NamesFrameInjected } from '../src/client/NamesFrame.tsx'
+import { RecordPanel, type RecordPanelInjected } from '../src/client/RecordPanel.tsx'
 import { WatchlistFeed } from '../src/client/watchlist-store.ts'
 import { WorkbenchFocus } from '../src/client/workbench-store.ts'
 import { WorkbenchSessions } from '../src/client/workbench-sessions.ts'
@@ -186,7 +186,7 @@ describe('the names frame', () => {
   it('marks a name whose thesis is still waiting, which no general agent tracks', async () => {
     const { view } = mountFrame({ rows: [row({ openTheses: 2 })] })
 
-    const mark = await view.findByLabelText('2 thesis waiting to be settled')
+    const mark = await view.findByLabelText('Open theses · 2')
     expect(mark.getAttribute('data-mark')).toBe('unverified')
   })
 
@@ -230,7 +230,7 @@ describe('the names frame', () => {
 
     expect(await view.findByText('本周储能订单节奏')).toBeTruthy()
     // The current one is marked, so the column says which conversation is open.
-    expect(view.getByText('Q2 财报速读').getAttribute('data-current')).toBe('true')
+    expect(view.getByText('Q2 财报速读').closest('button')?.getAttribute('data-current')).toBe('true')
   })
 
   it('lists conversations only under the open name', async () => {
@@ -249,7 +249,7 @@ describe('the names frame', () => {
     await view.findByText('宁德时代')
     focus.open(CATL, '宁德时代', [])
 
-    fireEvent.click(await view.findByText('+ New conversation'))
+    fireEvent.click(await view.findByText('New conversation'))
 
     expect(startConversation).toHaveBeenCalledWith(CATL)
   })
@@ -348,8 +348,9 @@ function mountPanel(record: NameRecordView = recordOf(), over?: {
   const read = vi.fn(() => Promise.resolve(record))
   const dossier = over?.dossier ?? vi.fn(() => Promise.resolve(dossierOf()))
   const append = over?.append ?? vi.fn(() => Promise.resolve(thesis()))
-  const props = { focus, read, dossier, append, t } as unknown as Parameters<typeof RecordPanel>[0]
-  return { view: render(<RecordPanel {...props} />), focus, read, dossier, append }
+  const closeDetails = vi.fn()
+  const props = { focus, read, dossier, append, closeDetails, t } as unknown as Parameters<typeof RecordPanel>[0]
+  return { view: render(<RecordPanel {...props} />), focus, read, dossier, append, closeDetails }
 }
 
 describe('the record panel', () => {
@@ -365,6 +366,16 @@ describe('the record panel', () => {
     expect(await view.findByText('SZSE:300750')).toBeTruthy()
     expect(view.getByText('212.30 CNY')).toBeTruthy()
     expect(view.getByRole('img').getAttribute('aria-label')).toContain('3 sessions')
+  })
+
+  it('collapses its own column without clearing the open name', async () => {
+    const { view, closeDetails, focus } = mountPanel()
+    await view.findByText('宁德时代')
+
+    fireEvent.click(view.getByLabelText('Collapse investment record'))
+
+    expect(closeDetails).toHaveBeenCalledTimes(1)
+    expect(focus.snapshot().instrument).toEqual(CATL)
   })
 
   it('reads the record and the figures for the open name', async () => {
@@ -478,6 +489,7 @@ describe('the record panel', () => {
       read: vi.fn(() => Promise.reject(new Error('offline'))),
       dossier: vi.fn(() => Promise.resolve(dossierOf())),
       append: vi.fn(),
+      closeDetails: vi.fn(),
       t,
     } as unknown as Parameters<typeof RecordPanel>[0]
     const view = render(<RecordPanel {...props} />)
@@ -719,20 +731,31 @@ describe('workbench registration', () => {
       },
     } as never, () => null)
     ctx.provide('locale', new LocaleRuntime(ctx))
-    ctx.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn(), toggleSidebar: vi.fn(), setMode: vi.fn() })
+    const layout = { openDetails: vi.fn(), closeDetails: vi.fn(), toggleSidebar: vi.fn(), setMode: vi.fn() }
+    ctx.provide('layout', layout)
     ctx.provide('sessions', {
       list: { getSnapshot: () => ({ byId: {}, current: undefined }), subscribe: () => () => {} },
       open: vi.fn(),
-      startAt: vi.fn(),
+      startAt: vi.fn(() => Promise.resolve('s-new')),
     })
     class RemoteService extends Service {
       constructor(serviceCtx: Context) { super(serviceCtx, 'remote') }
     }
     new RemoteService(ctx)
     const list = vi.fn().mockResolvedValue({ ok: true, value: { rows: [] } })
-    ctx.provide('remote.watchlist', { list })
-    ctx.provide('remote.nameRecord', { read: vi.fn() })
-    return { ctx, slots, list }
+    ctx.provide('remote.watchlist', {
+      list,
+      search: vi.fn(),
+      follow: vi.fn(),
+      dossier: vi.fn(),
+      archive: vi.fn().mockResolvedValue({ ok: true, value: { path: '/archive' } }),
+    })
+    ctx.provide('remote.nameRecord', {
+      read: vi.fn().mockResolvedValue({ ok: true, value: recordOf() }),
+      append: vi.fn(),
+      bindSession: vi.fn().mockResolvedValue({ ok: true, value: ['s-new'] }),
+    })
+    return { ctx, slots, list, layout }
   }
 
   it('declares only the services the two columns and their Remotes use', () => {
@@ -762,6 +785,22 @@ describe('workbench registration', () => {
     expect(panel?.component).toBe(RecordPanel)
     // Registration must not read anything: each column reads when it mounts.
     expect(b.list).not.toHaveBeenCalled()
+  })
+
+  it('opens and closes the record column through the shared layout service', async () => {
+    const b = await bench()
+    const fiber = b.ctx.plugin({ inject: [...workbench.inject], apply: workbench.apply })
+    await fiber.await()
+
+    const frame = b.slots.entries('sidebar.mode').find(entry => entry.options.id === workbench.NAMES_MODE)
+    const names = (frame?.inject as unknown as () => NamesFrameInjected)()
+    names.open(CATL, '宁德时代')
+    expect(b.layout.openDetails).toHaveBeenCalledTimes(1)
+
+    const panel = b.slots.entries('details').find(entry => entry.options.key === workbench.NAMES_MODE)
+    const record = (panel?.inject as unknown as () => RecordPanelInjected)()
+    record.closeDetails()
+    expect(b.layout.closeDetails).toHaveBeenCalledTimes(1)
   })
 
   it('removes every registration when its fiber disposes (HMR safety)', async () => {

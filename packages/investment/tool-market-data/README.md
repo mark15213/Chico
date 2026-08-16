@@ -11,6 +11,8 @@ Model-facing `market_quote` and `market_history` tools over [`ctx.marketData`](.
 
 Instrument arguments are flat rather than a nested object: a model produces `market` and `symbol` more reliably as two named strings, and `market` is an enum mirroring the seam's closed `Market` union so an unknown venue is rejected by schema validation rather than by the provider.
 
+A successful `market_history` result declares the shared `price-series` render intent with the bars and adjustment in replayable result metadata. `dsh-client-ui-tool` renders that intent as an expanded candle chart; a client that does not understand the intent still receives the model-facing bar table, while an errored call or malformed replay metadata falls back to the generic result card.
+
 Enablement controls registration. An enabled tool stays visible when no provider is usable and fails at execution time with the seam's structured error, so a composition never advertises a capability that silently returns nothing.
 
 ## Model Experience
@@ -37,6 +39,5 @@ The prompt section is static for the lifetime of the package mount, so it stays 
 
 ## Known Limitations and Deferred Work
 
-- **Presentation is a generic card.** Bars render as text rather than as a chart, because the render-intent union has no chart member. Adding one is a change to the shared tool vocabulary and its client renderer, not to this package.
 - **One instrument per call.** A watchlist refresh issues one call per name. A batch operation needs its own partial-failure semantics and belongs to the seam first.
 - **No fundamentals, filings, or corporate actions.** Those are separate capabilities; this package covers prices only.

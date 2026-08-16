@@ -1,6 +1,12 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import type { InstrumentRef, SessionId, WatchlistSearchResult } from '@deepseek-ai/dsh-api-remotes/client'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import {
+  IconChevronRightOutline14,
+  IconNewChatOutline16,
+  IconRefreshOutline14,
+  IconSearchOutline16,
+} from '@deepseek-ai/dsh-client-ui-primitives'
 import { useWatchlist, type WatchlistSource } from './watchlist-store.ts'
 import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
 import { instrumentLabel, normalizeQuery, rowFigures, sameInstrument } from './watchlist-model.ts'
@@ -101,8 +107,26 @@ export function NamesFrame({
 
   return (
     <div className={css.frame}>
+      <header className={css.overview}>
+        <div className={css.overviewCopy}>
+          <h2 className={css.heading}>{t('title')}</h2>
+          {status === 'ready' ? <span className={css.count}>{t('count', { count: rows.length })}</span> : null}
+        </div>
+        <button
+          type="button"
+          className={css.iconButton}
+          aria-label={t('refresh')}
+          title={t('refresh')}
+          disabled={status === 'loading'}
+          onClick={() => { void source.refresh() }}
+        >
+          <IconRefreshOutline14 size={14} />
+        </button>
+      </header>
+
       <label className={css.field} htmlFor={fieldId}>
         <span className={css.visuallyHidden}>{t('lookup.label')}</span>
+        <IconSearchOutline16 className={css.searchIcon} size={14} />
         <input
           id={fieldId}
           type="search"
@@ -115,7 +139,7 @@ export function NamesFrame({
       </label>
 
       {picking ? (
-        <div className={css.picker}>
+        <div className={css.picker} aria-label={t('lookup.results')}>
           {matches.matches.length === 0 ? <p className={css.note}>{t('lookup.empty')}</p> : null}
           {matches.matches.map((match) => {
             const label = instrumentLabel(match.instrument)
@@ -172,6 +196,7 @@ export function NamesFrame({
                   className={css.row}
                   data-open={on ? 'true' : undefined}
                   aria-current={on ? 'true' : undefined}
+                  aria-label={`${t('record.open')} ${row.displayName}`}
                   onClick={() => { open(row.instrument, row.displayName) }}
                 >
                   <span
@@ -180,7 +205,7 @@ export function NamesFrame({
                     title={row.openTheses > 0 ? t('mark.unverified', { count: row.openTheses }) : undefined}
                     aria-label={row.openTheses > 0 ? t('mark.unverified', { count: row.openTheses }) : undefined}
                   >
-                    {row.openTheses > 0 ? '*' : '·'}
+                    {row.openTheses > 0 ? row.openTheses : <span className={css.quietMark} aria-hidden />}
                   </span>
                   <span className={css.identity}>
                     <span className={css.name}>{row.displayName}</span>
@@ -196,9 +221,14 @@ export function NamesFrame({
                         </>
                       )}
                   </span>
+                  <IconChevronRightOutline14 className={css.rowArrow} size={14} />
                 </button>
                 {on ? (
                   <ul className={css.conversations}>
+                    <li className={css.conversationHead}>
+                      <span>{t('conversation.title')}</span>
+                      <span>{titles.length}</span>
+                    </li>
                     {titles.map(entry => (
                       <li key={entry.id}>
                         <button
@@ -207,7 +237,8 @@ export function NamesFrame({
                           data-current={entry.current ? 'true' : undefined}
                           onClick={() => { openConversation(entry.id) }}
                         >
-                          {entry.title}
+                          <span className={css.conversationDot} aria-hidden />
+                          <span className={css.conversationTitle}>{entry.title}</span>
                         </button>
                       </li>
                     ))}
@@ -217,6 +248,7 @@ export function NamesFrame({
                         className={css.newConversation}
                         onClick={() => { void startConversation(row.instrument) }}
                       >
+                        <IconNewChatOutline16 size={13} />
                         {t('conversation.new')}
                       </button>
                     </li>

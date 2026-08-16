@@ -8,11 +8,15 @@ Chico 投资界面 bundle：叠加在 [`dsh-web-app`](../web-app/README.md) 之�
 
 | 行 | 包 | 原因 |
 |---|---|---|
-| `market-data` | `dsh-market-data` | 报价和 K 线所经过的能力接缝 |
+| `followed-names` | `dsh-followed-names` | 持久关注列表及其共享投资档案目录 |
+| `market-data` | `dsh-market-data` | 报价和 K 线所经过的能力 seam |
 | `market-data-mock` | `dsh-market-data-mock` | 数据源：编译进包内的数据集，不需要凭证也不访问网络 |
 | `tool-market-data` | `dsh-tool-market-data` | `market_quote` 和 `market_history` |
+| `name-record` | `dsh-name-record` | 一只标的的立场、决策链和绑定会话 |
+| `watchlist` | `dsh-watchlist` | 在 Host 端连接关注标的、记录与行情的 Remote 投影 |
+| `ui-watchlist` | `dsh-client-ui-watchlist` | 投资框架：关注标的、标的专属对话开场、记录面板和工作台图表 |
 
-浏览器名册不需要新增行。price-series 卡片属于共享的渲染意图联合，因此 `dsh-client-ui-tool` 已经把已完成的 history 调用渲染为蜡烛图——任何拥有 web 表层的组合都会随工具一起获得图表。
+`ui-watchlist` 在普通 `sessions` 框架旁注册 `names` 框架。它同时替换左右两栏的内容，中栏则保留共享对话主体并获得标的专属开场。price-series 卡片本身仍属于共享的渲染意图联合，因此即使没有 Chico，`dsh-client-ui-tool` 也会渲染已完成的 history 调用；工作台配置项则为绑定到已打开标的的对话提供更丰富的图表。
 
 `market-data` 不固定 `provider`。因此选择会解析到唯一可用的那个；拥有第二个数据源的部署应在后续 patch 层增加自己的提供方行并固定 id，而不是修改这一行。
 
@@ -30,7 +34,7 @@ Chico 投资界面 bundle：叠加在 [`dsh-web-app`](../web-app/README.md) 之�
 
 该层只增加能力、从不移除界面：它不禁用下层的任何一行，因为那属于 `dsh-web-app` 已经作出的界面策略决定。它也不携带任何运行时胶水——插件体为空。Chico 专有的服务属于它自己的包，那样以不同方式打补丁的组合仍然能看到它。
 
-没有浏览器名册那一行，history 工具照样工作，并通过通用卡片渲染它的 K 线表格，而这正是 price-series 渲染意图对不具备该能力的 UI 所作的承诺。该行是改进，不是必需。
+没有 `ui-watchlist`，行情工具仍然工作，`dsh-client-ui-tool` 会通过共享 `PriceSeriesBlock` 渲染 `market_history`。不理解 `price-series` 意图的客户端仍能收到工具面向模型的 K 线表格。Chico 配置项增加投资框架及其更丰富的图表；它是该能力的消费方，而不是该能力的前置条件。
 
 ## Model Experience
 
@@ -42,6 +46,7 @@ Indirectly, through the `dsh-tool-market-data` rows this layer inserts, which ow
 
 ## Known Limitations and Deferred Work
 
-- **只覆盖内地交易所。** 随包数据源服务上交所、深交所和北交所。在香港或美国上市的关注标的会被按标的拒绝，因此它的行会出现但没有价格，而不会让整个页面失败。
+- **合成价格没有在显示位置标记。** bundle 文档说明了数据源，但 `Quote` 和 `PriceBar` 没有来源字段，因此渲染后的报价或图表与场所数据支持的结果外观相同。
+- **标的名册固定。** 数据源服务横跨上海、深圳和香港的六只股票与四条基准指数，其他标的一律拒绝而不是现场合成。
 - **只有收盘后数据。** 这里的任何一行都无法展示盘中价格，界面目前也没有在展示位置标注一个报价是收盘价。
-- **除图表外没有投资专有界面。** 关注标的、档案面板和 Today 已完成设计但尚未构建，见 [Chico 工作台设计](../../../products/chico/workbench-design.md)。
+- **投资闭环仍靠手工且只覆盖价格。** 框架会列出标的与对话，记录面板可以写入并结算决策链条目，但不会从对话中抽取条目、归因涨跌，也不展示基本面、公告、所有权或 Today；见[工作台设计](../../../products/chico/workbench-design.md)。

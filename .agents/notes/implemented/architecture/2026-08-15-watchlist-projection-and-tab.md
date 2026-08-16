@@ -34,11 +34,11 @@ The caller passes the `limit` it will draw. The surface rendering the list is wh
 
 An unfollowed record is reported as not followed, which makes the picker the way back to a name taken off the list — the only way, since nothing lists what was once followed.
 
-### A name opens inside the tab, not in the details column
+### The browser Consumer is the investing frame
 
-The design puts the name dossier in the details column, which `ui-conversation` owns as a single slot filled by the tool inspector. Taking it over would delete tool inspection; making the column subject-aware would change two shared shells before the dossier has content worth the argument.
+`packages/client/ui-watchlist` registers the `names` frame: followed names and their conversations on the left, the shared conversation body in the centre, and the open name's record in the keyed details column. The [frame-mode decision](2026-08-15-frame-modes-and-name-workbench.md) owns why the watchlist is not a session-scoped tab and why the ordinary session browser and tool inspector remain together under the `sessions` frame.
 
-So the page replaces the list inside the tab. Nothing shared changes, a row finally opens onto something, and the column question stays open — which is the right shape for a question whose answer depends on content that does not exist yet.
+The projection stays independent of that presentation. `ctx.watchlist` is the Host-side data source for the names frame, and another browser Consumer can reuse it without adopting Chico's layout.
 
 `dossier` returns the record, its quote, and its history in one call. A page assembled from three round trips shows three different instants, and a professional comparing a figure against a chart needs them to be the same observation.
 
@@ -50,21 +50,13 @@ That failure returns `{ ok: false, reason: 'unknown-instrument' }`. The gateway 
 
 Both writes stamp `new Date().toISOString()`. The registry takes time as a parameter so its records stay reproducible under test; this package is the caller that knows a user action happens now, and the tests assert the arc rather than the instant.
 
-### The tab lives in the conversation view ring
+### One feed drives the names frame
 
-`packages/client/ui-watchlist` registers one `conversation.view` entry at order 20, beside chat and trajectory. The slot is session-scoped and the watchlist is one book, the same in every session; the component reads nothing from the session snapshot, so every session shows the same rows. The ring is still the right place, because it is where a professional switches between reading a conversation and reading positions.
+The followed rows are one book, the same in every session, so `ui-watchlist` owns a plain observable rather than a session- or root-scoped slot store. The names column receives that observable; following a name refreshes it, and a refresh requested while another is in flight joins the existing read.
 
 Every state is useful with an empty record: an empty watchlist states how to fill it rather than rendering a blank panel, and an unpriceable row reads **No quote** instead of disappearing.
 
 Direction is carried three ways — the sign in the text, a `data-direction` attribute, and color from theme tokens — so a row survives grayscale, color vision deficiency, and a test that reads the DOM. Red is up and green is down, the convention of the market this product serves.
-
-### The sidebar shows the same rows, from the same feed
-
-`ui-sidebar` gained `sidebar.pinned`, a wide-only region above the session browser for content the reader keeps in view while working on something else. The Chico bundle fills it with the followed names; no other composition claims it.
-
-The rows are not a slot `store` handle. The framework enforces one handle per scope, and these two slots do not share one — the view ring is session-scoped, the sidebar is root-scoped — while the rows are neither: one book, the same in every session. The plugin therefore owns a plain observable and hands both registrations the same subscription, so following a name in the tab moves the sidebar with it. Two independent readers would have disagreed the moment one of them followed a name.
-
-The pinned rows do not navigate. The sidebar is root-scoped and neither surface that could receive a name — the view ring, the details column — is reachable from there, so a click affordance would be a promise nothing keeps. It is a display, which is what a book pinned beside your work is for.
 
 ## Alternatives considered
 
@@ -76,22 +68,22 @@ The pinned rows do not navigate. The sidebar is root-scoped and neither surface 
 
 **Returning `void` from `unfollow`.** Rejected in favor of the remaining followed count: the browser reloads either way today, but a count lets a caller reconcile without a second round trip, and a Remote method that returns nothing tells a client nothing about whether state moved.
 
-**Model-facing watchlist tools first, then the UI.** Considered and deferred by the product owner. Tools need no Remote and would have made the capability reachable in conversation sooner, but the tab is the surface the design calls for and the tools' argument design is its own discussion.
+**Model-facing watchlist tools first, then the browser Consumer.** Considered and deferred by the product owner. Tools need no Remote and would have made the capability reachable in conversation sooner, but the investing frame is the product surface this decision serves and the tools' argument design remains separate.
 
 ## Consequences
 
 `market-data` gained a `./types` subpath. Typert requires every Remote boundary type to be reachable outside the package root, and `InstrumentRef` appears in two of the three method signatures. Its `files` list now ships `lib/types/**/*.js` as well, because `types.ts` carries the `MarketDataError` class.
 
-The watchlist reads once per mount or explicit refresh. There is no subscription and no cache, so an open tab is as stale as its last read and a thirty-name list costs thirty provider calls each time. Push and caching are their own decisions and neither is needed to make the surface usable.
+The watchlist reads once per mount or explicit refresh. There is no provider push or cache, so an open names frame is as stale as its last read and a thirty-name list costs thirty provider calls each time. Push and caching are their own decisions and neither is needed to make the surface usable.
 
-The picker inherits whatever order the provider returns. The seam states no ranking contract, so two providers can answer one query differently and neither this package nor the tab can say which is better.
+The picker inherits whatever order the provider returns. The seam states no ranking contract, so two providers can answer one query differently and neither this package nor the names frame can say which is better.
 
-The name page carries figures and a chart and nothing recorded — no notes, no insights, no financials, no filings. It is the frame the record will hang in, and it reads as thin until something hangs there.
+The names frame now reads and writes the separate name record beside the quote and chart. Entries remain manual, and no fundamentals, filings, ownership, or attribution capability contributes to the panel.
 
 ## Testing
 
 `packages/investment/watchlist/tests` boots the real registry, storage, and market-data composition: the join, the recorded-versus-venue name, the omission of unfollowed records, the empty list, per-row degradation for both a seam refusal and a raw socket error, the selection failure that raises instead, the venue-resolved display name, the unlisted code as a value, the preserved `firstFollowedAt` across a re-follow, the remaining count from `unfollow`, and service withdrawal on fiber disposal. Lookup adds matching by code and by name, the followed flag over a followed and an unfollowed record, the empty query, and the refused over-ceiling limit.
 
-`packages/client/ui-watchlist/tests` covers the pure derivations (sign, direction including flat, currency, the no-quote nulls, query normalization) and the view over a stubbed Remote face: the populated list, the direction attribute, the surviving unpriceable row, the empty state, retry after a failed read, the trimmed query with its draw limit, the empty field that costs no request, one request for a burst of keystrokes, the match list, the already-followed marker, the nothing-matched and failed-lookup states, the reload and cleared field after a follow, the refused follow that keeps the query, and the named row after a failed unfollow. The name page covers the read with its draw range, the figures and chart, the missing history, the unpriceable name, the failed read that keeps its way back, the return, and unfollowing from the page. The pinned list covers its rows, the empty and failed states that render nothing, the cap with its remainder, and the unpriceable row; the feed covers one answer reaching both surfaces and a refresh joining one already in flight. Both registrations are asserted with fiber teardown proving removal.
+`packages/client/ui-watchlist/tests` covers the names frame over stubbed Remote faces: followed and unpriceable rows, search and follow outcomes, stable direction semantics, refresh joining, opening a name, and registration disposal. The later [frame-mode](2026-08-15-frame-modes-and-name-workbench.md) and [conversation-opening](2026-08-15-frame-owned-conversation-opening.md) decisions own coverage of the record panel and name-bound conversation lifecycle.
 
-`packages/bundle/chico-web-app/tests` asserts the shipped patch inserts the projection with no config and the one browser row that makes it visible.
+`packages/bundle/chico-web-app/tests` asserts the shipped patch inserts the projection with no config and the `ui-watchlist` row that consumes it.
