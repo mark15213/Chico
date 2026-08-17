@@ -46,6 +46,11 @@ export function SidebarRoot({
   setMode,
   collapsed,
   width,
+  detailsClosed,
+  openDetails,
+  page,
+  openPage,
+  closePage,
   startSession,
   toggleSidebar,
   modes,
@@ -200,6 +205,11 @@ export function SidebarRoot({
         {renderSlot('sidebar.mode', {
           wide,
           expandSidebar: () => { if (collapsed) toggleSidebar() },
+          detailsClosed,
+          openDetails,
+          page,
+          openPage,
+          closePage,
         }, { only: mode })}
       </div>
 

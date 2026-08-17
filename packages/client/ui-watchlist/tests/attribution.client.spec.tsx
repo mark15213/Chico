@@ -498,8 +498,10 @@ describe('the details column', () => {
     }
     const closeDetails = vi.fn()
     const useSession = vi.fn((select: (state: ConversationSnapshot) => unknown) => select(snapshot))
+    const useWorkspaces = (select: (state: unknown) => unknown) => select({ archivedSessionIds: [] })
     const props = {
       useSession,
+      useWorkspaces,
       focus,
       read: () => new Promise(() => {}),
       dossier: () => new Promise(() => {}),

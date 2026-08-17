@@ -67,6 +67,28 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation.session.header.utilities': { kind: 'list'; scope: 'session'; owner: ConversationHeaderActionOwnerProps }
     /**
+     * A strip pinned to the top of this session's scrollport, declared by this
+     * package's body entry. Additive: entries render by ascending `order`, and
+     * an empty ledger draws nothing and takes no height.
+     *
+     * This is the seat for a condition that holds for the whole conversation
+     * rather than for one turn — what is watching this conversation's subject,
+     * say. It survives the header's blank-session hiding, and it stays put
+     * while the transcript scrolls under it.
+     *
+     * It occupies its own height rather than floating over the transcript, and
+     * paints the column's own background: a strip that overlapped the first
+     * turn would cover the thing the reader came for, and one that let text
+     * pass through it while scrolling would be unreadable over its own
+     * content.
+     *
+     * A per-turn statement belongs in the chat flow instead.
+     *
+     * The owner passes nothing: an occupant reads the session through the
+     * framework session kit and its own inject face.
+     */
+    'conversation.session.strip': { kind: 'list'; scope: 'session' }
+    /**
      * The conversation view ring: one list entry per view tab (chat here;
      * trajectory/waterfall from ui-trajectory), rendered one-at-a-time by
      * the session body via `only: <active id>`. Declared by this package's
@@ -92,6 +114,18 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * registration, and a domain upgrades by registering one row component.
      */
     'conversation.chat.commandview': { kind: 'keyed'; scope: 'session'; owner: CommandRowOwnerProps }
+    /**
+     * The tail of the transcript: content that belongs to this conversation
+     * but is not one of its turns, rendered after the last node and before the
+     * running-turn status. Declared by this package's chat-view entry.
+     * Additive; entries render by ascending `order`.
+     *
+     * Entries scroll with the transcript and sit where new content arrives, so
+     * this is where something delivered to the conversation from outside it
+     * belongs while it has no node of its own. A statement that must stay
+     * visible belongs in `conversation.session.overlay` instead.
+     */
+    'conversation.chat.foot': { kind: 'list'; scope: 'session' }
     /**
      * The completed Turn Node's extension chain, rendered before that Node's
      * IconActions. Entries derive a match from the engine-owned Turn and
@@ -598,6 +632,7 @@ export interface ComposerChainProps {
 export type ConversationSlotProps =
   PropsRuntime<'conversation'> & PropsRenderSlots<
     | 'conversation.session' | 'conversation.session.header'
+    | 'conversation.session.strip'
     | 'conversation.composer' | 'conversation.composer.bar'
     | 'conversation.input.overlay'
     | 'conversation.input.dock' | 'conversation.composer.dock'
@@ -739,7 +774,8 @@ export interface ChatViewInjected {
 
 /** Full chat-view component props: runtime & its Tool/command/tail render shares & store & injected & locale seat. */
 export type ChatViewSlotProps =
-  PropsRuntime<'conversation.view'> & PropsRenderSlots<'conversation.chat.node'>
+  PropsRuntime<'conversation.view'>
+  & PropsRenderSlots<'conversation.chat.node' | 'conversation.chat.foot'>
   & PropsStore<ChatStore> & ChatViewInjected & PropsLocale<'conversation'>
 
 /**

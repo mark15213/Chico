@@ -1,0 +1,10 @@
+/* Deliveries stack at the tail of the transcript with the gap the assistant
+   flow keeps between its own answers, so a push reads as another thing said
+   in this conversation rather than as a panel bolted to the bottom. */
+
+.pushes {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}

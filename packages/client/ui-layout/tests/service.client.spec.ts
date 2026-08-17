@@ -1,8 +1,8 @@
 /**
  * LayoutController behavior: the cross-plugin panel-action face. Geometry
  * lives in the entry store (layout-store.spec.ts) — here we assert the
- * delegation contract: attachPanels wiring, the three actions forwarding, the
- * unwired fail-loud, and re-attach overwriting a stale action set.
+ * delegation contract: attachPanels wiring, the panel and page actions
+ * forwarding, the unwired fail-loud, and re-attach overwriting a stale set.
  */
 import { describe, expect, it, vi } from 'vitest'
 import { LayoutController } from '@deepseek-ai/dsh-client-ui-layout/src/client/service.ts'
@@ -16,7 +16,11 @@ function fakePanels(): PanelActions {
     setNarrow: vi.fn(),
     setMode: vi.fn(),
     openDetails: vi.fn(),
+    restoreDetails: vi.fn(),
+    releaseDetailsExpansion: vi.fn(),
     closeDetails: vi.fn(),
+    openPage: vi.fn(),
+    closePage: vi.fn(),
   }
 }
 
@@ -47,12 +51,26 @@ describe('LayoutController', () => {
     expect(panels.setDetails).not.toHaveBeenCalled()
   })
 
+  it('forwards the page transitions to the attached set', () => {
+    const service = new LayoutController()
+    const panels = fakePanels()
+    service.attachPanels(panels)
+
+    service.openPage('automation')
+    service.closePage()
+
+    expect(panels.openPage).toHaveBeenCalledWith('automation')
+    expect(panels.closePage).toHaveBeenCalledTimes(1)
+  })
+
   it('fails loud before the root entry wired its actions', () => {
     const service = new LayoutController()
     expect(() => { service.toggleSidebar() }).toThrow(/panel actions not wired/)
     expect(() => { service.openDetails() }).toThrow(/panel actions not wired/)
     expect(() => { service.closeDetails() }).toThrow(/panel actions not wired/)
     expect(() => { service.setMode('names') }).toThrow(/panel actions not wired/)
+    expect(() => { service.openPage('automation') }).toThrow(/panel actions not wired/)
+    expect(() => { service.closePage() }).toThrow(/panel actions not wired/)
   })
 
   it('re-attach overwrites the stale action set (entry re-register)', () => {

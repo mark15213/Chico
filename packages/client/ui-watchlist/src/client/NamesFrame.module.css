@@ -4,6 +4,8 @@
    introducing a second product surface. */
 
 .frame {
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -12,6 +14,42 @@
   padding: 2px var(--dsh-sidebar-inline-padding, 12px) 12px 0;
   overflow-y: auto;
   scrollbar-gutter: stable;
+}
+
+/* The workbench block above the names: what runs unattended, read before the
+   list it runs over. Separated by a rule rather than a card, so it reads as a
+   section of one column and not as a second surface floating over it. */
+.workbench {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 4px 4px 10px;
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+}
+
+.workbenchEntries {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sectionHeading {
+  margin: 0 0 4px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+/* The 56px rail: workbench icons stacked over the details-recovery action. */
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .overview {
@@ -28,6 +66,13 @@
   align-items: baseline;
   gap: 8px;
   min-width: 0;
+}
+
+.overviewActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
 }
 
 .heading {
@@ -67,6 +112,26 @@
 .iconButton:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.railDetails {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 4px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+}
+
+.railDetails:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
 }
 
 .field {
@@ -317,6 +382,15 @@
 .change[data-direction='down'] { color: var(--dsw-alias-state-success-primary); }
 .change[data-direction='flat'] { color: var(--dsw-alias-label-tertiary); }
 
+/* Marks sit between the figures and the row arrow; the container collapses to
+   nothing when no workbench feature applies to this name. */
+.marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+
 .rowArrow {
   color: var(--dsw-alias-label-caption);
   opacity: 0;
@@ -393,6 +467,12 @@
   line-height: 14px;
 }
 
+.conversationRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
 .conversation,
 .newConversation {
   display: flex;
@@ -411,6 +491,36 @@
   line-height: 16px;
   text-align: start;
   cursor: pointer;
+}
+
+.conversation {
+  flex: 1 1 auto;
+}
+
+.deleteConversation {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  opacity: 0;
+  cursor: pointer;
+}
+
+.conversationRow:hover .deleteConversation,
+.conversationRow:focus-within .deleteConversation {
+  opacity: 1;
+}
+
+.deleteConversation:hover {
+  background: var(--dsw-alias-interactive-bg-hover-danger);
+  color: var(--dsw-alias-state-error-primary);
 }
 
 .conversation:hover,
@@ -448,11 +558,33 @@
   color: var(--dsw-alias-label-secondary);
 }
 
+.deleteAction {
+  border-color: var(--dsw-alias-state-error-primary);
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.deleteStatus,
+.deleteError {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.deleteStatus {
+  color: var(--dsw-alias-label-secondary);
+}
+
+.deleteError {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.railDetails:focus-visible,
 .iconButton:focus-visible,
 .matchOpen:focus-visible,
 .add:focus-visible,
 .row:focus-visible,
 .conversation:focus-visible,
+.deleteConversation:focus-visible,
 .newConversation:focus-visible {
   outline: 2px solid var(--dsw-alias-state-business-primary);
   outline-offset: 2px;

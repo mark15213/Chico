@@ -959,13 +959,17 @@ describe('ChatView', () => {
       return opts?.fallback ?? null
     })
     render(<h.ChatView {...h.props} />)
-    expect(calls).toHaveLength(1)
-    expect(calls[0]).toMatchObject({
+    // The transcript foot renders beside the node dispatch; this assertion is
+    // about the dispatch, so it reads only those calls.
+    const nodeCalls = calls.filter(call => call.key === 'conversation.chat.node')
+    expect(nodeCalls).toHaveLength(1)
+    expect(calls.some(call => call.key === 'conversation.chat.foot')).toBe(true)
+    expect(nodeCalls[0]).toMatchObject({
       key: 'conversation.chat.node',
       owner: { node: { kind: 'tool-call' }, selectedCallId: undefined },
       entryKey: 'tool-call',
     })
-    const owner = calls[0]?.owner as RoutedChatNodeOwner
+    const owner = nodeCalls[0]?.owner as RoutedChatNodeOwner
     expect((owner.node.data as { readonly root: ToolCallBlock }).root).toBe(block)
     expect(owner.openFile).toBe(h.openFile)
     expect(owner.inspectCall).toBe(h.inspectCall)

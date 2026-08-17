@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 import type { Browser, Page } from 'playwright'
 import { chromium } from 'playwright'
+import type { InstrumentRef } from '@deepseek-ai/dsh-market-data'
 import { afterAll, beforeAll, describe, expect, it, onTestFailed } from 'vitest'
 import {
   acknowledgeReloadConnectionLoss, assertFixtureInventory, captureStableAria, compareOrRefreshGolden,
@@ -25,6 +26,7 @@ const CHICO_OVERLAY = fileURLToPath(
 )
 const PROMPT = 'Reply with the single word LIGHTHOUSE and stop.'
 const MODE = webSnapshotMode()
+const CATL = { market: 'SZSE', symbol: '300750' } as InstrumentRef
 
 /** Last AppFrame grid track in CSS pixels. */
 async function detailsTrack(page: Page): Promise<number> {
@@ -69,14 +71,15 @@ async function handleSnapshot(page: Page): Promise<string> {
   ].join('\n').trimEnd()
 }
 
-/** Stable Chico workbench projection across its default and reopened detail tabs. */
-async function chicoWorkbenchSnapshot(
-  page: Page,
-  workspaceCwd: string,
+/** Stable Chico workbench projection across recovery and deletion. */
+function chicoWorkbenchSnapshot(
+  watchlist: string,
   defaultEvidence: string,
-): Promise<string> {
-  const watchlist = await captureStableAria(page, '[class*="regionArea"]', workspaceCwd)
-  const reopenedRecord = await captureStableAria(page, '[class*="detailsCol"]', workspaceCwd)
+  collapsedWatchlist: string,
+  reopenedRecord: string,
+  deleteConfirmation: string,
+  deletedWatchlist: string,
+): string {
   return [
     '# Chico investment workbench',
     '',
@@ -88,9 +91,21 @@ async function chicoWorkbenchSnapshot(
     '',
     defaultEvidence,
     '',
+    '## Collapsed-details recovery',
+    '',
+    collapsedWatchlist,
+    '',
     '## Reopened record',
     '',
     reopenedRecord,
+    '',
+    '## Delete confirmation',
+    '',
+    deleteConfirmation,
+    '',
+    '## After deleting the current conversation',
+    '',
+    deletedWatchlist,
   ].join('\n')
 }
 
@@ -212,7 +227,7 @@ describe.skipIf(MODE === 'record')('web e2e: Chico investment workbench', () => 
     if (failures.length > 1) throw new AggregateError(failures, 'Chico workbench cleanup failed')
   })
 
-  it('opens, collapses, and reopens one stock record', async () => {
+  it('opens, collapses, reopens, and deletes one stock conversation', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-chico-investment-workbench'))
 
     await page.getByRole('tab', { name: 'Investing', exact: true }).click()
@@ -265,19 +280,111 @@ describe.skipIf(MODE === 'record')('web e2e: Chico investment workbench', () => 
     await collapse.click()
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
     expect(await appFrame(page).getAttribute('data-details-collapsed')).toBe('true')
+    const collapsedWatchlist = await captureStableAria(
+      page,
+      '[class*="regionArea"]',
+      scaffold.workspaceCwd,
+    )
 
-    await stock.click()
+    await page.getByRole('button', { name: 'Expand investing details', exact: true }).click()
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(360)
     expect(await appFrame(page).getAttribute('data-details-collapsed')).toBeNull()
     await collapse.waitFor()
     await expect.poll(() => recordTab.getAttribute('aria-selected')).toBe('true')
     await details.getByRole('region', { name: 'Price trend', exact: true }).waitFor()
+    const watchlistBeforeDelete = await captureStableAria(
+      page,
+      '[class*="regionArea"]',
+      scaffold.workspaceCwd,
+    )
+    const reopenedRecord = await captureStableAria(
+      page,
+      '[class*="detailsCol"]',
+      scaffold.workspaceCwd,
+    )
+
+    await page.setViewportSize({ width: 1210, height: 1000 })
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
+    await page.getByRole('button', { name: 'Expand investing details', exact: true }).click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(300)
+    await page.setViewportSize({ width: 1680, height: 1000 })
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(360)
+
+    const boundBeforeDelete = scaffold.ctx.nameRecord.sessions(CATL)
+    expect(boundBeforeDelete).toHaveLength(1)
+    const deletedSessionId = boundBeforeDelete[0]!
+    await page.getByRole('button', { name: 'Delete conversation “archive”', exact: true }).click()
+    const deleteDialog = page.getByRole('dialog', { name: 'Delete conversation record?', exact: true })
+    await deleteDialog.waitFor()
+    expect(await deleteDialog.textContent()).toContain('does not permanently delete logs')
+    const deleteConfirmation = await captureStableAria(
+      page,
+      '[role="dialog"]',
+      scaffold.workspaceCwd,
+    )
+    await deleteDialog.getByRole('button', { name: 'Delete conversation record', exact: true }).click()
+
+    await deleteDialog.waitFor({ state: 'detached', timeout: 10_000 })
+    await expect.poll(
+      () => page.getByRole('button', { name: 'Delete conversation “archive”', exact: true }).count(),
+      { timeout: 10_000 },
+    ).toBe(0)
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
+    await page.getByText(
+      'Pick a name on the left to start a conversation about it.',
+      { exact: true },
+    ).waitFor()
+    const deletedWatchlist = await captureStableAria(
+      page,
+      '[class*="regionArea"]',
+      scaffold.workspaceCwd,
+    )
+    expect([...scaffold.ctx.workspaceRegistry.archivedSessionIds]).toContain(deletedSessionId)
+    expect((await scaffold.ctx.sessionPersistence.list()).map(header => header.id)).toContain(deletedSessionId)
+    expect(scaffold.ctx.nameRecord.sessions(CATL)).toContain(deletedSessionId)
 
     await compareOrRefreshGolden(
       CHICO_WORKBENCH_EXPECTED,
-      await chicoWorkbenchSnapshot(page, scaffold.workspaceCwd, defaultEvidence),
+      chicoWorkbenchSnapshot(
+        watchlistBeforeDelete,
+        defaultEvidence,
+        collapsedWatchlist,
+        reopenedRecord,
+        deleteConfirmation,
+        deletedWatchlist,
+      ),
       MODE,
     )
+
+    const warningStart = tripwire.warnings.length
+    await page.reload({ waitUntil: 'load' })
+    acknowledgeReloadConnectionLoss(tripwire, warningStart)
+    await appFrame(page).waitFor({ timeout: 30_000 })
+    await page.getByRole('tab', { name: 'Investing', exact: true }).click()
+    const reopenedStock = page.getByRole('button', {
+      name: 'Open investment record 宁德时代',
+      exact: true,
+    })
+    await reopenedStock.waitFor({ timeout: 15_000 })
+    await reopenedStock.click()
+    const reopenedDelete = page.getByRole('button', {
+      name: 'Delete conversation “archive”',
+      exact: true,
+    })
+    await expect.poll(() => reopenedDelete.count(), { timeout: 15_000 }).toBe(1)
+    await expect.poll(
+      () => page.getByRole('button', { name: 'archive', exact: true }).getAttribute('data-current'),
+      { timeout: 5_000 },
+    ).toBe('true')
+    await expect.poll(
+      () => page.getByText('Related conversations', { exact: true }).locator('..').locator('span').nth(1).textContent(),
+      { timeout: 5_000 },
+    ).toBe('1')
+    const boundAfterReopen = scaffold.ctx.nameRecord.sessions(CATL)
+    expect(boundAfterReopen).toHaveLength(2)
+    expect(boundAfterReopen[0]).toBe(deletedSessionId)
+    expect(boundAfterReopen[1]).not.toBe(deletedSessionId)
+    expect([...scaffold.ctx.workspaceRegistry.archivedSessionIds]).toEqual([deletedSessionId])
     await assertFixtureInventory(CHICO_SNAPSHOT_DIR, ['workbench.expected.md'])
   }, 90_000)
 })

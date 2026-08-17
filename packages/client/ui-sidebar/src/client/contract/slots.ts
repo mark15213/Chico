@@ -52,6 +52,20 @@ export interface SidebarSectionOwnerProps {
   wide: boolean
   /** Rail icons request expansion; the browser rides the wide flip for focus. */
   expandSidebar: () => void
+  /** Whether the details column is currently rendered closed. */
+  detailsClosed: boolean
+  /** Restore a usable details column within the current frame width. */
+  openDetails: () => void
+  /**
+   * Which page covers the centre column, or null while the conversation
+   * shows. A frame offering pages marks its own entry from this value rather
+   * than keeping a second copy of the same fact.
+   */
+  page: string | null
+  /** Show a page in the centre column instead of the conversation. */
+  openPage: (page: string) => void
+  /** Return the centre column to the conversation. */
+  closePage: () => void
 }
 
 /**

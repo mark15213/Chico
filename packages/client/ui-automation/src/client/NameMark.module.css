@@ -1,0 +1,15 @@
+/* Quiet by construction: the row's job is the price, and this only says that
+   something is watching. It never carries direction colour, which on this row
+   means what the market did. */
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-caption);
+}

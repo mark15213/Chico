@@ -28,6 +28,15 @@ export interface ILayout {
    * @param mode - the frame id a registrant declared.
    */
   setMode(mode: string): void
+  /**
+   * Show a page in the centre column instead of the conversation. The details
+   * column keys off the page while it is open, and the panel closes on the
+   * way for the same reason a frame switch closes it.
+   * @param page - the page id a registrant declared on the `page` slot.
+   */
+  openPage(page: string): void
+  /** Return the centre column to the conversation. */
+  closePage(): void
   /** Toggle the sidebar panel (closed ⟷ contract default width). */
   toggleSidebar(): void
   /** Open the details panel (no-op when already open). */
@@ -57,6 +66,19 @@ export class LayoutController implements ILayout {
    */
   setMode(mode: string): void {
     this.#require().setMode(mode)
+  }
+
+  /**
+   * Show a page in the centre column instead of the conversation.
+   * @param page - the page id a registrant declared on the `page` slot.
+   */
+  openPage(page: string): void {
+    this.#require().openPage(page)
+  }
+
+  /** Return the centre column to the conversation. */
+  closePage(): void {
+    this.#require().closePage()
   }
 
   /** Toggle the sidebar panel (closed ⟷ contract default width). */

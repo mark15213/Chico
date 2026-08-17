@@ -34,6 +34,8 @@ function mountColumn(): { column: HTMLElement; quiet: () => boolean } {
       mode="sessions" setMode={() => {}}
       modes={{ list: () => [], subscribe: () => () => {}, version: () => 0 }}
       collapsed={false} width={300}
+      detailsClosed={true} openDetails={vi.fn()}
+      page={null} openPage={vi.fn()} closePage={vi.fn()}
       useSessions={neverHook} useWorkspaces={neverHook}
       startSession={vi.fn()} toggleSidebar={vi.fn()} t={t}
       renderSlot={((_key: string, owner: SidebarSectionOwnerProps) =>

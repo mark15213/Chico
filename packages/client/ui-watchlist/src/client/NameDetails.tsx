@@ -1,6 +1,6 @@
 import { useId, useRef, useState, type ReactNode } from 'react'
 import { IconChevronRightOutline14 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { AttributionPanel } from './AttributionPanel.tsx'
 import { RecordPanel, type RecordPanelInjected } from './RecordPanel.tsx'
 import { instrumentLabel } from './watchlist-model.ts'
@@ -23,6 +23,7 @@ export interface NameDetailsInjected extends RecordPanelInjected {
 /** Full props of the investing frame's details column. */
 export type NameDetailsProps =
   PropsRuntime<'details'>
+  & PropsRenderSlots<'investing.record.section'>
   & PropsLocale<'watchlist'>
   & NameDetailsInjected
 
@@ -40,12 +41,15 @@ export type NameDetailsProps =
  * @returns the column.
  */
 export function NameDetails({
-  useSession, focus, read, dossier, append, closeDetails, t,
+  useSession, useWorkspaces, focus, read, dossier, append, setStance, closeDetails, renderSlot, t,
 }: NameDetailsProps): ReactNode {
   const tabsId = useId()
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const [tab, setTab] = useState<(typeof TABS)[number]>('evidence')
-  const { instrument, displayName, sessionStatus } = useWorkbenchFocus(focus)
+  const { instrument, displayName, sessions, sessionStatus } = useWorkbenchFocus(focus)
+  const archivedSessionIds = useWorkspaces(state => state.archivedSessionIds)
+  const archived = new Set(archivedSessionIds)
+  const sessionCount = sessions.filter(id => !archived.has(id)).length
   const label = instrument === null ? null : instrumentLabel(instrument)
   const name = displayName === null || displayName === '' ? label : displayName
 
@@ -130,7 +134,16 @@ export function NameDetails({
         aria-labelledby={`${tabsId}-tab-record`}
         hidden={tab !== 'record'}
       >
-        <RecordPanel focus={focus} read={read} dossier={dossier} append={append} t={t} />
+        <RecordPanel
+          focus={focus}
+          read={read}
+          dossier={dossier}
+          append={append}
+          setStance={setStance}
+          sessionCount={sessionCount}
+          renderSlot={renderSlot}
+          t={t}
+        />
       </div>
     </div>
   )

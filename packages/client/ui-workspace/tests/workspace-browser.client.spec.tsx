@@ -63,6 +63,11 @@ function mount(overrides: Partial<WorkspaceBrowserProps> = {}) {
   const props: WorkspaceBrowserProps = {
     wide: true,
     expandSidebar: vi.fn(),
+    detailsClosed: true,
+    openDetails: vi.fn(),
+    page: null,
+    openPage: vi.fn(),
+    closePage: vi.fn(),
     useSessions: hook(sessionState([])),
     useWorkspaces: hook(workspaceState([])),
     useStore: bindSnapshotSelector(store),

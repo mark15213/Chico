@@ -33,7 +33,7 @@ declare module '@deepseek-ai/cordis' {
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
     // The 'root' entry itself is the runtime's built-in slot (declared
-    // there); these four are the frame's children, declared by the same
+    // there); these five are the frame's children, declared by the same
     // register() call that contributes AppFrame. Session owners never pass
     // sessionId: the framework injects it as a standard prop.
     /**
@@ -72,6 +72,22 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'details': { kind: 'keyed'; scope: 'session'; owner: DetailsOwnerProps }
     /**
+     * A page in the centre column: the surface shown INSTEAD of the
+     * conversation while `ctx.layout.openPage` names its entry. Additive and
+     * frame-agnostic — a fresh `key` is a new page beside the existing ones,
+     * and no page at all leaves the conversation showing.
+     *
+     * The conversation stays mounted underneath and merely hidden, so a draft
+     * being typed survives a trip through a page. The details column keys off
+     * the open page while there is one, so a page owns both the centre and
+     * the right column and never leaves the conversation's detail beside it.
+     *
+     * Root scope: a page is about a set of things the product owns rather
+     * than about the current conversation, and it must render with no session
+     * at all.
+     */
+    'page': { kind: 'keyed'; scope: 'root'; owner: PageOwnerProps }
+    /**
      * Frame-wide floating layer, above every column and outside their scroll
      * containers. Deliberately generic and unowned by any feature: a badge, a
      * toast stack or a status pill all belong here, and entries order among
@@ -91,7 +107,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 // PropsStore & I). Conversation business state and actions arrive through
 // framework-standard hooks and each registrant's inject face, not owner props.
 
-/** Sidebar owner share: live column state from the frame's concession solve. */
+/** Sidebar owner share: live frame column state and recovery actions. */
 export interface SidebarOwnerProps {
   /**
    * Which frame the columns are showing. The sidebar occupant renders the
@@ -105,6 +121,20 @@ export interface SidebarOwnerProps {
   collapsed: boolean
   /** Rendered column width in px (SIDEBAR_COLLAPSED when collapsed). */
   width: number
+  /** True when the details column is visually closed, including responsive concession. */
+  detailsClosed: boolean
+  /** Restore a closed details column, overriding responsive concession when needed. */
+  openDetails: () => void
+  /**
+   * Which page occupies the centre column, or null while the conversation
+   * shows. The frame that offers a page reads it to mark its own entry as the
+   * one currently open.
+   */
+  page: string | null
+  /** Show a page in the centre column instead of the conversation. */
+  openPage: (page: string) => void
+  /** Return the centre column to the conversation. */
+  closePage: () => void
 }
 
 /** Conversation owner share: business state and actions belong to the registrant. */
@@ -116,6 +146,17 @@ export interface ConvOwnerProps {
    * sidebar and the details column read the same value.
    */
   mode: string
+}
+
+/** Page owner share: the frame it opened under, and the way back to the conversation. */
+export interface PageOwnerProps {
+  /**
+   * Which frame the columns are showing. A page is opened from one frame's
+   * own navigation, and reads the mode for the same reason its neighbours do.
+   */
+  mode: string
+  /** Return the centre column to the conversation this page covered. */
+  closePage: () => void
 }
 
 /** Details owner share: empty — sessionId arrives as a framework-standard prop. */
@@ -132,7 +173,7 @@ export const inject = ['slots', 'theme']
 
 /**
  * Client plugin body: provide ctx.layout, then one register() call — AppFrame
- * into 'root' with the four child-slot declarations, the layout store seat,
+ * into 'root' with the five child-slot declarations, the layout store seat,
  * and the inject hook that hands the store's bound actions to the service.
  * @param ctx - client root context.
  */
@@ -146,6 +187,7 @@ export function apply(ctx: ClientContext): void {
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
         'details': { kind: 'keyed', scope: 'session' },
+        'page': { kind: 'keyed', scope: 'root' },
         'shell.overlay': { kind: 'list', scope: 'root' },
       },
       // Exclusive store: the factory itself — the framework instantiates per

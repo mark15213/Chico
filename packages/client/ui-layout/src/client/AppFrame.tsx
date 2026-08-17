@@ -20,7 +20,7 @@ import css from './AppFrame.module.css'
 /** Full composed props: runtime share + child-slot render share + store share. */
 export type AppFrameProps =
   & PropsRuntime<'root'>
-  & PropsRenderSlots<'sidebar' | 'conversation' | 'details' | 'shell.overlay'>
+  & PropsRenderSlots<'sidebar' | 'conversation' | 'details' | 'page' | 'shell.overlay'>
   & PropsStore<ReturnType<typeof createLayoutStore>>
 
 /** Center column grid item (session-body building block). */
@@ -101,8 +101,9 @@ export function AppFrame({
   // The default frame's detail is a call inside one conversation, so it is
   // gated on a live one and closes when the reader switches session. Another
   // frame's detail is about whatever that frame put in focus — a name, say —
-  // which outlives any session and exists before the first one opens.
-  const sessionFramed = panels.mode === DEFAULT_MODE
+  // which outlives any session and exists before the first one opens. An open
+  // page is never session-framed: its detail belongs to the page.
+  const sessionFramed = panels.page === null && panels.mode === DEFAULT_MODE
   const lastSession = useRef(detailsSession)
   useLayoutEffect(() => {
     if (!sessionFramed || detailsSession === undefined) return
@@ -145,7 +146,18 @@ export function AppFrame({
     ? 0
     : panels.sidebar === 0 ? SIDEBAR_DEFAULT : panels.sidebar
   const detailsWidth = sessionFramed && detailsSession === undefined ? 0 : panels.details
-  const cols = computeColumns(viewport, sidebarPreference, detailsWidth)
+  const naturalCols = computeColumns(viewport, sidebarPreference, detailsWidth)
+  const cols = computeColumns(
+    viewport,
+    sidebarPreference,
+    detailsWidth,
+    panels.detailsExpansionOverride,
+  )
+  useEffect(() => {
+    if (panels.detailsExpansionOverride && naturalCols.details > 0) {
+      actions.releaseDetailsExpansion()
+    }
+  }, [actions, naturalCols.details, panels.detailsExpansionOverride])
   const colsRef = useRef(cols)
   colsRef.current = cols
 
@@ -187,6 +199,11 @@ export function AppFrame({
           setMode: actions.setMode,
           collapsed: sidebarCollapsed,
           width: cols.sidebar,
+          detailsClosed: cols.details === 0,
+          openDetails: actions.restoreDetails,
+          page: panels.page,
+          openPage: actions.openPage,
+          closePage: actions.closePage,
         })}
       </div>
       <>
@@ -194,9 +211,30 @@ export function AppFrame({
             paint — no loading gate: a bare status line reads worse than
             the shell's own pending rendering. The conversation
             is session-maybe; the strict details entry naturally renders
-            empty while no session is current. */}
-        <CenterColumn>{renderSlot('conversation', { mode: panels.mode })}</CenterColumn>
-        <DetailsColumn>{renderSlot('details', { mode: panels.mode }, { entryKey: panels.mode })}</DetailsColumn>
+            empty while no session is current.
+
+            A page covers the conversation rather than replacing it: the
+            occupant stays mounted and hidden, so a half-typed draft and the
+            reader's scroll position survive a trip through a page. The
+            details column keys off the page while one is open, because the
+            right column describes what the centre is showing. */}
+        <CenterColumn>
+          <div className={css.centerPane} hidden={panels.page !== null}>
+            {renderSlot('conversation', { mode: panels.mode })}
+          </div>
+          {panels.page !== null && (
+            <div className={css.centerPane}>
+              {renderSlot(
+                'page',
+                { mode: panels.mode, closePage: actions.closePage },
+                { entryKey: panels.page },
+              )}
+            </div>
+          )}
+        </CenterColumn>
+        <DetailsColumn>
+          {renderSlot('details', { mode: panels.mode }, { entryKey: panels.page ?? panels.mode })}
+        </DetailsColumn>
       </>
       <div className={css.overlayLayer} data-shell-overlay>
         {renderSlot('shell.overlay', {})}

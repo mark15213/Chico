@@ -1,21 +1,45 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import type { InstrumentRef, SessionId, WatchlistSearchResult } from '@deepseek-ai/dsh-api-remotes/client'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import {
+  Button,
+  IconChevronLeftOutline14,
   IconChevronRightOutline14,
   IconNewChatOutline16,
   IconRefreshOutline14,
   IconSearchOutline16,
+  IconTrashOutline16,
+  Modal,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { useWatchlist, type WatchlistSource } from './watchlist-store.ts'
 import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
 import { instrumentLabel, normalizeQuery, rowFigures, sameInstrument } from './watchlist-model.ts'
+// Type-only: pulls this package's own SlotMap merge (the workbench block and
+// the name mark) into every program that sees the frame's props.
+import type {} from './workbench-slots.ts'
 import css from './NamesFrame.module.css'
+
+/**
+ * The workbench block's own ledger reading. The frame draws no heading for an
+ * empty block, and only the registration side can see the slot ledger, so the
+ * count crosses as an observable rather than being guessed from the rendered
+ * output.
+ */
+export interface WorkbenchLedger {
+  /** How many workbench entries are registered. */
+  count: () => number
+  /** Subscribe to registration changes. */
+  subscribe: (fn: () => void) => () => void
+  /** Ledger version, for the store subscription's snapshot identity. */
+  version: () => number
+}
 
 /** Registration-side face the names frame calls through. */
 export interface NamesFrameInjected {
   /** The rows, shared with every other watchlist surface. */
   rows: WatchlistSource
+  /** Whether the workbench block has anything to draw. */
+  workbench: WorkbenchLedger
   /** Find listings a typed query names, marked with whether they are followed. */
   search: (query: string, limit: number, signal?: AbortSignal) => Promise<WatchlistSearchResult>
   /** Follow one instrument, resolving its name from the venue. */
@@ -32,11 +56,19 @@ export interface NamesFrameInjected {
   openConversation: (id: SessionId) => void
   /** Begin a new conversation about the open name. */
   startConversation: (instrument: InstrumentRef) => Promise<void>
+  /** Mark this frame active while its sidebar occupant is mounted. */
+  activateConversationNavigation: () => () => void
+  /**
+   * Remove one conversation from user-facing lists through the durable global
+   * archive set. Its log and name-record binding remain available for recovery.
+   */
+  archiveConversation: (id: SessionId) => Promise<void>
 }
 
 /** Full props of the sidebar's names frame. */
 export type NamesFrameProps =
   PropsRuntime<'sidebar.mode'>
+  & PropsRenderSlots<'investing.workbench.section' | 'investing.name.mark'>
   & PropsLocale<'watchlist'>
   & NamesFrameInjected
 
@@ -57,25 +89,34 @@ const LOOKUP_DEBOUNCE_MS = 250
  * Order is the order the user built the list in. Sorting by anything the
  * market decides would reshuffle the column under the reader between glances.
  * @param props - the shared rows, the lookup, the selection, and the locale seat.
- * @returns the column, wide only — the rail has no room for a name and a price.
+ * @returns the names column when wide; the rail carries only details recovery.
  */
 export function NamesFrame({
-  rows: source, search, follow, focus, open, openConversation, startConversation,
-  useSessions, wide, t,
+  rows: source, workbench, search, follow, focus, open, openConversation, startConversation,
+  archiveConversation, activateConversationNavigation, useSessions, useWorkspaces, wide,
+  detailsClosed, openDetails, page, openPage, closePage, renderSlot, t,
 }: NamesFrameProps): ReactNode {
   const fieldId = useId()
+  useSyncExternalStore(workbench.subscribe, workbench.version)
   const { status, rows } = useWatchlist(source)
   const { instrument: opened, sessions } = useWorkbenchFocus(focus)
+  const archivedSessionIds = useWorkspaces(state => state.archivedSessionIds)
+  const archived = new Set(archivedSessionIds)
+  const visibleSessions = sessions.filter(id => !archived.has(id))
   // Titles and the current selection come from the live session list, so a
   // renamed conversation reads correctly without the record being re-read.
-  const titles = useSessions(list => sessions.map(id => ({
+  const titles = useSessions(list => visibleSessions.map(id => ({
     id,
     title: list.byId[id]?.displayTitle ?? id,
     current: list.current === id,
   })))
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<WatchlistSearchResult | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<{ id: SessionId; title: string } | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteFailed, setDeleteFailed] = useState(false)
 
+  useEffect(() => activateConversationNavigation(), [activateConversationNavigation])
   useEffect(() => { void source.refresh() }, [source])
 
   // One in-flight lookup at a time: a later keystroke aborts the request the
@@ -99,29 +140,77 @@ export function NamesFrame({
     return () => { window.clearTimeout(timer) }
   }, [query, search])
 
-  // The rail is 56px of icons; a name beside a price does not fit, and half a
-  // row is worse than none.
-  if (!wide) return null
+  // The rail is 56px of icons; a name beside a price does not fit. Workbench
+  // entries survive as their own icons — what runs unattended stays reachable
+  // from a collapsed column — and when the details column is closed, its
+  // recovery action still has to remain visible.
+  if (!wide) {
+    const railDetails = opened !== null && detailsClosed
+      ? (
+        <button
+          type="button"
+          className={css.railDetails}
+          aria-label={t('detail.expand')}
+          title={t('detail.expand')}
+          onClick={openDetails}
+        >
+          <IconChevronLeftOutline14 size={14} />
+        </button>
+      )
+      : null
+    if (workbench.count() === 0) return railDetails
+    return (
+      <div className={css.rail}>
+        {renderSlot('investing.workbench.section', { wide, page, openPage, closePage })}
+        {railDetails}
+      </div>
+    )
+  }
 
   const picking = matches !== null
 
   return (
     <div className={css.frame}>
+      {/* The workbench block leads, because what runs unattended is read
+          before the list it runs over. An empty ledger draws nothing at all,
+          so a composition without workbench features opens on the names. */}
+      {workbench.count() > 0 ? (
+        <section className={css.workbench} aria-label={t('workbench.title')}>
+          <h2 className={css.sectionHeading}>{t('workbench.title')}</h2>
+          <div className={css.workbenchEntries}>
+            {renderSlot('investing.workbench.section', { wide, page, openPage, closePage })}
+          </div>
+        </section>
+      ) : null}
+
       <header className={css.overview}>
         <div className={css.overviewCopy}>
           <h2 className={css.heading}>{t('title')}</h2>
           {status === 'ready' ? <span className={css.count}>{t('count', { count: rows.length })}</span> : null}
         </div>
-        <button
-          type="button"
-          className={css.iconButton}
-          aria-label={t('refresh')}
-          title={t('refresh')}
-          disabled={status === 'loading'}
-          onClick={() => { void source.refresh() }}
-        >
-          <IconRefreshOutline14 size={14} />
-        </button>
+        <div className={css.overviewActions}>
+          {opened !== null && detailsClosed ? (
+            <button
+              type="button"
+              className={css.iconButton}
+              aria-label={t('detail.expand')}
+              title={t('detail.expand')}
+              onClick={openDetails}
+            >
+              <IconChevronLeftOutline14 size={14} />
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={css.iconButton}
+            aria-label={t('refresh')}
+            title={t('refresh')}
+            disabled={status === 'loading'}
+            onClick={() => { void source.refresh() }}
+          >
+            <IconRefreshOutline14 size={14} />
+          </button>
+        </div>
       </header>
 
       <label className={css.field} htmlFor={fieldId}>
@@ -221,6 +310,14 @@ export function NamesFrame({
                         </>
                       )}
                   </span>
+                  {/* Marks are non-interactive by contract: this row is
+                      already the button that opens the name. */}
+                  <span className={css.marks}>
+                    {renderSlot('investing.name.mark', {
+                      instrument: row.instrument,
+                      displayName: row.displayName,
+                    })}
+                  </span>
                   <IconChevronRightOutline14 className={css.rowArrow} size={14} />
                 </button>
                 {on ? (
@@ -230,7 +327,7 @@ export function NamesFrame({
                       <span>{titles.length}</span>
                     </li>
                     {titles.map(entry => (
-                      <li key={entry.id}>
+                      <li className={css.conversationRow} key={entry.id}>
                         <button
                           type="button"
                           className={css.conversation}
@@ -239,6 +336,18 @@ export function NamesFrame({
                         >
                           <span className={css.conversationDot} aria-hidden />
                           <span className={css.conversationTitle}>{entry.title}</span>
+                        </button>
+                        <button
+                          type="button"
+                          className={css.deleteConversation}
+                          aria-label={t('conversation.deleteAction', { name: entry.title })}
+                          title={t('conversation.deleteAction', { name: entry.title })}
+                          onClick={() => {
+                            setDeleteFailed(false)
+                            setDeleteTarget({ id: entry.id, title: entry.title })
+                          }}
+                        >
+                          <IconTrashOutline16 size={13} />
                         </button>
                       </li>
                     ))}
@@ -259,6 +368,59 @@ export function NamesFrame({
           })}
         </ul>
       ) : null}
+
+      <Modal
+        open={deleteTarget !== null}
+        onClose={() => {
+          if (deleting) return
+          setDeleteTarget(null)
+          setDeleteFailed(false)
+        }}
+        closeLabel={t('conversation.cancel')}
+        title={t('conversation.deleteTitle')}
+        {...deleteTarget === null
+          ? {}
+          : { description: t('conversation.deleteDescription', { name: deleteTarget.title }) }}
+        footer={(
+          <>
+            <Button
+              variant="outline"
+              disabled={deleting}
+              onClick={() => {
+                setDeleteTarget(null)
+                setDeleteFailed(false)
+              }}
+            >
+              {t('conversation.cancel')}
+            </Button>
+            <Button
+              variant="outline"
+              className={css.deleteAction}
+              disabled={deleting || deleteTarget === null}
+              onClick={() => {
+                if (deleteTarget === null || deleting) return
+                setDeleting(true)
+                setDeleteFailed(false)
+                void archiveConversation(deleteTarget.id).then(
+                  () => {
+                    setDeleting(false)
+                    setDeleteTarget(null)
+                  },
+                  () => {
+                    setDeleting(false)
+                    setDeleteFailed(true)
+                  },
+                )
+              }}
+            >
+              {t('conversation.delete')}
+            </Button>
+          </>
+        )}
+      >
+        {deleting ? <p className={css.deleteStatus} role="status">{t('conversation.deleting')}</p> : null}
+        {deleteFailed ? <p className={css.deleteError} role="alert">{t('conversation.deleteFailed')}</p> : null}
+      </Modal>
     </div>
   )
 }

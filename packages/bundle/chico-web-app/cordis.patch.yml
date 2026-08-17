@@ -70,8 +70,20 @@
 
     # ── browser roster ──────────────────────────────────────────────────────
     # The name workbench: one navigation frame in the sidebar and one detail
-    # panel keyed to it. This is the only browser row Chico adds, and it is the
-    # surface everything above exists to serve — a composition without it would
-    # carry a record nobody can see.
+    # panel keyed to it. It is the surface everything above exists to serve —
+    # a composition without it would carry a record nobody can see — and it
+    # declares the workbench block the row below registers into.
     - id: ui-watchlist
       name: '@deepseek-ai/dsh-client-ui-watchlist'
+
+    # Automations: the workbench block's first occupant, its management page in
+    # the centre column, and the strip stating what watches a name above that
+    # name's conversation.
+    #
+    # **The rules and their hits are a fixture compiled into the package.** No
+    # condition is evaluated, nothing is stored, and nothing is delivered to a
+    # conversation: the engine and the durable rule registry are host-side and
+    # are not built yet. The row exists so the surface can be reviewed in the
+    # assembled product rather than in isolation.
+    - id: ui-automation
+      name: '@deepseek-ai/dsh-client-ui-automation'

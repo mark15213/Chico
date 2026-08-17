@@ -150,7 +150,18 @@ describe('row derivations', () => {
 /** The names frame over the real feed and focus, with a stubbed Remote face. */
 function mountFrame(
   snapshot: WatchlistSnapshot = { rows: [row()] },
-  over?: { search?: unknown; follow?: unknown; wide?: boolean },
+  over?: {
+    search?: unknown
+    follow?: unknown
+    wide?: boolean
+    detailsClosed?: boolean
+    archivedSessionIds?: readonly string[]
+    archiveConversation?: (id: never) => Promise<void>
+    activateConversationNavigation?: () => () => void
+    openDetails?: () => void
+    workbenchEntries?: number
+    page?: string | null
+  },
 ) {
   const list = vi.fn(() => Promise.resolve(snapshot))
   const feed = new WatchlistFeed(list)
@@ -162,17 +173,37 @@ function mountFrame(
   const open = vi.fn((instrument: typeof CATL, name: string) => { focus.open(instrument, name, []) })
   const openConversation = vi.fn()
   const startConversation = vi.fn()
+  const archiveConversation = over?.archiveConversation ?? vi.fn(() => Promise.resolve())
+  const activateConversationNavigation = over?.activateConversationNavigation ?? vi.fn(() => () => {})
+  const openDetails = over?.openDetails ?? vi.fn()
   const useSessions = (select: (state: unknown) => unknown) => select({
     byId: { 's-1': { displayTitle: '本周储能订单节奏' }, 's-2': { displayTitle: 'Q2 财报速读' } },
     current: 's-2',
   })
+  const useWorkspaces = (select: (state: unknown) => unknown) => select({
+    archivedSessionIds: over?.archivedSessionIds ?? [],
+  })
+  const workbenchEntries = over?.workbenchEntries ?? 0
+  const workbench = {
+    count: () => workbenchEntries,
+    subscribe: () => () => {},
+    version: () => 0,
+  }
+  const openPage = vi.fn()
+  const closePage = vi.fn()
+  // The frame renders its declared holes; a test double states which hole was
+  // asked for so the block's presence is observable without a slot runtime.
+  const renderSlot = vi.fn((name: string) => <span data-slot={name} />)
   const props = {
-    rows: feed, search, follow, focus, open, openConversation, startConversation, useSessions,
-    wide: over?.wide ?? true, t,
+    rows: feed, workbench, search, follow, focus, open, openConversation, startConversation,
+    archiveConversation, activateConversationNavigation, renderSlot,
+    useSessions, useWorkspaces, wide: over?.wide ?? true, detailsClosed: over?.detailsClosed ?? false,
+    openDetails, page: over?.page ?? null, openPage, closePage, t,
   } as unknown as Parameters<typeof NamesFrame>[0]
   return {
-    view: render(<NamesFrame {...props} />),
-    list, feed, focus, search, follow, open, openConversation, startConversation,
+    view: render(<NamesFrame {...props} />), list, feed, focus, search, follow, open,
+    openConversation, startConversation, archiveConversation, openDetails,
+    openPage, closePage, renderSlot,
   }
 }
 
@@ -266,6 +297,75 @@ describe('the names frame', () => {
     expect(openConversation).toHaveBeenCalledWith('s-1')
   })
 
+  it('restores the details column without reopening the selected name', async () => {
+    const { view, focus, open, openDetails } = mountFrame(undefined, { detailsClosed: true })
+    await view.findByText('宁德时代')
+    focus.open(CATL, '宁德时代', ['s-1'] as never)
+
+    fireEvent.click(await view.findByLabelText('Expand investing details'))
+
+    expect(openDetails).toHaveBeenCalledTimes(1)
+    expect(open).not.toHaveBeenCalled()
+  })
+
+  it('offers no details recovery action before a name is selected or while details are open', async () => {
+    const closed = mountFrame(undefined, { detailsClosed: true })
+    await closed.view.findByText('宁德时代')
+    expect(closed.view.queryByLabelText('Expand investing details')).toBeNull()
+
+    const open = mountFrame()
+    await open.view.findByText('宁德时代')
+    open.focus.open(CATL, '宁德时代')
+    expect(open.view.queryByLabelText('Expand investing details')).toBeNull()
+  })
+
+  it('keeps the details recovery action on the collapsed navigation rail', async () => {
+    const { view, focus, openDetails } = mountFrame(undefined, { wide: false, detailsClosed: true })
+    focus.open(CATL, '宁德时代')
+
+    fireEvent.click(await view.findByLabelText('Expand investing details'))
+
+    expect(openDetails).toHaveBeenCalledTimes(1)
+  })
+
+  it('confirms deletion with its retained-log semantics before archiving a conversation', async () => {
+    const archiveConversation = vi.fn(() => Promise.resolve())
+    const { view, focus } = mountFrame(undefined, { archiveConversation })
+    await view.findByText('宁德时代')
+    focus.open(CATL, '宁德时代', ['s-1'] as never)
+
+    fireEvent.click(await view.findByLabelText('Delete conversation “本周储能订单节奏”'))
+
+    expect(view.getByRole('dialog', { name: 'Delete conversation record?' }).textContent).toContain(
+      'does not permanently delete logs',
+    )
+    fireEvent.click(view.getByRole('button', { name: 'Delete conversation record' }))
+    await waitFor(() => { expect(archiveConversation).toHaveBeenCalledWith('s-1') })
+  })
+
+  it('keeps an archive failure visible for retry', async () => {
+    const archiveConversation = vi.fn(() => Promise.reject(new Error('offline')))
+    const { view, focus } = mountFrame(undefined, { archiveConversation })
+    await view.findByText('宁德时代')
+    focus.open(CATL, '宁德时代', ['s-1'] as never)
+
+    fireEvent.click(await view.findByLabelText('Delete conversation “本周储能订单节奏”'))
+    fireEvent.click(view.getByRole('button', { name: 'Delete conversation record' }))
+
+    expect((await view.findByRole('alert')).textContent).toContain('Could not delete the conversation')
+    expect(view.getByText('本周储能订单节奏')).toBeTruthy()
+  })
+
+  it('hides archived conversations and excludes them from the related count', async () => {
+    const { view, focus } = mountFrame(undefined, { archivedSessionIds: ['s-1'] })
+    await view.findByText('宁德时代')
+    focus.open(CATL, '宁德时代', ['s-1', 's-2'] as never)
+
+    await view.findByText('Q2 财报速读')
+    expect(view.queryByText('本周储能订单节奏')).toBeNull()
+    expect(view.getByText('Related conversations').nextElementSibling?.textContent).toBe('1')
+  })
+
   it('says how to start when nothing is followed', async () => {
     const { view } = mountFrame({ rows: [] })
 
@@ -276,6 +376,58 @@ describe('the names frame', () => {
     const { view } = mountFrame(undefined, { wide: false })
 
     expect(view.container.textContent).toBe('')
+  })
+
+  it('draws no workbench block while nothing has registered into it', () => {
+    // A heading over an empty block is chrome explaining an absence.
+    const { view, renderSlot } = mountFrame()
+
+    expect(view.queryByText('Workbench')).toBeNull()
+    expect(renderSlot.mock.calls.some(call => call[0] === 'investing.workbench.section')).toBe(false)
+  })
+
+  it('leads with the workbench block once something occupies it', () => {
+    const { view, renderSlot } = mountFrame(undefined, { workbenchEntries: 1 })
+
+    expect(view.getByRole('region', { name: 'Workbench' })).toBeTruthy()
+    expect(renderSlot).toHaveBeenCalledWith(
+      'investing.workbench.section',
+      expect.objectContaining({ wide: true, page: null }),
+    )
+  })
+
+  it('keeps workbench entries reachable from the collapsed rail', () => {
+    // What runs unattended must stay reachable when the column is 56px; a
+    // name beside a price is what does not fit, not an icon.
+    const { view, renderSlot } = mountFrame(undefined, { wide: false, workbenchEntries: 1 })
+
+    expect(renderSlot).toHaveBeenCalledWith(
+      'investing.workbench.section',
+      expect.objectContaining({ wide: false }),
+    )
+    expect(view.container.firstChild).toBeTruthy()
+  })
+
+  it('offers each row to the mark slot with the name that row is about', async () => {
+    const { view, renderSlot } = mountFrame()
+    await view.findByText('宁德时代')
+
+    expect(renderSlot).toHaveBeenCalledWith(
+      'investing.name.mark',
+      expect.objectContaining({ instrument: CATL, displayName: '宁德时代' }),
+    )
+  })
+
+  it('keeps the lookup with the names it searches, below their heading', () => {
+    // The search finds a name; it belongs to the followed list rather than to
+    // the column, so the workbench block above it is not separated from it.
+    const { view } = mountFrame(undefined, { workbenchEntries: 1 })
+    const heading = view.getByRole('heading', { name: 'Watchlist' })
+    const field = view.getByLabelText('Search instruments')
+    const workbench = view.getByRole('region', { name: 'Workbench' })
+
+    expect(workbench.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(heading.compareDocumentPosition(field) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('keeps the unpriceable name on the list', async () => {
@@ -343,15 +495,24 @@ describe('the names frame lookup', () => {
 function mountPanel(record: NameRecordView = recordOf(), over?: {
   dossier?: unknown
   append?: unknown
+  setStance?: unknown
   focused?: boolean
+  sessionCount?: number
 }) {
   const focus = new WorkbenchFocus()
   if (over?.focused !== false) focus.open(CATL, '宁德时代')
   const read = vi.fn(() => Promise.resolve(record))
   const dossier = over?.dossier ?? vi.fn(() => Promise.resolve(dossierOf()))
   const append = over?.append ?? vi.fn(() => Promise.resolve(thesis()))
-  const props = { focus, read, dossier, append, t } as unknown as Parameters<typeof RecordPanel>[0]
-  return { view: render(<RecordPanel {...props} />), focus, read, dossier, append }
+  const setStance = over?.setStance ?? vi.fn(() => Promise.resolve({}))
+  const renderSlot = vi.fn((name: string) => <span data-slot={name} />)
+  const props = {
+    focus, read, dossier, append, setStance, renderSlot,
+    sessionCount: over?.sessionCount ?? record.sessions.length, t,
+  } as unknown as Parameters<typeof RecordPanel>[0]
+  return {
+    view: render(<RecordPanel {...props} />), focus, read, dossier, append, setStance, renderSlot,
+  }
 }
 
 describe('the record panel', () => {
@@ -374,6 +535,13 @@ describe('the record panel', () => {
     await view.findByText('Investment rationale and record')
     expect(read).toHaveBeenCalledWith(CATL)
     expect(dossier).toHaveBeenCalledWith(CATL, 60)
+  })
+
+  it('counts only conversations still visible after archiving', async () => {
+    const { view } = mountPanel(recordOf({ sessions: ['s-1', 's-2'] as never }), { sessionCount: 1 })
+
+    await view.findByText('Investment rationale and record')
+    expect(view.getByText('Chats').nextElementSibling?.textContent).toBe('1')
   })
 
   it('says what the empty chain is for rather than showing nothing', async () => {
@@ -479,6 +647,7 @@ describe('the record panel', () => {
       read: vi.fn(() => Promise.reject(new Error('offline'))),
       dossier: vi.fn(() => Promise.resolve(dossierOf())),
       append: vi.fn(),
+      sessionCount: 0,
       t,
     } as unknown as Parameters<typeof RecordPanel>[0]
     const view = render(<RecordPanel {...props} />)
@@ -513,11 +682,29 @@ describe('the shared selection', () => {
 
     expect(focus.snapshot()).toBe(initial)
   })
+
+  it('clears the selected name with its conversation state', () => {
+    const focus = new WorkbenchFocus()
+    focus.open(CATL, '宁德时代', ['s-1'] as never)
+
+    focus.clear()
+
+    expect(focus.snapshot()).toEqual({
+      instrument: null,
+      displayName: null,
+      sessions: [],
+      sessionStatus: 'pending',
+    })
+  })
 })
 
 describe('the centre column', () => {
   /** A session list the test drives, plus the controller over it. */
-  function bench(bound: readonly string[] = []) {
+  function bench(
+    bound: readonly string[] = [],
+    archivedSessionIds: readonly string[] = [],
+    archivesReady = true,
+  ) {
     let state = { byId: {} as Record<string, { blank: boolean } | undefined>, current: undefined as string | undefined }
     const listeners = new Set<() => void>()
     const publish = (next: typeof state) => {
@@ -539,10 +726,53 @@ describe('the centre column', () => {
     const bind = vi.fn((_i: unknown, id: string) => Promise.resolve([...bound, id]))
     const archive = vi.fn(() => Promise.resolve({ path: '/archive' }))
     const focus = new WorkbenchFocus()
+    const onFocusCleared = vi.fn()
+    let archiveState: {
+      archivedSessionIds: readonly string[]
+      phase: 'pending' | 'ready'
+      state: 'idle' | 'loading' | 'error'
+    } = {
+      archivedSessionIds,
+      phase: archivesReady ? 'ready' : 'pending',
+      state: archivesReady ? 'idle' : 'loading',
+    }
+    const archiveListeners = new Set<() => void>()
+    const publishArchives = (
+      ids: readonly string[],
+      phase: 'pending' | 'ready' = 'ready',
+      state: 'idle' | 'loading' | 'error' = 'idle',
+    ): void => {
+      archiveState = { archivedSessionIds: ids, phase, state }
+      for (const listener of archiveListeners) listener()
+    }
     const controller = new WorkbenchSessions(
-      sessions as never, { read, bind, archive } as never, focus,
+      sessions as never,
+      { read, bind, archive } as never,
+      focus,
+      {
+        getSnapshot: () => archiveState,
+        subscribe: (fn: () => void) => {
+          archiveListeners.add(fn)
+          return () => archiveListeners.delete(fn)
+        },
+      } as never,
+      onFocusCleared,
     )
-    return { controller, sessions, read, bind, archive, focus, publish }
+    const deactivate = controller.activate()
+    return {
+      controller,
+      sessions,
+      read,
+      bind,
+      archive,
+      focus,
+      publish,
+      publishArchives,
+      archiveListenerCount: () => archiveListeners.size,
+      sessionListenerCount: () => listeners.size,
+      onFocusCleared,
+      deactivate,
+    }
   }
 
   it('navigates to the name\u2019s newest conversation', async () => {
@@ -555,6 +785,50 @@ describe('the centre column', () => {
     expect(b.focus.snapshot()).toMatchObject({
       instrument: CATL, sessions: ['s-1', 's-2'], sessionStatus: 'ready',
     })
+  })
+
+  it('skips an archived newest conversation while retaining the name record', async () => {
+    const b = bench(['s-1', 's-2'], ['s-2'])
+
+    await b.controller.open(CATL, '宁德时代')
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-1')
+    expect(b.focus.snapshot().sessions).toEqual(['s-1', 's-2'])
+  })
+
+  it('creates a replacement when all bound conversations are archived', async () => {
+    const b = bench(['s-1'], ['s-1'])
+
+    await b.controller.open(CATL, '宁德时代')
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-new')
+    expect(b.bind).toHaveBeenCalledWith(CATL, 's-new')
+    expect(b.focus.snapshot().sessions).toEqual(['s-1', 's-new'])
+  })
+
+  it('waits for the archive baseline before selecting a bound conversation', async () => {
+    const b = bench(['s-1'], [], false)
+
+    const opening = b.controller.open(CATL, '宁德时代')
+    await waitFor(() => { expect(b.read).toHaveBeenCalledWith(CATL) })
+    expect(b.sessions.open).not.toHaveBeenCalled()
+
+    b.publishArchives(['s-1'])
+    await opening
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-new')
+    expect(b.focus.snapshot().sessions).toEqual(['s-1', 's-new'])
+  })
+
+  it('leaves navigation retryable when the archive baseline fails', async () => {
+    const b = bench(['s-1'], [], false)
+
+    const opening = b.controller.open(CATL, '宁德时代')
+    b.publishArchives([], 'pending', 'error')
+    await opening
+
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().sessionStatus).toBe('failed')
   })
 
   it('publishes the name before the read, so the other columns move on the click', async () => {
@@ -642,7 +916,7 @@ describe('the centre column', () => {
 
   it('does not select after a binding returns to a superseded navigation', async () => {
     const b = bench()
-    const binding = Promise.withResolvers<readonly string[]>()
+    const binding = Promise.withResolvers<string[]>()
     b.bind.mockReturnValueOnce(binding.promise)
 
     const openingFirst = b.controller.open(CATL, '宁德时代')
@@ -658,6 +932,21 @@ describe('the centre column', () => {
     expect(b.focus.snapshot()).toMatchObject({
       instrument: MOUTAI, sessions: ['s-moutai'], sessionStatus: 'ready',
     })
+  })
+
+  it('does not open a newly bound conversation archived while its binding was in flight', async () => {
+    const b = bench()
+    const binding = Promise.withResolvers<string[]>()
+    b.bind.mockReturnValueOnce(binding.promise)
+
+    const opening = b.controller.open(CATL, '宁德时代')
+    await waitFor(() => { expect(b.bind).toHaveBeenCalledWith(CATL, 's-new') })
+    b.publishArchives(['s-new'])
+    binding.resolve(['s-new'])
+    await opening
+
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().sessionStatus).toBe('failed')
   })
 
   it('does not publish a created session after selection synchronously starts newer navigation', async () => {
@@ -724,6 +1013,16 @@ describe('the centre column', () => {
     expect(b.sessions.startAt).not.toHaveBeenCalled()
   })
 
+  it('does not reopen an archived conversation from a stale surface', () => {
+    const b = bench(['s-1'], ['s-1'])
+    b.focus.open(CATL, '宁德时代', ['s-1'] as never)
+
+    b.controller.show('s-1' as never)
+
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().sessionStatus).toBe('ready')
+  })
+
   it('marks an existing-conversation selection failure for retry', () => {
     const b = bench(['s-1'])
     b.focus.open(CATL, '宁德时代', ['s-1'] as never)
@@ -776,6 +1075,225 @@ describe('the centre column', () => {
     expect(b.sessions.startAt).not.toHaveBeenCalled()
     expect(b.sessions.open).toHaveBeenLastCalledWith('s-1')
     expect(b.focus.snapshot().sessionStatus).toBe('ready')
+  })
+
+  it('does not reuse an archived blank conversation', async () => {
+    const b = bench(['s-1'], ['s-1'])
+    b.focus.open(CATL, '宁德时代', ['s-1'] as never)
+    b.publish({ byId: { 's-1': { blank: true } }, current: undefined })
+
+    await b.controller.start(CATL)
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-new')
+    expect(b.sessions.startAt).toHaveBeenCalledWith('/archive')
+  })
+
+  it('selects the newest remaining conversation after archiving the current one', async () => {
+    const b = bench(['s-1', 's-2'])
+    b.focus.open(CATL, '宁德时代', ['s-1', 's-2'] as never)
+    b.publish({ byId: {}, current: 's-2' })
+
+    const result = await b.controller.archive('s-2' as never, async () => {
+      b.publishArchives(['s-2'])
+      b.publish({ byId: {}, current: undefined })
+    })
+
+    expect(result).toBe('selected')
+    expect(b.sessions.open).toHaveBeenCalledWith('s-1')
+    expect(b.focus.snapshot()).toMatchObject({
+      instrument: CATL,
+      sessions: ['s-1', 's-2'],
+      sessionStatus: 'ready',
+    })
+  })
+
+  it('selects the newest remaining conversation after a global archive clears the current one', async () => {
+    const b = bench(['s-1', 's-2'])
+    await b.controller.open(CATL, '宁德时代')
+    b.publish({ byId: {}, current: 's-2' })
+    b.sessions.open.mockClear()
+
+    // WorkspaceRuntime clears the Session before publishing the archive set
+    // from the same projection; reconciliation therefore runs in a microtask.
+    b.publish({ byId: {}, current: undefined })
+    b.publishArchives(['s-2'])
+
+    await waitFor(() => { expect(b.sessions.open).toHaveBeenCalledWith('s-1') })
+    expect(b.focus.snapshot()).toMatchObject({
+      instrument: CATL,
+      sessions: ['s-1', 's-2'],
+      sessionStatus: 'ready',
+    })
+    expect(b.onFocusCleared).not.toHaveBeenCalled()
+  })
+
+  it('keeps a retryable selection failure after archiving the current conversation', async () => {
+    const b = bench(['s-1', 's-2'])
+    b.focus.open(CATL, '宁德时代', ['s-1', 's-2'] as never)
+    b.publish({ byId: {}, current: 's-2' })
+    b.sessions.open.mockImplementationOnce(() => { throw new Error('offline') })
+
+    const result = await b.controller.archive('s-2' as never, async () => {
+      b.publishArchives(['s-2'])
+      b.publish({ byId: {}, current: undefined })
+    })
+
+    expect(result).toBe('unchanged')
+    expect(b.focus.snapshot()).toMatchObject({
+      instrument: CATL,
+      sessionStatus: 'failed',
+    })
+  })
+
+  it('preserves navigation started while selecting after an archive', async () => {
+    const b = bench(['s-1', 's-2'])
+    b.focus.open(CATL, '宁德时代', ['s-1', 's-2'] as never)
+    b.publish({ byId: {}, current: 's-2' })
+    let openingSecond: Promise<void> | undefined
+    b.sessions.open.mockImplementationOnce(() => {
+      b.read.mockResolvedValueOnce({ sessions: ['s-moutai'] })
+      openingSecond = b.controller.open(MOUTAI, '贵州茅台')
+    })
+
+    const result = await b.controller.archive('s-2' as never, async () => {
+      b.publishArchives(['s-2'])
+      b.publish({ byId: {}, current: undefined })
+    })
+    if (openingSecond === undefined) throw new Error('selection did not start the newer navigation')
+    await openingSecond
+
+    expect(result).toBe('unchanged')
+    expect(b.focus.snapshot()).toMatchObject({
+      instrument: MOUTAI,
+      sessions: ['s-moutai'],
+      sessionStatus: 'ready',
+    })
+  })
+
+  it('clears the name after archiving its last current conversation', async () => {
+    const b = bench(['s-1'])
+    b.focus.open(CATL, '宁德时代', ['s-1'] as never)
+    b.publish({ byId: {}, current: 's-1' })
+
+    const result = await b.controller.archive('s-1' as never, async () => {
+      b.publishArchives(['s-1'])
+      b.publish({ byId: {}, current: undefined })
+    })
+
+    expect(result).toBe('cleared')
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().instrument).toBeNull()
+  })
+
+  it('clears the name and details after a global archive removes its current conversation', async () => {
+    const b = bench(['s-1'])
+    await b.controller.open(CATL, '宁德时代')
+    b.publish({ byId: {}, current: 's-1' })
+    b.sessions.open.mockClear()
+
+    b.publish({ byId: {}, current: undefined })
+    b.publishArchives(['s-1'])
+
+    await waitFor(() => { expect(b.focus.snapshot().instrument).toBeNull() })
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.onFocusCleared).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not reclaim an explicit unarchived current-session clear', async () => {
+    const b = bench(['s-1'])
+    await b.controller.open(CATL, '宁德时代')
+    b.publish({ byId: {}, current: 's-1' })
+    b.sessions.open.mockClear()
+
+    b.publish({ byId: {}, current: undefined })
+    await Promise.resolve()
+    b.publishArchives(['s-1'])
+    await Promise.resolve()
+
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().instrument).toEqual(CATL)
+    expect(b.onFocusCleared).not.toHaveBeenCalled()
+  })
+
+  it('defers archive reconciliation while another frame is active', async () => {
+    const b = bench(['s-1', 's-2'])
+    await b.controller.open(CATL, '宁德时代')
+    b.publish({ byId: {}, current: 's-2' })
+    b.sessions.open.mockClear()
+    b.deactivate()
+
+    b.publish({ byId: {}, current: undefined })
+    b.publishArchives(['s-2'])
+    await Promise.resolve()
+
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().instrument).toEqual(CATL)
+
+    b.controller.activate()
+
+    expect(b.sessions.open).toHaveBeenCalledWith('s-1')
+    expect(b.focus.snapshot().sessionStatus).toBe('ready')
+  })
+
+  it('does not infer an inactive clear from an older archived conversation', async () => {
+    const b = bench(['s-old', 's-current'], ['s-old'])
+    await b.controller.open(CATL, '宁德时代')
+    b.publish({ byId: {}, current: 's-current' })
+    b.sessions.open.mockClear()
+    b.deactivate()
+
+    b.publish({ byId: {}, current: undefined })
+    await Promise.resolve()
+    b.controller.activate()
+
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().instrument).toEqual(CATL)
+    expect(b.onFocusCleared).not.toHaveBeenCalled()
+  })
+
+  it('does not move navigation when a non-current conversation is archived', async () => {
+    const b = bench(['s-1', 's-2'])
+    b.focus.open(CATL, '宁德时代', ['s-1', 's-2'] as never)
+    b.publish({ byId: {}, current: 's-2' })
+    const persist = vi.fn(() => Promise.resolve())
+
+    await expect(b.controller.archive('s-1' as never, persist)).resolves.toBe('unchanged')
+
+    expect(persist).toHaveBeenCalledWith('s-1')
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().instrument).toEqual(CATL)
+  })
+
+  it('cancels an archive-baseline waiter when disposed', async () => {
+    const b = bench(['s-1'], [], false)
+    const opening = b.controller.open(CATL, '宁德时代')
+    await waitFor(() => { expect(b.archiveListenerCount()).toBe(1) })
+    expect(b.sessionListenerCount()).toBe(1)
+
+    b.controller.dispose()
+    await opening
+
+    expect(b.archiveListenerCount()).toBe(0)
+    expect(b.sessionListenerCount()).toBe(0)
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.sessions.startAt).not.toHaveBeenCalled()
+  })
+
+  it('cancels a queued global-archive reconciliation when disposed', async () => {
+    const b = bench(['s-1'])
+    await b.controller.open(CATL, '宁德时代')
+    b.publish({ byId: {}, current: 's-1' })
+    b.sessions.open.mockClear()
+    b.publish({ byId: {}, current: undefined })
+    b.publishArchives(['s-1'])
+
+    b.controller.dispose()
+    await Promise.resolve()
+
+    expect(b.sessionListenerCount()).toBe(0)
+    expect(b.sessions.open).not.toHaveBeenCalled()
+    expect(b.focus.snapshot().instrument).toEqual(CATL)
+    expect(b.onFocusCleared).not.toHaveBeenCalled()
   })
 
   it('marks a blank-conversation selection failure without creating another', async () => {
@@ -915,6 +1433,14 @@ describe('workbench registration', () => {
       open: vi.fn(),
       startAt: vi.fn(() => Promise.resolve('s-new')),
     })
+    const workspaces = {
+      list: {
+        getSnapshot: () => ({ archivedSessionIds: [], phase: 'ready', state: 'idle' }),
+        subscribe: () => () => {},
+      },
+      archiveSession: vi.fn(() => Promise.resolve()),
+    }
+    ctx.provide('workspaces', workspaces)
     class RemoteService extends Service {
       constructor(serviceCtx: Context) { super(serviceCtx, 'remote') }
     }
@@ -932,12 +1458,12 @@ describe('workbench registration', () => {
       append: vi.fn(),
       bindSession: vi.fn().mockResolvedValue({ ok: true, value: ['s-new'] }),
     })
-    return { ctx, slots, list, layout }
+    return { ctx, slots, list, layout, workspaces }
   }
 
   it('declares only the services the two columns and their Remotes use', () => {
     expect(workbench.inject).toEqual([
-      'slots', 'locale', 'layout', 'sessions', 'remote', 'remote.watchlist', 'remote.nameRecord',
+      'slots', 'locale', 'layout', 'sessions', 'workspaces', 'remote', 'remote.watchlist', 'remote.nameRecord',
     ])
   })
 
@@ -978,6 +1504,18 @@ describe('workbench registration', () => {
     const details = (panel?.inject as unknown as () => NameDetailsInjected)()
     details.closeDetails()
     expect(b.layout.closeDetails).toHaveBeenCalledTimes(1)
+  })
+
+  it('archives a deleted investing conversation through the global workspace set', async () => {
+    const b = await bench()
+    const fiber = b.ctx.plugin({ inject: [...workbench.inject], apply: workbench.apply })
+    await fiber.await()
+
+    const frame = b.slots.entries('sidebar.mode').find(entry => entry.options.id === workbench.NAMES_MODE)
+    const names = (frame?.inject as unknown as () => NamesFrameInjected)()
+    await names.archiveConversation('s-old' as never)
+
+    expect(b.workspaces.archiveSession).toHaveBeenCalledWith('s-old')
   })
 
   it('removes every registration when its fiber disposes (HMR safety)', async () => {

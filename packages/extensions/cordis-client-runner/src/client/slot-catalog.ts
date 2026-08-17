@@ -1530,7 +1530,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     doc: 'The whole left column. OCCUPIED by ui-sidebar\'s SidebarRoot, which\ndeclares the workspace and settings seats inside it — registering here\nreplaces the navigation column outright rather than adding to it, and\nthe seats it declares disappear with it. To add something to the\nsidebar, register into one of those inner seats instead.\n\nThe occupant receives the frame\'s live column state (mode, collapsed,\nwidth) and is expected to render the compact control rail while\ncollapsed, and the frame switch while wide.',
     registerOptions: [],
     ownerProps: [
-      '/** Sidebar owner share: live column state from the frame\'s concession solve. */\nexport interface SidebarOwnerProps {\n  /**\n   * Which frame the columns are showing. The sidebar occupant renders the\n   * switch and picks which of its regions to draw; the details occupant reads\n   * the same value, so the two columns never disagree about what is in focus.\n   */\n  mode: string\n  /** Switch the frame. */\n  setMode: (mode: string) => void\n  /** True when the sidebar is closed (the column renders the compact control rail). */\n  collapsed: boolean\n  /** Rendered column width in px (SIDEBAR_COLLAPSED when collapsed). */\n  width: number\n}',
+      '/** Sidebar owner share: live frame column state and recovery actions. */\nexport interface SidebarOwnerProps {\n  /**\n   * Which frame the columns are showing. The sidebar occupant renders the\n   * switch and picks which of its regions to draw; the details occupant reads\n   * the same value, so the two columns never disagree about what is in focus.\n   */\n  mode: string\n  /** Switch the frame. */\n  setMode: (mode: string) => void\n  /** True when the sidebar is closed (the column renders the compact control rail). */\n  collapsed: boolean\n  /** Rendered column width in px (SIDEBAR_COLLAPSED when collapsed). */\n  width: number\n  /** True when the details column is visually closed, including responsive concession. */\n  detailsClosed: boolean\n  /** Restore a closed details column, overriding responsive concession when needed. */\n  openDetails: () => void\n}',
     ],
     ownerPropsReferences: [],
     standardProps: [
@@ -1620,7 +1620,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
       },
     ],
     ownerProps: [
-      '/**\n * Owner share of the browser hole — the only facts crossing the shell/region\n * boundary. Business data and actions arrive through the region\'s own inject.\n */\nexport interface SidebarSectionOwnerProps {\n  /** Shell fold-state output: wide renders the full browser, rail the icon column. */\n  wide: boolean\n  /** Rail icons request expansion; the browser rides the wide flip for focus. */\n  expandSidebar: () => void\n}',
+      '/**\n * Owner share of the browser hole — the only facts crossing the shell/region\n * boundary. Business data and actions arrive through the region\'s own inject.\n */\nexport interface SidebarSectionOwnerProps {\n  /** Shell fold-state output: wide renders the full browser, rail the icon column. */\n  wide: boolean\n  /** Rail icons request expansion; the browser rides the wide flip for focus. */\n  expandSidebar: () => void\n  /** Whether the details column is currently rendered closed. */\n  detailsClosed: boolean\n  /** Restore a usable details column within the current frame width. */\n  openDetails: () => void\n}',
     ],
     ownerPropsReferences: [],
     standardProps: [

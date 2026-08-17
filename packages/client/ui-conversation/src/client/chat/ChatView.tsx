@@ -395,6 +395,11 @@ export function ChatView({
               t={t}
             />
           ))}
+          {/* Content delivered to this conversation from outside its turns.
+              It sits after the last node so it lands where new content lands,
+              and before the running status so an in-flight turn stays the last
+              thing in the column. */}
+          {renderSlot('conversation.chat.foot', {})}
           {/* No pending placeholders: questions (ui-user-questions) and approvals
               (ApprovalPanel) both take over the composer, so a flow card would
               double-render the same wait. */}

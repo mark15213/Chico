@@ -198,6 +198,13 @@ export function ConversationRoot({
     <div className={css.root} data-phase={phase}>
       {renderSlot('conversation.session.header', {})}
       <div className={css.scrollBody} data-conversation-scroll="">
+        {/* Pinned to the top of the scrollport with its own height: an
+            occupant states a standing condition of this conversation, and it
+            survives both the header's blank-session hiding and the reader
+            scrolling away without covering either. */}
+        <div className={css.sessionStrip} data-conversation-strip="">
+          {renderSlot('conversation.session.strip', {})}
+        </div>
         {renderSlot('conversation.session', {})}
         {composerSeat}
       </div>

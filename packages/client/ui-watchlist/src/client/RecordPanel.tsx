@@ -1,17 +1,21 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
 import type {
   ChainEntry,
   ChainEntryRequest,
   InstrumentRef,
   NameDossier,
   NameRecordView,
+  NameStance,
+  StanceRequest,
 } from '@deepseek-ai/dsh-api-remotes/client'
 import {
   IconListPenOutline16,
   IconPlusOutline16,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { ProChart } from './chart/ProChart.tsx'
-import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale, PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
+// Type-only: this package's SlotMap merge (the record block it renders).
+import type {} from './workbench-slots.ts'
 import { directionOf, formatChange, formatLast, instrumentLabel } from './watchlist-model.ts'
 import { useWorkbenchFocus, type WorkbenchSelection } from './workbench-store.ts'
 import css from './RecordPanel.module.css'
@@ -30,16 +34,32 @@ export interface RecordPanelInjected {
   dossier: (instrument: InstrumentRef, sessions: number) => Promise<NameDossier>
   /** Record one chain entry. */
   append: (instrument: InstrumentRef, request: ChainEntryRequest) => Promise<ChainEntry>
+  /**
+   * Set where the user stands on this name. Every figure behind a stance is
+   * entered by hand — the harness has no broker connection — and the posture
+   * is what a workbench feature scoped to holdings reads.
+   */
+  setStance: (instrument: InstrumentRef, request: StanceRequest) => Promise<NameStance>
 }
 
 /** Full props of the record tab. */
-export type RecordPanelProps = RecordPanelInjected & PropsLocale<'watchlist'>
+export type RecordPanelProps =
+  RecordPanelInjected
+  & PropsRenderSlots<'investing.record.section'>
+  & PropsLocale<'watchlist'>
+  & {
+    /** Conversations still visible after the global archive set is applied. */
+    sessionCount: number
+  }
 
 /** Sessions of history the header chart draws; the seam bounds anything larger. */
 const HISTORY_SESSIONS = 60
 
 /** The kinds a user writes by hand. A verification settles a thesis, so it is offered per thesis. */
 const WRITABLE = ['thesis', 'decision', 'event'] as const
+
+/** Where a user can stand on a name. `watching` is what an unset record reads as. */
+const POSTURES = ['holding', 'watching', 'avoiding'] as const
 
 type Loaded = { readonly record: NameRecordView; readonly dossier: NameDossier | null }
 
@@ -53,16 +73,20 @@ type Loaded = { readonly record: NameRecordView; readonly dossier: NameDossier |
  * It carries the name's figures too. The design puts those above the
  * conversation, which belongs to another package; until the centre column can
  * take them, this is where the name's numbers and its record stay together.
- * @param props - the focus, the two reads, the write, and the locale seat.
+ * @param props - the focus, visible conversation count, reads, write, and locale seat.
  * @returns the tab body, or the empty state before a name is opened.
  */
-export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProps): ReactNode {
-  const { instrument } = useWorkbenchFocus(focus)
+export function RecordPanel({
+  focus, read, dossier, append, setStance, sessionCount, renderSlot, t,
+}: RecordPanelProps): ReactNode {
+  const { instrument, displayName: focusName } = useWorkbenchFocus(focus)
   const [state, setState] = useState<Loaded | 'loading' | 'error'>('loading')
   const [kind, setKind] = useState<(typeof WRITABLE)[number]>('thesis')
   const [body, setBody] = useState('')
   const [saving, setSaving] = useState(false)
+  const [stancePending, setStancePending] = useState(false)
   const [reload, setReload] = useState(0)
+  const postureId = useId()
 
   useEffect(() => {
     if (instrument === null) return
@@ -94,6 +118,19 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
   const loaded = typeof state === 'object' ? state : null
   const quote = loaded?.dossier?.quote ?? null
   const bars = loaded?.dossier?.bars ?? []
+  const posture = loaded?.record.stance?.posture ?? 'watching'
+
+  const setPosture = (next: (typeof POSTURES)[number]): void => {
+    if (stancePending || next === posture) return
+    setStancePending(true)
+    void setStance(instrument, { posture: next }).then(
+      () => {
+        setStancePending(false)
+        setReload(value => value + 1)
+      },
+      () => { setStancePending(false) },
+    )
+  }
 
   const submit = (event: FormEvent): void => {
     event.preventDefault()
@@ -155,11 +192,33 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
 
       {loaded !== null ? (
         <>
-          <dl className={css.stance}>
-            <div>
-              <dt>{t('record.posture')}</dt>
-              <dd>{t(`record.posture.${loaded.record.stance?.posture ?? 'watching'}`)}</dd>
+          {/* The posture is what a holdings-scoped workbench feature reads, so
+              it is set here rather than only reported. An unset record reads
+              as watching, and pressing that is still a write: "I looked and
+              decided not to hold" is a fact worth stamping. It takes its own
+              full-width row because three labelled choices do not fit the
+              figure cards beside it. */}
+          <div className={css.postureRow}>
+            <span className={css.postureLabel} id={postureId}>{t('record.posture')}</span>
+            <div className={css.postures} role="group" aria-labelledby={postureId}>
+              {POSTURES.map(option => (
+                <button
+                  key={option}
+                  type="button"
+                  className={css.posture}
+                  data-posture={option}
+                  data-on={option === posture ? 'true' : undefined}
+                  aria-pressed={option === posture}
+                  disabled={stancePending}
+                  onClick={() => { setPosture(option) }}
+                >
+                  {t(`record.posture.${option}`)}
+                </button>
+              ))}
             </div>
+          </div>
+
+          <dl className={css.stance}>
             <div>
               <dt>{t('record.position')}</dt>
               <dd>{loaded.record.stance?.positionPercent === null || loaded.record.stance === null
@@ -168,9 +227,16 @@ export function RecordPanel({ focus, read, dossier, append, t }: RecordPanelProp
             </div>
             <div>
               <dt>{t('record.sessions')}</dt>
-              <dd>{loaded.record.sessions.length}</dd>
+              <dd>{sessionCount}</dd>
             </div>
           </dl>
+
+          {/* What another workbench feature holds about this name, between
+              the figures above and the user's own writing below. */}
+          {renderSlot('investing.record.section', {
+            instrument,
+            displayName: focusName ?? label,
+          })}
 
           <section className={css.recordSection}>
             <header className={css.recordHead}>

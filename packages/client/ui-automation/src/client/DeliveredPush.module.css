@@ -1,0 +1,55 @@
+/* A delivery takes the assistant flow's own measure — full width, 16/28
+   narration — so continuing from it reads as continuing a conversation rather
+   than as replying to a notification. */
+
+.push {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* The one thing that separates a push from an answer. Without it a reader
+   scrolling back cannot tell what they asked for from what arrived. */
+.attribution {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.attributionIcon {
+  display: inline-flex;
+  color: var(--dsw-alias-label-caption);
+}
+
+.reading {
+  margin: 0;
+  color: var(--dsw-alias-label-primary);
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.followUp {
+  display: flex;
+  /* Optical align with the 28px icon hit targets the assistant footer uses. */
+  margin-left: -6px;
+}
+
+.ask {
+  padding: 3px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.ask:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}

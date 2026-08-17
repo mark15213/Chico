@@ -53,6 +53,22 @@ describe('computeColumns', () => {
     expect(cols).toEqual({ sidebar: 280, center: 930, details: 0 })
   })
 
+  it('manual recovery keeps a usable details width and lets the center absorb the deficit', () => {
+    const cols = computeColumns(1210, open(SIDEBAR_DEFAULT), open(DETAILS_DEFAULT), true)
+    expect(cols).toEqual({
+      sidebar: SIDEBAR_DEFAULT,
+      center: 1210 - SIDEBAR_DEFAULT - DETAILS_MIN,
+      details: DETAILS_MIN,
+    })
+  })
+
+  it('manual recovery never overflows fixed tracks in a tiny viewport', () => {
+    const cols = computeColumns(400, open(SIDEBAR_DEFAULT), open(DETAILS_DEFAULT), true)
+    expect(cols).toEqual({ sidebar: SIDEBAR_DEFAULT, center: 0, details: 120 })
+    expect(cols.sidebar + cols.center + cols.details).toBe(400)
+    expect(computeColumns(400, open(SIDEBAR_DEFAULT), closed(DETAILS_DEFAULT), true).details).toBe(0)
+  })
+
   it('the sidebar never concedes: center absorbs the deficit below CENTER_MIN', () => {
     // 700 < 280+640: sidebar keeps 280, center takes 420 < CENTER_MIN.
     const cols = computeColumns(700, open(SIDEBAR_DEFAULT), closed(DETAILS_DEFAULT))

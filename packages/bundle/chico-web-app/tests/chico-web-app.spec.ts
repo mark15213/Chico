@@ -93,10 +93,19 @@ describe('chico bundle patch', () => {
     expect(insertedRow('name-record')?.config).toBeUndefined()
   })
 
-  it('adds the workbench, the one browser row everything above exists to serve', () => {
+  it('adds the workbench, the browser row everything above exists to serve', () => {
     // A composition carrying the projections without it would hold a record
     // nobody can see.
     expect(insertedRow('ui-watchlist')?.name).toBe('@deepseek-ai/dsh-client-ui-watchlist')
+  })
+
+  it('adds automations after the workbench that declares their seat', () => {
+    // The workbench block, the page seat, and the name mark are all declared
+    // by ui-watchlist's own registration, so a composition carrying this row
+    // without it would register into holes nobody opened.
+    expect(insertedRow('ui-automation')?.name).toBe('@deepseek-ai/dsh-client-ui-automation')
+    const ids = inserted.map(row => row.id)
+    expect(ids.indexOf('ui-automation')).toBeGreaterThan(ids.indexOf('ui-watchlist'))
   })
 
   it('disables no row from the layer below', () => {

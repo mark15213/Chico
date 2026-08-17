@@ -74,6 +74,12 @@ export class WorkbenchFocus implements WorkbenchSelection {
    */
   snapshot = (): WorkbenchFocusState => this.state
 
+  /** Clear the workbench selection after its last conversation is removed. */
+  clear = (): void => {
+    if (this.state === EMPTY) return
+    this.publish(EMPTY)
+  }
+
   /**
    * Show one name with the conversations recorded against it.
    * @param instrument - the instrument to show.

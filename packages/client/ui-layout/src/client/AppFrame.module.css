@@ -36,6 +36,20 @@
   overflow: hidden;
 }
 
+/* One occupant of the centre column. The conversation pane keeps its subtree
+   mounted while a page covers it, so `hidden` must win over the flex display
+   the pane would otherwise carry. */
+.centerPane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.centerPane[hidden] {
+  display: none;
+}
+
 .detailsCol {
   min-width: 0;
   overflow: hidden;

@@ -16,6 +16,7 @@ import { useSyncExternalStore } from 'react'
 import { AppFrame } from '@deepseek-ai/dsh-client-ui-layout/src/client/AppFrame.tsx'
 import type { AppFrameProps } from '@deepseek-ai/dsh-client-ui-layout/src/client/AppFrame.tsx'
 import { SIDEBAR_COLLAPSED } from '@deepseek-ai/dsh-client-ui-layout/src/client/columns.ts'
+import type { SidebarOwnerProps } from '@deepseek-ai/dsh-client-ui-layout/src/client/index.ts'
 import { createLayoutStore } from '@deepseek-ai/dsh-client-ui-layout/src/client/stores.ts'
 import type {
   SessionId, SessionListState, WorkspaceListState,
@@ -60,6 +61,7 @@ function mountFrame() {
     slotCalls.push({ key, props: owner })
     if (key === 'sidebar') return <div data-testid="sidebar-content" />
     if (key === 'conversation') return <div data-testid="center-content" />
+    if (key === 'page') return <div data-testid="page-content" />
     if (key === 'details') return <div data-testid="details-content" />
     if (key === 'conversation.empty') return <div data-testid="empty-content" />
     return <div data-testid="other-content" />
@@ -214,9 +216,41 @@ describe('AppFrame', () => {
     expect(tracks(frame)).toEqual([280, 0])
   })
 
-  it('sidebar slot receives live concession output as owner props', () => {
-    const { slotCalls } = mountFrame()
-    expect(slotCalls.find(c => c.key === 'sidebar')!.props).toMatchObject({ collapsed: false, width: 280 })
+  it('sidebar slot receives live column state and the details reopen action', () => {
+    const { frame, slotCalls } = mountFrame()
+    const owner = slotCalls.find(c => c.key === 'sidebar')!.props as SidebarOwnerProps
+    expect(owner).toMatchObject({ collapsed: false, width: 280, detailsClosed: true })
+
+    act(() => { owner.openDetails() })
+
+    expect(tracks(frame)).toEqual([280, 360])
+    const next = slotCalls.filter(c => c.key === 'sidebar').at(-1)!.props as SidebarOwnerProps
+    expect(next.detailsClosed).toBe(false)
+    expect(next.openDetails).toBe(owner.openDetails)
+  })
+
+  it('sidebar recovery overrides a responsive details concession', () => {
+    frameWidth = 1210
+    const { frame, instance, slotCalls } = mountFrame()
+    act(() => { instance.actions.openDetails() })
+    expect(tracks(frame)).toEqual([280, 0])
+
+    const owner = slotCalls.filter(c => c.key === 'sidebar').at(-1)!.props as SidebarOwnerProps
+    expect(owner.detailsClosed).toBe(true)
+    act(() => { owner.openDetails() })
+
+    expect(tracks(frame)).toEqual([280, 300])
+    expect(instance.getSnapshot().detailsExpansionOverride).toBe(true)
+
+    frameWidth = 1280
+    act(() => { fireResize?.(); vi.advanceTimersByTime(20) })
+    expect(tracks(frame)).toEqual([280, 360])
+    expect(instance.getSnapshot().detailsExpansionOverride).toBe(false)
+
+    frameWidth = 1210
+    act(() => { fireResize?.(); vi.advanceTimersByTime(20) })
+    expect(tracks(frame)).toEqual([280, 0])
+    expect((slotCalls.filter(c => c.key === 'sidebar').at(-1)!.props as SidebarOwnerProps).detailsClosed).toBe(true)
   })
 
   it('sidebar drag widens through rAF-batched pointer moves', () => {
@@ -421,5 +455,72 @@ describe('AppFrame — unmount with an in-flight resize frame', () => {
     frameWidth = 1250
     act(() => { fireResize?.(); fireResize?.(); vi.advanceTimersByTime(20) })
     expect(tracks(frame)).toEqual([280, 330])
+  })
+})
+
+describe('AppFrame — a page over the centre column', () => {
+  it('leaves the conversation showing while no page is open', () => {
+    const { queryByTestId } = mountFrame()
+
+    expect(queryByTestId('page-content')).toBeNull()
+    expect(queryByTestId('center-content')?.closest('[hidden]')).toBeNull()
+  })
+
+  it('covers the conversation without unmounting it, so a draft survives', () => {
+    const { instance, getByTestId, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.openPage('automation') })
+    rerenderFrame()
+
+    // Both occupy the centre column; the conversation is hidden, not removed.
+    expect(getByTestId('page-content')).toBeTruthy()
+    expect(getByTestId('center-content').closest('[hidden]')).toBeTruthy()
+  })
+
+  it('keys the details column on the open page, not on the frame', () => {
+    const { instance, slotCalls, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.openPage('automation') })
+    rerenderFrame()
+
+    // The right column describes whatever the centre is showing; asking for
+    // the frame's own detail here would put a name's record beside a rule.
+    const detailCall = slotCalls.filter(call => call.key === 'details').at(-1)
+    expect(detailCall).toBeTruthy()
+  })
+
+  it('hands the page its own way back to the conversation', () => {
+    const { instance, slotCalls, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.openPage('automation') })
+    rerenderFrame()
+    const pageCall = slotCalls.filter(call => call.key === 'page').at(-1)
+    ;(pageCall?.props as { closePage: () => void }).closePage()
+    rerenderFrame()
+
+    expect(instance.store.getSnapshot().page).toBeNull()
+  })
+
+  it('keeps a page detail out of the default frame session gate', () => {
+    // The gate exists for a call inside one conversation. A page's detail is
+    // about a rule, which outlives every session, so a blank session must not
+    // force its column shut.
+    selectedSession.current = undefined
+    const { instance, frame, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.openPage('automation'); instance.actions.openDetails() })
+    rerenderFrame()
+
+    expect(tracks(frame)[1]).toBeGreaterThan(0)
+  })
+
+  it('gives the sidebar the open page so a frame can mark its own entry', () => {
+    const { instance, slotCalls, rerenderFrame } = mountFrame()
+
+    act(() => { instance.actions.openPage('automation') })
+    rerenderFrame()
+
+    const sidebarCall = slotCalls.filter(call => call.key === 'sidebar').at(-1)
+    expect((sidebarCall?.props as SidebarOwnerProps).page).toBe('automation')
   })
 })

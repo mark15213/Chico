@@ -58,15 +58,23 @@ export function clampWidth(px: number, min: number, max: number): number {
 
 /**
  * Solve the three column widths for one viewport frame. Pure: no hysteresis —
- * the output is a function of (viewport, preferences) only, so recovery on
- * re-widening is automatic. Preferences re-clamp here because they cross the
- * store boundary and callers may still supply stale ranges.
+ * the output is a function of its inputs only, so recovery on re-widening is
+ * automatic. Preferences re-clamp here because they cross the store boundary
+ * and callers may still supply stale ranges. A manual details override keeps
+ * a usable details track, up to its minimum, and lets the center absorb the
+ * responsive deficit, matching the sidebar's manual narrow-viewport expansion.
  * @param viewport - available frame width in px.
  * @param sidebar - sidebar width preference in px (0 = closed).
  * @param details - details width preference in px (0 = closed).
+ * @param detailsExpansionOverride - whether a user explicitly restored auto-closed details.
  * @returns resolved widths; details 0 means visually closed (never unmounted), while a closed sidebar keeps its compact rail.
  */
-export function computeColumns(viewport: number, sidebar: number, details: number): Columns {
+export function computeColumns(
+  viewport: number,
+  sidebar: number,
+  details: number,
+  detailsExpansionOverride = false,
+): Columns {
   // The sidebar is fixed at its preference (or the rail) — it never concedes.
   const s = sidebar === 0 ? SIDEBAR_COLLAPSED : clampWidth(sidebar, SIDEBAR_MIN, SIDEBAR_MAX)
   const d0 = details === 0 ? 0 : clampWidth(details, DETAILS_MIN, DETAILS_MAX)
@@ -78,7 +86,17 @@ export function computeColumns(viewport: number, sidebar: number, details: numbe
   const d1 = d0 === 0 ? 0 : Math.max(DETAILS_MIN, viewport - s - CENTER_MIN)
   if (s + d1 + CENTER_MIN <= viewport) return { sidebar: s, center: CENTER_MIN, details: d1 }
 
-  // Step 3: auto-close details (derived — preferences untouched); center
-  // absorbs any remaining deficit (may drop below CENTER_MIN).
+  // Step 3: an explicit recovery keeps as much as the details minimum as the
+  // viewport can hold without overflowing its fixed tracks. Otherwise details
+  // auto-closes (derived — preferences untouched). Center absorbs any
+  // remaining deficit and may drop below CENTER_MIN.
+  if (detailsExpansionOverride && d0 > 0) {
+    const forcedDetails = Math.min(DETAILS_MIN, Math.max(0, viewport - s))
+    return {
+      sidebar: s,
+      center: Math.max(0, viewport - s - forcedDetails),
+      details: forcedDetails,
+    }
+  }
   return { sidebar: s, center: Math.max(0, viewport - s), details: 0 }
 }

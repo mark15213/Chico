@@ -40,7 +40,7 @@ import { en, NS, zh, type WatchlistLocaleKey } from './locales.ts'
 
 export type { InvestingHeroInjected, InvestingHeroProps } from './InvestingHero.tsx'
 export { InvestingHero } from './InvestingHero.tsx'
-export type { NamesFrameInjected, NamesFrameProps } from './NamesFrame.tsx'
+export type { NamesFrameInjected, NamesFrameProps, WorkbenchLedger } from './NamesFrame.tsx'
 export type { NameDetailsInjected, NameDetailsProps } from './NameDetails.tsx'
 export { NameDetails } from './NameDetails.tsx'
 export type { AttributionPanelProps } from './AttributionPanel.tsx'
@@ -61,12 +61,25 @@ export { ProChart } from './chart/ProChart.tsx'
 export type { WorkbenchChartProps } from './chart/WorkbenchChart.tsx'
 export { WorkbenchChart } from './chart/WorkbenchChart.tsx'
 export { WorkbenchSessions } from './workbench-sessions.ts'
+export type { NameMarkOwnerProps, WorkbenchSectionOwnerProps } from './workbench-slots.ts'
 export type { WatchlistLocaleKey } from './locales.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** Name workbench copy. */
     'watchlist': WatchlistLocaleKey
+  }
+}
+
+declare module '@deepseek-ai/cordis' {
+  interface Context {
+    /**
+     * The open name, readable by any plugin whose own surface is about
+     * whatever the investing frame is showing. Read-only on purpose: opening a
+     * name moves three columns and starts a conversation, so it stays with the
+     * workbench that owns those transitions.
+     */
+    investingFocus: import('./workbench-store.ts').WorkbenchSelection
   }
 }
 
@@ -77,9 +90,25 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
  */
 export const NAMES_MODE = 'names'
 
+/**
+ * The workbench block's slot key. A feature that manages something standing —
+ * automations, and whatever joins them — registers one entry here and opens
+ * its own page from it.
+ */
+export const WORKBENCH_SECTION = 'investing.workbench.section'
+
+/** The slot key for a non-interactive mark on one followed name's row. */
+export const NAME_MARK = 'investing.name.mark'
+
+/**
+ * The Record tab's block for what another workbench feature holds about the
+ * open name — the automations watching it, and the way to attach more.
+ */
+export const RECORD_SECTION = 'investing.record.section'
+
 /** Services required by the registrations and the generated Remote faces. */
 export const inject = [
-  'slots', 'locale', 'layout', 'sessions', 'remote', 'remote.watchlist', 'remote.nameRecord',
+  'slots', 'locale', 'layout', 'sessions', 'workspaces', 'remote', 'remote.watchlist', 'remote.nameRecord',
 ]
 
 /**
@@ -124,6 +153,11 @@ export function apply(ctx: ClientContext): void {
     if (!result.ok) throw new Error(`nameRecord.append failed: ${result.error.code}: ${result.error.message}`)
     return result.value
   }
+  const setStance: RecordPanelInjected['setStance'] = async (instrument, request) => {
+    const result = await ctx.remote.nameRecord.setStance(instrument, request)
+    if (!result.ok) throw new Error(`nameRecord.setStance failed: ${result.error.code}: ${result.error.message}`)
+    return result.value
+  }
 
   const bind = async (
     instrument: InstrumentRef, sessionId: SessionId,
@@ -141,12 +175,33 @@ export function apply(ctx: ClientContext): void {
 
   const feed = new WatchlistFeed(list)
   const focus = new WorkbenchFocus()
-  const conversations = new WorkbenchSessions(ctx.sessions, { read, bind, archive }, focus)
+  const conversations = new WorkbenchSessions(
+    ctx.sessions,
+    { read, bind, archive },
+    focus,
+    ctx.workspaces.list,
+    () => { ctx.layout.closeDetails() },
+  )
+  ctx.effect(
+    () => () => { conversations.dispose() },
+    'ui-watchlist: conversation navigation',
+  )
+
+  // The open name, published for surfaces this package does not own: a strip
+  // above the conversation belongs to whichever feature it is about, and that
+  // feature has no other way to learn which name is in focus.
+  ctx.effect(() => ctx.reflect.provide('investingFocus', focus), 'ui-watchlist: open name')
 
   /** Show one name: every column moves, and the details column is revealed. */
   const openName = (instrument: InstrumentRef, displayName: string): void => {
     ctx.layout.openDetails()
     void conversations.open(instrument, displayName)
+  }
+
+  const workbench: NamesFrameInjected['workbench'] = {
+    count: () => ctx.slots.entries(WORKBENCH_SECTION).length,
+    subscribe: fn => ctx.slots.subscribe(WORKBENCH_SECTION, fn),
+    version: () => ctx.slots.getVersion(WORKBENCH_SECTION),
   }
 
   ctx.slots.inject('sidebar.mode', () => ctx.slots.register({
@@ -155,14 +210,25 @@ export function apply(ctx: ClientContext): void {
     order: 20,
     locale: NS,
     label: () => t('mode.names'),
+    children: {
+      [WORKBENCH_SECTION]: { kind: 'list', scope: 'root' },
+      [NAME_MARK]: { kind: 'list', scope: 'root' },
+    },
     inject: (): NamesFrameInjected => ({
       rows: feed,
+      workbench,
       search,
       follow,
       focus,
       open: openName,
       openConversation: conversations.show,
       startConversation: conversations.start,
+      activateConversationNavigation: conversations.activate,
+      archiveConversation: async (id) => {
+        await conversations.archive(id, async (sessionId) => {
+          await ctx.workspaces.archiveSession(sessionId)
+        })
+      },
     }),
   }, NamesFrame))
 
@@ -177,11 +243,15 @@ export function apply(ctx: ClientContext): void {
     name: 'details',
     key: NAMES_MODE,
     locale: NS,
+    children: {
+      [RECORD_SECTION]: { kind: 'list', scope: 'root' },
+    },
     inject: (): NameDetailsInjected => ({
       focus,
       read,
       dossier,
       append,
+      setStance,
       closeDetails: () => { ctx.layout.closeDetails() },
     }),
   }, NameDetails))

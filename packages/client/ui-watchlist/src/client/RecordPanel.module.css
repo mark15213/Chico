@@ -90,9 +90,66 @@
   background: var(--dsw-alias-bg-layer-1);
 }
 
+/* The posture is the one figure here the user writes, so it reads as a control
+   row rather than as a third read-only card. */
+.postureRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.postureLabel {
+  flex: 0 0 auto;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 9.5px;
+  line-height: 14px;
+}
+
+.postures {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.posture {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 11px;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.posture:hover:not(:disabled) {
+  color: var(--dsw-alias-label-primary);
+}
+
+.posture:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.posture[data-on] {
+  background: var(--dsw-alias-bg-l1);
+  color: var(--dsw-alias-label-primary);
+  font-weight: 600;
+}
+
+/* Holding is the posture that turns a name into a position, so it carries the
+   local direction convention rather than the neutral selected fill. */
+.posture[data-posture='holding'][data-on] {
+  color: var(--dsw-alias-state-error-primary);
+}
+
 .stance {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
   margin: 0;
 }

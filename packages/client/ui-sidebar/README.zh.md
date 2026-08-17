@@ -8,9 +8,9 @@ New Session 会启动运行时的页面局部前端 Session Intent。运行时�
 
 `sidebar.mode` 是导航框架列表：每个框架一个条目，各自拥有从切换器到底部的整个区域。ui-workspace 把会话浏览器注册为 `sessions`；产品在它旁边注册自己的框架。外壳按 `order` 为每个注册画一个切换项，并且只渲染当前激活那个的区域——仅在列宽展开时，因为 56px 导轨里每个控件只有一个图标的位置，放不下一排标签。只注册了一个框架时不画切换器：没有可选的东西。
 
-当前框架属于**布局**，不属于本包。详情栏也随它更换占用方，因此一个只移动本列的切换器会让两栏描述不同的东西。
+当前框架属于**布局**，不属于本包。详情栏也随它更换占用方，因此一个只移动本列的切换器会让两栏描述不同的东西。外壳把 `detailsClosed` 与 `openDetails` 转发给当前 `sidebar.mode` 条目，由注册方决定何时提供恢复详情栏的操作。
 
-`SidebarRootComponentProps` 组合布局 owner share（含 `mode` 与 `setMode`）、全局 `useSessions` 和 `useWorkspaces` 钩子、已声明的 `sidebar.mode` 与 `sidebar.settings` 子 slot，以及注入的 `startSession`、侧边栏切换与框架账本。这里没有插件 store。
+`SidebarRootComponentProps` 组合布局 owner share（含框架、侧边栏与详情栏的查看状态）、全局 `useSessions` 和 `useWorkspaces` 钩子、已声明的 `sidebar.mode` 与 `sidebar.settings` 子 slot，以及注入的 `startSession`、侧边栏切换与框架账本。这里没有插件 store。
 
 实时收起时，外壳会把展开内容固定在当前宽度，并用 150ms 将其淡出。随后，上方四个控件——外壳的侧栏切换与新建会话，以及通过 `sidebar.workspaces` 渲染的添加和搜索——共用一次 150ms 的淡入和 49px 左移，在布局的 300ms 栏滑动结束时一起进入 56px 轨道；每个 36px 控件盒都会沿同一条路径到达轨道左侧 10px 的内边距。固定在底部的 `sidebar.settings` 控件只共用淡入时序，不发生横向位移。页面初始即为收起状态时会静态渲染轨道；减少动态效果模式会禁用两段过渡。
 

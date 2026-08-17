@@ -24,6 +24,7 @@ const neverHook = (() => { throw new Error('shell must not read global hooks') }
 function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; width?: number } = {}) {
   const startSession = vi.fn()
   const toggleSidebar = vi.fn()
+  const openDetails = vi.fn()
   let regionOwner: SidebarSectionOwnerProps | undefined
   let settingsOwner: SidebarSettingsOwnerProps | undefined
   let footerActionOwner: SidebarFooterActionOwnerProps | undefined
@@ -32,11 +33,13 @@ function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; w
     subscribe: () => () => {},
     version: () => 0,
   }
-  let current = { collapsed, width }
+  let current = { collapsed, width, detailsClosed: true }
   const root = () => (
     <SidebarRoot
       mode="sessions" setMode={() => {}} modes={modes}
       collapsed={current.collapsed} width={current.width}
+      detailsClosed={current.detailsClosed} openDetails={openDetails}
+      page={null} openPage={() => {}} closePage={() => {}}
       useSessions={neverHook} useWorkspaces={neverHook}
       startSession={startSession} toggleSidebar={toggleSidebar} t={t}
       renderSlot={((
@@ -60,6 +63,7 @@ function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; w
   return {
     startSession,
     toggleSidebar,
+    openDetails,
     regionOwner: () => {
       if (regionOwner === undefined) throw new Error('region owner not rendered')
       return regionOwner
@@ -91,15 +95,22 @@ describe('SidebarRoot shell', () => {
     expect(b.toggleSidebar).toHaveBeenCalledOnce()
   })
 
-  it('hands the region its wide flag and clamps expandSidebar to the collapsed state', () => {
+  it('hands the region live panel state and actions', () => {
     const b = mountShell()
     expect(b.regionOwner().wide).toBe(true)
+    expect(b.regionOwner().detailsClosed).toBe(true)
     // The settings seat rides the same wide flag (ui-settings renders the row).
     expect(b.settingsOwner().wide).toBe(true)
     expect(b.footerActionOwner().wide).toBe(true)
     // Expanded: the request is a no-op (no accidental collapse).
     b.regionOwner().expandSidebar()
     expect(b.toggleSidebar).not.toHaveBeenCalled()
+    b.regionOwner().openDetails()
+    expect(b.openDetails).toHaveBeenCalledOnce()
+
+    b.rerender({ detailsClosed: false })
+    expect(b.regionOwner().detailsClosed).toBe(false)
+    expect(b.regionOwner().openDetails).toBe(b.openDetails)
   })
 
   it('keeps the region mounted through collapse and expands on its request', () => {
