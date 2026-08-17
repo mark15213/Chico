@@ -78,6 +78,7 @@ const SENTENCE_MODEL_EXPERIENCE: Readonly<Record<string, SentenceContract>> = {
   'packages/investment/followed-names': { kind: 'none', reason: 'Durable product state behind ctx.followedNames; a consumer that renders a watchlist to a model owns that surface.' },
   'packages/investment/name-record': { kind: 'none', reason: 'Durable product state behind ctx.nameRecord; a consumer that puts a name record in front of a model owns that surface.' },
   'packages/investment/watchlist': { kind: 'none', reason: 'A browser-facing Remote join of ctx.followedNames with quotes; a tool that puts a watchlist in front of a model owns that surface.' },
+  'packages/client/ui-automation': { kind: 'none', reason: 'Browser-side UI plugin layer; renders automation rules and their firings without changing model context.' },
   'packages/client/ui-watchlist': { kind: 'none', reason: 'Browser-side UI plugin layer; renders the watchlist projection without changing model context.' },
   'packages/client/ui-workflow-run': { kind: 'none', reason: 'Browser-side UI plugin layer; renders durable workflow records without changing model context.' },
   'packages/client/ui-input-trigger': { kind: 'none', reason: 'Browser-side UI plugin layer; registers nothing model-facing.' },

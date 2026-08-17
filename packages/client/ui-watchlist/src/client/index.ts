@@ -211,8 +211,8 @@ export function apply(ctx: ClientContext): void {
     locale: NS,
     label: () => t('mode.names'),
     children: {
-      [WORKBENCH_SECTION]: { kind: 'list', scope: 'root' },
-      [NAME_MARK]: { kind: 'list', scope: 'root' },
+      'investing.workbench.section': { kind: 'list', scope: 'root' },
+      'investing.name.mark': { kind: 'list', scope: 'root' },
     },
     inject: (): NamesFrameInjected => ({
       rows: feed,
@@ -244,7 +244,7 @@ export function apply(ctx: ClientContext): void {
     key: NAMES_MODE,
     locale: NS,
     children: {
-      [RECORD_SECTION]: { kind: 'list', scope: 'root' },
+      'investing.record.section': { kind: 'list', scope: 'root' },
     },
     inject: (): NameDetailsInjected => ({
       focus,
